@@ -22,4 +22,11 @@
     <style name="Theme.UFVCourt.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.UFVCourt.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Theme.UFVCourt.Starting" parent="Theme.SplashScreen" >
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.UFVCourt.NoActionBar</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+    </style>
 </resources>
