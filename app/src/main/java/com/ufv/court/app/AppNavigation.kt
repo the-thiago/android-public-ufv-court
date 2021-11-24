@@ -1,4 +1,4 @@
-package com.ufv.court
+package com.ufv.court.app
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable

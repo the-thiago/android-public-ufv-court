@@ -1,4 +1,4 @@
-package com.ufv.court
+package com.ufv.court.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.ufv.court.ui.theme
+package com.ufv.court.app.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

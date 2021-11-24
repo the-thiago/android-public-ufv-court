@@ -1,4 +1,4 @@
-package com.ufv.court.ui.theme
+package com.ufv.court.app.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">UFV Court</string>
+    <string name="error">Erro</string>
+    <string name="ok">OK</string>
+    <string name="success">Sucesso</string>
+    <string name="email">Email</string>
+    <string name="password">Senha</string>
+    <string name="enter">Entrar</string>
+    <string name="forgot_password">Esqueci minha senha</string>
+    <string name="I_want_to_register">Quero me cadastrar</string>
 </resources>

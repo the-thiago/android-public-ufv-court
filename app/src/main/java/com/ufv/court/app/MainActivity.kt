@@ -1,4 +1,4 @@
-package com.ufv.court
+package com.ufv.court.app
 
 import android.os.Bundle
 import android.view.View
@@ -7,14 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.ufv.court.ui.theme.UFVCourtTheme
+import com.ufv.court.app.theme.UFVCourtTheme
 
 class MainActivity : ComponentActivity() {
 
