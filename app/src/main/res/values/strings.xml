@@ -15,4 +15,8 @@
     <string name="email_domain_not_allowed">Você deve utilizar um e-mail válido da UFV</string>
     <string name="empty_field_error">Preencha todos os campos</string>
     <string name="different_passwords">Senhas diferentes</string>
+    <string name="could_not_create_account">Não foi possível cadastrar a conta</string>
+    <string name="invalid_credentials">Credenciais inválidas</string>
+    <string name="user_already_exists">Uma conta com esse e-mail já existe</string>
+    <string name="invalid_number_of_characters">A senha deve ter pelo menos 6 caracteres</string>
 </resources>

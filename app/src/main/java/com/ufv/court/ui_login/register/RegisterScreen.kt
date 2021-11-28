@@ -15,6 +15,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.CustomTextField
@@ -97,13 +100,15 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
-    ErrorTreatment(state.error) {
-        action(RegisterAction.CleanErrors)
+    state.error?.let {
+        ErrorTreatment(state.error) {
+            action(RegisterAction.CleanErrors)
+        }
     }
 }
 
 @Composable
-fun ErrorTreatment(error: Throwable?, onDismiss: () -> Unit) {
+fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
     when (error) {
         is RegisterError.DifferentPassword -> {
             OneButtonErrorDialog(
@@ -120,6 +125,30 @@ fun ErrorTreatment(error: Throwable?, onDismiss: () -> Unit) {
         is RegisterError.EmailDomainNotAllowed -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.email_domain_not_allowed),
+                onDismiss = onDismiss
+            )
+        }
+        is FirebaseAuthWeakPasswordException -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.invalid_number_of_characters),
+                onDismiss = onDismiss
+            )
+        }
+        is FirebaseAuthUserCollisionException -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.user_already_exists),
+                onDismiss = onDismiss
+            )
+        }
+        is FirebaseAuthInvalidCredentialsException -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.invalid_credentials),
+                onDismiss = onDismiss
+            )
+        }
+        else -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.could_not_create_account),
                 onDismiss = onDismiss
             )
         }

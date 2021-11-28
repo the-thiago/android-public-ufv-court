@@ -2,6 +2,7 @@ package com.ufv.court.app
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -16,7 +17,7 @@ fun AppNavigation(navController: NavHostController) {
     AnimatedNavHost(navController = navController, startDestination = "temporary") {
         composable("temporary") {
 //            LoginScreen(viewModel = LoginViewModel())
-            RegisterScreen(viewModel = RegisterViewModel())
+            RegisterScreen(viewModel = hiltViewModel())
         }
     }
 }

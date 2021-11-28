@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'com.google.gms.google-services'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -73,7 +75,16 @@ dependencies {
     // firebase
     implementation platform('com.google.firebase:firebase-bom:29.0.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+
+    // hilt
+    implementation("com.google.dagger:hilt-android:2.40")
+    kapt("com.google.dagger:hilt-android-compiler:2.40")
+    implementation("androidx.hilt:hilt-common:1.0.0")
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0-beta01")
 
     // retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit"

@@ -3,6 +3,7 @@ buildscript {
         compose_version = '1.0.5'
         kotlin = '1.5.31'
         accompanist = '0.21.3-beta'
+        hilt = "2.40"
         okhttp = '4.9.1'
         retrofit = '2.9.0'
     }
@@ -13,7 +14,8 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.3"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin"
-        classpath 'com.google.gms:google-services:4.3.10'
+        classpath "com.google.gms:google-services:4.3.10"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt"
     }
 }
 

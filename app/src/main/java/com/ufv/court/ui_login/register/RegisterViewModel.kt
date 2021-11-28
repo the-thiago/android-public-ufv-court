@@ -3,14 +3,20 @@ package com.ufv.court.ui_login.register
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.user_service.domain.usecase.RegisterUserUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegisterViewModel : ViewModel() {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val registerUserUseCase: RegisterUserUseCase
+) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<RegisterAction>()
 
@@ -46,9 +52,18 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
             if (areValidCredentials()) {
                 _state.value = state.value.copy(isLoading = true)
-
-
-                _state.value = state.value.copy(isLoading = false)
+                val result = registerUserUseCase(
+                    parameters = RegisterUserUseCase.Params(
+                        email = state.value.email,
+                        password = state.value.password
+                    )
+                )
+                if (result is Result.Success) {
+                    _state.value = state.value.copy(isLoading = false)
+                    // todo navigate to home
+                } else if (result is Result.Error) {
+                    _state.value = state.value.copy(isLoading = false, error = result.exception)
+                }
             }
         }
     }
