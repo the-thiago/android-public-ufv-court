@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
+import com.ufv.court.ui_login.login.LoginScreen
+import com.ufv.court.ui_login.login.LoginViewModel
 import com.ufv.court.ui_login.register.RegisterScreen
 import com.ufv.court.ui_login.register.RegisterViewModel
 

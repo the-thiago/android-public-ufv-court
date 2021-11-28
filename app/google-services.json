@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "722603776312",
+    "project_id": "ufv-court",
+    "storage_bucket": "ufv-court.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:722603776312:android:93497341a3e214d5d509cd",
+        "android_client_info": {
+          "package_name": "com.ufv.court"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "722603776312-2ihn0gmg1vikr3vo85auqflb0v1ep65b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpXOCi27lxavNu1lalEJxrUx9o3MxWrio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "722603776312-2ihn0gmg1vikr3vo85auqflb0v1ep65b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -56,7 +56,6 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-
         Image(
             modifier = Modifier
                 .height(184.dp)

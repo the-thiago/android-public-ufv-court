@@ -1,6 +1,10 @@
 package com.ufv.court.ui_login.register
 
 sealed class RegisterAction {
-    data class ChangeEmailText(val email: String) : RegisterAction()
-    data class ChangePasswordText(val password: String) : RegisterAction()
+    object NavigateUp : RegisterAction()
+    object CleanErrors : RegisterAction()
+    data class ChangeEmail(val email: String) : RegisterAction()
+    data class ChangePassword(val password: String) : RegisterAction()
+    data class ChangeConfirmPassword(val confirmPassword: String) : RegisterAction()
+    object Register : RegisterAction()
 }

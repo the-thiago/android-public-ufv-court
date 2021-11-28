@@ -5,7 +5,14 @@
     <string name="success">Sucesso</string>
     <string name="email">Email</string>
     <string name="password">Senha</string>
+    <string name="confirm_password">Confirme sua senha</string>
     <string name="enter">Entrar</string>
     <string name="forgot_password">Esqueci minha senha</string>
     <string name="I_want_to_register">Quero me cadastrar</string>
+    <string name="Voltar">Voltar</string>
+    <string name="create_account">Criar conta</string>
+    <string name="create">Criar</string>
+    <string name="email_domain_not_allowed">Você deve utilizar um e-mail válido da UFV</string>
+    <string name="empty_field_error">Preencha todos os campos</string>
+    <string name="different_passwords">Senhas diferentes</string>
 </resources>

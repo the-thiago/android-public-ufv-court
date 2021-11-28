@@ -8,7 +8,7 @@ val Teal200 = Color(0xFF03DAC5)
 /**
  * Color for theme, primary color
  */
-val DarkRed = Color(0xFF7A1B1C)
+val DarkRed = Color(0xFF791D1F)
 
 /**
  * Color for theme, primary color
