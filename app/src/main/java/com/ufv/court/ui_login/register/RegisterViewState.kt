@@ -6,6 +6,7 @@ data class RegisterViewState(
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
+    val showEmailSentDialog: Boolean = false
 ) {
     companion object {
         val Empty = RegisterViewState()
@@ -16,4 +17,8 @@ sealed class RegisterError : Exception() {
     object DifferentPassword : RegisterError()
     object EmptyField : RegisterError()
     object EmailDomainNotAllowed : RegisterError()
+    object AuthWeakPassword : RegisterError()
+    object AuthUserCollision : RegisterError()
+    object AuthInvalidCredentials : RegisterError()
+    object SendEmailVerification : RegisterError()
 }

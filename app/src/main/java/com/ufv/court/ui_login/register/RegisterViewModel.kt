@@ -3,8 +3,11 @@ package com.ufv.court.ui_login.register
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.user_service.domain.usecase.RegisterUserUseCase
+import com.ufv.court.core.user_service.domain.usecase.SendEmailVerificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerUserUseCase: RegisterUserUseCase
+    private val registerUserUseCase: RegisterUserUseCase,
+    private val sendEmailVerificationUseCase: SendEmailVerificationUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<RegisterAction>()
@@ -43,6 +47,9 @@ class RegisterViewModel @Inject constructor(
                         confirmPassword = action.confirmPassword
                     )
                     RegisterAction.Register -> register()
+                    is RegisterAction.ShowEmailSentDialog -> _state.value = state.value.copy(
+                        showEmailSentDialog = action.show
+                    )
                 }
             }
         }
@@ -59,13 +66,22 @@ class RegisterViewModel @Inject constructor(
                     )
                 )
                 if (result is Result.Success) {
-                    _state.value = state.value.copy(isLoading = false)
-                    // todo navigate to home
+                    sendEmailVerification()
                 } else if (result is Result.Error) {
                     _state.value = state.value.copy(isLoading = false, error = result.exception)
                 }
             }
         }
+    }
+
+    private suspend fun sendEmailVerification() {
+        val result = sendEmailVerificationUseCase(Unit)
+        if (result is Result.Success) {
+            _state.value = state.value.copy(isLoading = false, showEmailSentDialog = true)
+        } else if (result is Result.Error) {
+            _state.value = state.value.copy(isLoading = false, error = result.exception)
+        }
+        // todo navigate up
     }
 
     private fun areValidCredentials(): Boolean {

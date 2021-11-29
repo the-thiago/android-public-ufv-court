@@ -15,15 +15,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
-import com.ufv.court.core.ui.components.CustomTextField
-import com.ufv.court.core.ui.components.CustomToolbar
-import com.ufv.court.core.ui.components.LoadingButton
-import com.ufv.court.core.ui.components.OneButtonErrorDialog
+import com.ufv.court.core.ui.components.*
 
 @Composable
 fun RegisterScreen(viewModel: RegisterViewModel) {
@@ -41,7 +35,7 @@ fun RegisterScreen(
     action: (RegisterAction) -> Unit
 ) {
     Scaffold(topBar = {
-        CustomToolbar(toolbarText = stringResource(R.string.create_account)) {
+        CustomToolbar(toolbarText = stringResource(R.string.create_account), elevation = 4.dp) {
             action(RegisterAction.NavigateUp)
         }
     }) {
@@ -105,6 +99,11 @@ fun RegisterScreen(
             action(RegisterAction.CleanErrors)
         }
     }
+    if (state.showEmailSentDialog) {
+        OneButtonSuccessDialog(message = stringResource(R.string.email_sent, state.email)) {
+            action(RegisterAction.ShowEmailSentDialog(false))
+        }
+    }
 }
 
 @Composable
@@ -128,21 +127,27 @@ fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
                 onDismiss = onDismiss
             )
         }
-        is FirebaseAuthWeakPasswordException -> {
+        is RegisterError.AuthWeakPassword -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.invalid_number_of_characters),
                 onDismiss = onDismiss
             )
         }
-        is FirebaseAuthUserCollisionException -> {
+        is RegisterError.AuthUserCollision -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.user_already_exists),
                 onDismiss = onDismiss
             )
         }
-        is FirebaseAuthInvalidCredentialsException -> {
+        is RegisterError.AuthInvalidCredentials -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.invalid_credentials),
+                onDismiss = onDismiss
+            )
+        }
+        is RegisterError.SendEmailVerification -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.verification_email_error),
                 onDismiss = onDismiss
             )
         }

@@ -6,5 +6,6 @@ sealed class RegisterAction {
     data class ChangeEmail(val email: String) : RegisterAction()
     data class ChangePassword(val password: String) : RegisterAction()
     data class ChangeConfirmPassword(val confirmPassword: String) : RegisterAction()
+    data class ShowEmailSentDialog(val show: Boolean) : RegisterAction()
     object Register : RegisterAction()
 }

@@ -11,4 +11,8 @@ internal class UserRepositoryImpl @Inject constructor(
     override suspend fun registerUser(email: String, password: String) {
         dataSource.registerUser(email = email, password = password)
     }
+
+    override suspend fun sendEmailVerification() {
+        dataSource.sendEmailVerification()
+    }
 }

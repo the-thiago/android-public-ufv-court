@@ -19,4 +19,6 @@
     <string name="invalid_credentials">Credenciais inválidas</string>
     <string name="user_already_exists">Uma conta com esse e-mail já existe</string>
     <string name="invalid_number_of_characters">A senha deve ter pelo menos 6 caracteres</string>
+    <string name="email_sent">Um e-mail de verificação foi enviado para %s</string>
+    <string name="verification_email_error">Não foi possível enviar o e-mail de verificação, tente logar</string>
 </resources>

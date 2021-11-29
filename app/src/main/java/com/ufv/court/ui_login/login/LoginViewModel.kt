@@ -30,6 +30,12 @@ class LoginViewModel : ViewModel() {
                         isPasswordVisible = !state.value.isPasswordVisible
                     )
                     LoginAction.Login -> doLogin()
+                    LoginAction.ForgotPasswordClick -> {
+                        // todo navigate
+                    }
+                    LoginAction.RegisterAccountClick -> {
+                        // todo navigate
+                    }
                 }
             }
         }

@@ -92,7 +92,10 @@ fun LoginScreen(
             action(LoginAction.Login)
         }
         Spacer(modifier = Modifier.height(16.dp))
-        TextButton(onClick = { }, shape = RoundedCornerShape(24.dp)) {
+        TextButton(
+            onClick = { action(LoginAction.ForgotPasswordClick) },
+            shape = RoundedCornerShape(24.dp)
+        ) {
             Text(
                 modifier = Modifier.testTag("ForgotPasswordTextButton"),
                 text = stringResource(R.string.forgot_password),
@@ -100,7 +103,10 @@ fun LoginScreen(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        TextButton(onClick = { }, shape = RoundedCornerShape(24.dp)) {
+        TextButton(
+            onClick = { action(LoginAction.RegisterAccountClick) },
+            shape = RoundedCornerShape(24.dp)
+        ) {
             Text(
                 modifier = Modifier.testTag("RegisterTextButton"),
                 text = stringResource(R.string.I_want_to_register),
