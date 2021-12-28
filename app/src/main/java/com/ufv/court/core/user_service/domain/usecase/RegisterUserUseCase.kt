@@ -16,4 +16,3 @@ class RegisterUserUseCase @Inject constructor(
         return repository.registerUser(email = parameters.email, password = parameters.password)
     }
 }
-

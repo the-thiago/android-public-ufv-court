@@ -102,6 +102,7 @@ fun RegisterScreen(
     if (state.showEmailSentDialog) {
         OneButtonSuccessDialog(message = stringResource(R.string.email_sent, state.email)) {
             action(RegisterAction.ShowEmailSentDialog(false))
+            action(RegisterAction.NavigateUp)
         }
     }
 }

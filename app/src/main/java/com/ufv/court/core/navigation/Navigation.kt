@@ -4,6 +4,7 @@ import androidx.navigation.NamedNavArgument
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
+    object Home : Screen("home")
 }
 
 sealed class LeafScreen(
@@ -17,4 +18,6 @@ sealed class LeafScreen(
 
     object Login : LeafScreen(Screen.Login, "login")
     object Register : LeafScreen(Screen.Login, "register")
+
+    object Home : LeafScreen(Screen.Login, "home")
 }

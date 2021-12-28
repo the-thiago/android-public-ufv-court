@@ -21,4 +21,7 @@
     <string name="invalid_number_of_characters">A senha deve ter pelo menos 6 caracteres</string>
     <string name="email_sent">Um e-mail de verificação foi enviado para %s</string>
     <string name="verification_email_error">Não foi possível enviar o e-mail de verificação, tente logar</string>
+    <string name="unknown_error">Erro inesperado</string>
+    <string name="email_not_verified">Um e-mail de verificação foi enviado para %s</string>
+    <string name="email_not_verified_title">E-mail não verificado</string>
 </resources>

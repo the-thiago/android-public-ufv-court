@@ -3,9 +3,8 @@ package com.ufv.court.ui_login.register
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.navigation.NavigationManager
 import com.ufv.court.core.user_service.domain.usecase.RegisterUserUseCase
 import com.ufv.court.core.user_service.domain.usecase.SendEmailVerificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
+    private val navigationManager: NavigationManager,
     private val registerUserUseCase: RegisterUserUseCase,
     private val sendEmailVerificationUseCase: SendEmailVerificationUseCase
 ) : ViewModel() {
@@ -34,9 +34,7 @@ class RegisterViewModel @Inject constructor(
             pendingActions.collect { action ->
                 when (action) {
                     RegisterAction.CleanErrors -> _state.value = state.value.copy(error = null)
-                    RegisterAction.NavigateUp -> {
-                        // todo
-                    }
+                    RegisterAction.NavigateUp -> navigationManager.navigateUp()
                     is RegisterAction.ChangeEmail -> _state.value = state.value.copy(
                         email = action.email
                     )
@@ -81,7 +79,6 @@ class RegisterViewModel @Inject constructor(
         } else if (result is Result.Error) {
             _state.value = state.value.copy(isLoading = false, error = result.exception)
         }
-        // todo navigate up
     }
 
     private fun areValidCredentials(): Boolean {

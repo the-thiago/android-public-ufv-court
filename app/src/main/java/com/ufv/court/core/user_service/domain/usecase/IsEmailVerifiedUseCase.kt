@@ -5,12 +5,12 @@ import com.ufv.court.core.core_common.base.UseCase
 import com.ufv.court.core.user_service.domain.repositories.UserRepository
 import javax.inject.Inject
 
-class SendEmailVerificationUseCase @Inject constructor(
+class IsEmailVerifiedUseCase @Inject constructor(
     private val repository: UserRepository,
     dispatchers: DispatchersProvider
-) : UseCase<Unit, Unit>(dispatchers.io) {
+) : UseCase<Unit, Boolean>(dispatchers.io) {
 
-    override suspend fun execute(parameters: Unit) {
-        return repository.sendEmailVerification()
+    override suspend fun execute(parameters: Unit): Boolean {
+        return repository.isEmailVerified()
     }
 }

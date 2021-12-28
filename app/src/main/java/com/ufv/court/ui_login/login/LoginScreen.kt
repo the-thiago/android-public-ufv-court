@@ -31,6 +31,7 @@ import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.CustomTextField
 import com.ufv.court.core.ui.components.LoadingButton
+import com.ufv.court.core.ui.components.OneButtonErrorDialog
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
@@ -115,6 +116,48 @@ fun LoginScreen(
             )
         }
         Spacer(modifier = Modifier.height(64.dp))
+    }
+    state.error?.let {
+        ErrorTreatment(email = state.email, error = state.error) {
+            action(LoginAction.CleanErrors)
+        }
+    }
+}
+
+@Composable
+fun ErrorTreatment(email: String, error: Throwable, onDismiss: () -> Unit) {
+    when (error) {
+        is LoginError.EmptyField -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.empty_field_error),
+                onDismiss = onDismiss
+            )
+        }
+        is LoginError.InvalidCredentials -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.invalid_credentials),
+                onDismiss = onDismiss
+            )
+        }
+        is LoginError.NoUserFound -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.invalid_credentials),
+                onDismiss = onDismiss
+            )
+        }
+        is LoginError.EmailNotVerified -> {
+            OneButtonErrorDialog(
+                title = stringResource(id = R.string.email_not_verified_title),
+                message = stringResource(R.string.email_not_verified, email),
+                onDismiss = onDismiss
+            )
+        }
+        else -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.unknown_error),
+                onDismiss = onDismiss
+            )
+        }
     }
 }
 

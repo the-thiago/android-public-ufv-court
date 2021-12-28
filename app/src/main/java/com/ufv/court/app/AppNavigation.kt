@@ -10,6 +10,7 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.ufv.court.core.navigation.LeafScreen
 import com.ufv.court.core.navigation.Screen
+import com.ufv.court.ui_home.HomeScreen
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.login.LoginViewModel
 import com.ufv.court.ui_login.register.RegisterScreen
@@ -20,6 +21,7 @@ import com.ufv.court.ui_login.register.RegisterViewModel
 fun AppNavigation(navController: NavHostController) {
     AnimatedNavHost(navController = navController, startDestination = Screen.Login.route) {
         addLoginTopLevel()
+        addHomeTopLevel()
     }
 }
 
@@ -46,5 +48,22 @@ fun NavGraphBuilder.addRegister() {
     composable(LeafScreen.Register.createRoute()) {
         val viewModel = hiltViewModel<RegisterViewModel>()
         RegisterScreen(viewModel)
+    }
+}
+
+fun NavGraphBuilder.addHomeTopLevel() {
+    navigation(
+        route = Screen.Home.route,
+        startDestination = LeafScreen.Home.createRoute()
+    ) {
+        addHome()
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addHome() {
+    composable(LeafScreen.Home.createRoute()) {
+//        val viewModel = hiltViewModel<RegisterViewModel>()
+        HomeScreen()
     }
 }

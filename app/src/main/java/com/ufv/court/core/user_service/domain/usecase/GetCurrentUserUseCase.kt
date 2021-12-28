@@ -2,15 +2,16 @@ package com.ufv.court.core.user_service.domain.usecase
 
 import com.ufv.court.core.core_common.base.DispatchersProvider
 import com.ufv.court.core.core_common.base.UseCase
+import com.ufv.court.core.user_service.domain.model.User
 import com.ufv.court.core.user_service.domain.repositories.UserRepository
 import javax.inject.Inject
 
-class SendEmailVerificationUseCase @Inject constructor(
+class GetCurrentUserUseCase @Inject constructor(
     private val repository: UserRepository,
     dispatchers: DispatchersProvider
-) : UseCase<Unit, Unit>(dispatchers.io) {
+) : UseCase<Unit, User>(dispatchers.io) {
 
-    override suspend fun execute(parameters: Unit) {
-        return repository.sendEmailVerification()
+    override suspend fun execute(parameters: Unit): User {
+        return repository.getCurrentUser()
     }
 }
