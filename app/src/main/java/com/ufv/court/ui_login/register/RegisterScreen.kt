@@ -15,29 +15,43 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel) {
+fun RegisterScreen(
+    navigateUp: () -> Unit
+) {
+    RegisterScreen(
+        viewModel = hiltViewModel(),
+        navigateUp = navigateUp
+    )
+}
+
+@Composable
+private fun RegisterScreen(viewModel: RegisterViewModel, navigateUp: () -> Unit) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = RegisterViewState.Empty)
 
-    RegisterScreen(viewState) { action ->
+    RegisterScreen(state = viewState, navigateUp = navigateUp) { action ->
         viewModel.submitAction(action)
     }
 }
 
 @Composable
-fun RegisterScreen(
+private fun RegisterScreen(
     state: RegisterViewState,
+    navigateUp: () -> Unit,
     action: (RegisterAction) -> Unit
 ) {
     Scaffold(topBar = {
-        CustomToolbar(toolbarText = stringResource(R.string.create_account), elevation = 4.dp) {
-            action(RegisterAction.NavigateUp)
-        }
+        CustomToolbar(
+            toolbarText = stringResource(R.string.create_account),
+            elevation = 4.dp,
+            onLeftButtonClick = navigateUp
+        )
     }) {
         Column(
             modifier = Modifier
@@ -102,7 +116,7 @@ fun RegisterScreen(
     if (state.showEmailSentDialog) {
         OneButtonSuccessDialog(message = stringResource(R.string.email_sent, state.email)) {
             action(RegisterAction.ShowEmailSentDialog(false))
-            action(RegisterAction.NavigateUp)
+            navigateUp()
         }
     }
 }

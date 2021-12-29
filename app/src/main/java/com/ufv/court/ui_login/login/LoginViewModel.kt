@@ -3,9 +3,6 @@ package com.ufv.court.ui_login.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ufv.court.core.core_common.base.Result
-import com.ufv.court.core.navigation.LeafScreen
-import com.ufv.court.core.navigation.NavigationManager
-import com.ufv.court.core.navigation.Screen
 import com.ufv.court.core.user_service.domain.usecase.IsEmailVerifiedUseCase
 import com.ufv.court.core.user_service.domain.usecase.LoginUseCase
 import com.ufv.court.core.user_service.domain.usecase.SendEmailVerificationUseCase
@@ -19,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val navigationManager: NavigationManager,
     private val loginUseCase: LoginUseCase,
     private val isEmailVerifiedUseCase: IsEmailVerifiedUseCase,
     private val sendEmailVerificationUseCase: SendEmailVerificationUseCase
@@ -46,19 +42,16 @@ class LoginViewModel @Inject constructor(
                     LoginAction.ChangePasswordVisibility -> _state.value = state.value.copy(
                         isPasswordVisible = !state.value.isPasswordVisible
                     )
-                    LoginAction.Login -> doLogin()
+                    is LoginAction.Login -> doLogin(action.onSuccess)
                     LoginAction.ForgotPasswordClick -> {
                         // todo navigate
-                    }
-                    LoginAction.RegisterAccountClick -> {
-                        navigationManager.navigate(LeafScreen.Register.createRoute())
                     }
                 }
             }
         }
     }
 
-    private fun doLogin() {
+    private fun doLogin(onSuccess: () -> Unit) {
         viewModelScope.launch {
             if (invalidCredentials()) return@launch
             _state.value = state.value.copy(isLoading = true)
@@ -66,7 +59,7 @@ class LoginViewModel @Inject constructor(
                 LoginUseCase.Params(email = state.value.email, password = state.value.password)
             )
             if (result is Result.Success) {
-                verifyIfEmailIsVerified()
+                verifyIfEmailIsVerified(onSuccess)
             } else if (result is Result.Error) {
                 _state.value = state.value.copy(error = result.exception)
             }
@@ -82,16 +75,12 @@ class LoginViewModel @Inject constructor(
         return false
     }
 
-    private suspend fun verifyIfEmailIsVerified() {
+    private suspend fun verifyIfEmailIsVerified(onSuccess: () -> Unit) {
         val result = isEmailVerifiedUseCase(Unit)
         if (result is Result.Success) {
             val verified = result.data
             if (verified) {
-                navigationManager.navigate(Screen.Home.route) {
-                    this.popUpTo(Screen.Login.route) {
-                        inclusive = true
-                    }
-                }
+                onSuccess()
             } else {
                 sendVerificationEmail()
             }

@@ -2,7 +2,6 @@ package com.ufv.court.ui_home.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ufv.court.core.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val navigationManager: NavigationManager,
+
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<HomeAction>()

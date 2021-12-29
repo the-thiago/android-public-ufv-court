@@ -3,6 +3,7 @@ package com.ufv.court.app
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.navigation
@@ -13,42 +14,53 @@ import com.ufv.court.core.navigation.Screen
 import com.ufv.court.ui_home.home.HomeScreen
 import com.ufv.court.ui_home.home.HomeViewModel
 import com.ufv.court.ui_login.login.LoginScreen
-import com.ufv.court.ui_login.login.LoginViewModel
 import com.ufv.court.ui_login.register.RegisterScreen
 import com.ufv.court.ui_login.register.RegisterViewModel
+import com.ufv.court.ui_profile.ProfileScreen
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun AppNavigation(navController: NavHostController) {
-    AnimatedNavHost(navController = navController, startDestination = Screen.Login.route) {
-        addLoginTopLevel()
+internal fun AppNavigation(navController: NavHostController, startDestination: String) {
+    AnimatedNavHost(navController = navController, startDestination = startDestination) {
+        addLoginTopLevel(navController)
         addHomeTopLevel()
+        addProfileTopLevel()
     }
 }
 
-fun NavGraphBuilder.addLoginTopLevel() {
+fun NavGraphBuilder.addLoginTopLevel(navController: NavController) {
     navigation(
         route = Screen.Login.route,
         startDestination = LeafScreen.Login.createRoute()
     ) {
-        addLogin()
-        addRegister()
+        addLogin(navController)
+        addRegister(navController)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.addLogin() {
+fun NavGraphBuilder.addLogin(navController: NavController) {
     composable(LeafScreen.Login.createRoute()) {
-        val viewModel = hiltViewModel<LoginViewModel>()
-        LoginScreen(viewModel)
+        LoginScreen(
+            openHome = {
+                navController.navigate(LeafScreen.Home.createRoute()) {
+                    popUpTo(Screen.Login.route)
+                    launchSingleTop = true
+                }
+            },
+            openRegister = {
+                navController.navigate(LeafScreen.Register.createRoute()) {
+                    launchSingleTop = true
+                }
+            }
+        )
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.addRegister() {
+fun NavGraphBuilder.addRegister(navController: NavController) {
     composable(LeafScreen.Register.createRoute()) {
-        val viewModel = hiltViewModel<RegisterViewModel>()
-        RegisterScreen(viewModel)
+        RegisterScreen(navigateUp = navController::navigateUp)
     }
 }
 
@@ -66,5 +78,21 @@ fun NavGraphBuilder.addHome() {
     composable(LeafScreen.Home.createRoute()) {
         val viewModel = hiltViewModel<HomeViewModel>()
         HomeScreen(viewModel)
+    }
+}
+
+fun NavGraphBuilder.addProfileTopLevel() {
+    navigation(
+        route = Screen.Profile.route,
+        startDestination = LeafScreen.Profile.createRoute()
+    ) {
+        addProfile()
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addProfile() {
+    composable(LeafScreen.Profile.createRoute()) {
+        ProfileScreen()
     }
 }

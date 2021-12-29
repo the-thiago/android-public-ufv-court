@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.CustomTextField
@@ -34,18 +35,40 @@ import com.ufv.court.core.ui.components.LoadingButton
 import com.ufv.court.core.ui.components.OneButtonErrorDialog
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel) {
+fun LoginScreen(
+    openHome: () -> Unit,
+    openRegister: () -> Unit
+) {
+    LoginScreen(
+        viewModel = hiltViewModel(),
+        openHome = openHome,
+        openRegister = openRegister
+    )
+}
+
+@Composable
+private fun LoginScreen(
+    viewModel: LoginViewModel,
+    openHome: () -> Unit,
+    openRegister: () -> Unit
+) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = LoginViewState.Empty)
 
-    LoginScreen(viewState) { action ->
+    LoginScreen(
+        state = viewState,
+        openHome = openHome,
+        openRegister = openRegister
+    ) { action ->
         viewModel.submitAction(action)
     }
 }
 
 @Composable
-fun LoginScreen(
+private fun LoginScreen(
     state: LoginViewState,
+    openHome: () -> Unit,
+    openRegister: () -> Unit,
     action: (LoginAction) -> Unit
 ) {
     Column(
@@ -90,7 +113,7 @@ fun LoginScreen(
             isLoading = state.isLoading,
             buttonText = stringResource(R.string.enter)
         ) {
-            action(LoginAction.Login)
+            action(LoginAction.Login(onSuccess = openHome))
         }
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
@@ -105,7 +128,7 @@ fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
-            onClick = { action(LoginAction.RegisterAccountClick) },
+            onClick = { openRegister() },
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
