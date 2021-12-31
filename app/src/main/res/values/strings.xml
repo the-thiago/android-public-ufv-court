@@ -24,4 +24,6 @@
     <string name="unknown_error">Erro inesperado</string>
     <string name="email_not_verified">Um e-mail de verificação foi enviado para %s</string>
     <string name="email_not_verified_title">E-mail não verificado</string>
+    <string name="home_label">Início</string>
+    <string name="profile_label">Perfil</string>
 </resources>
