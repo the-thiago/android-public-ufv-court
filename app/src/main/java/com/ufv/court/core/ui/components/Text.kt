@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TextFieldLabel(modifier: Modifier = Modifier, text: String) {
     Text(
-        text = text,
+        text = text.uppercase(),
         modifier = modifier
             .fillMaxWidth()
             .padding(bottom = 3.dp, start = 4.dp)

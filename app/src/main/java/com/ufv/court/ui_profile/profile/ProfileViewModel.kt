@@ -1,4 +1,4 @@
-package com.ufv.court.ui_profile
+package com.ufv.court.ui_profile.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

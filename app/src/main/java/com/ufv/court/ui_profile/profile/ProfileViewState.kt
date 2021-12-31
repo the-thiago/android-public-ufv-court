@@ -1,4 +1,4 @@
-package com.ufv.court.ui_profile
+package com.ufv.court.ui_profile.profile
 
 data class ProfileViewState(
     val error: Throwable? = null,

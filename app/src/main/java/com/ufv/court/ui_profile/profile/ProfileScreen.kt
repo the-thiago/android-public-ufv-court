@@ -1,4 +1,4 @@
-package com.ufv.court.ui_profile
+package com.ufv.court.ui_profile.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -36,20 +36,30 @@ import com.ufv.court.core.ui.components.TwoButtonsDialog
 
 @Composable
 fun ProfileScreen(
-    openLogin: () -> Unit
+    openLogin: () -> Unit,
+    openChangePassword: () -> Unit
 ) {
     ProfileScreen(
         viewModel = hiltViewModel(),
-        openLogin = openLogin
+        openLogin = openLogin,
+        openChangePassword = openChangePassword
     )
 }
 
 @Composable
-private fun ProfileScreen(viewModel: ProfileViewModel, openLogin: () -> Unit) {
+private fun ProfileScreen(
+    viewModel: ProfileViewModel,
+    openLogin: () -> Unit,
+    openChangePassword: () -> Unit
+) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = ProfileViewState.Empty)
 
-    ProfileScreen(state = viewState, openLogin = openLogin) { action ->
+    ProfileScreen(
+        state = viewState,
+        openLogin = openLogin,
+        openChangePassword = openChangePassword
+    ) { action ->
         viewModel.submitAction(action)
     }
 }
@@ -58,18 +68,19 @@ private fun ProfileScreen(viewModel: ProfileViewModel, openLogin: () -> Unit) {
 private fun ProfileScreen(
     state: ProfileViewState,
     openLogin: () -> Unit,
+    openChangePassword: () -> Unit,
     action: (ProfileAction) -> Unit
 ) {
     Column(
         modifier = Modifier
+            .padding(bottom = 56.dp) // toolbar height
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ProfileTopBar(state)
         ProfileHorizontalDivisor()
-        ChangePasswordItem {
-        }
+        ChangePasswordItem(onClick = openChangePassword)
         ProfileHorizontalDivisor()
         ChangePersonalDataItem {
         }

@@ -19,6 +19,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.ufv.court.R
+import com.ufv.court.core.navigation.LeafScreen
 import com.ufv.court.core.navigation.Screen
 
 @Composable
@@ -27,7 +28,8 @@ fun BottomBar(navController: NavHostController) {
     val currentDestination = navBackStackEntry?.destination
 
     AnimatedVisibility(
-        visible = currentDestination?.route?.substringBefore("/") != Screen.Login.route,
+        visible = currentDestination?.route == LeafScreen.Home.createRoute() ||
+                currentDestination?.route == LeafScreen.Profile.createRoute(),
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
     ) {

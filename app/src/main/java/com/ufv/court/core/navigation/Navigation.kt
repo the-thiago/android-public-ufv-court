@@ -23,4 +23,5 @@ sealed class LeafScreen(
     object Home : LeafScreen(Screen.Home, "home")
 
     object Profile : LeafScreen(Screen.Profile, "profile")
+    object ChangePassword : LeafScreen(Screen.Profile, "changepassword")
 }
