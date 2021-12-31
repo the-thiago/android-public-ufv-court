@@ -13,4 +13,6 @@ interface UserDataSource {
     suspend fun isEmailVerified(): Boolean
 
     suspend fun getCurrentUser(): User
+
+    suspend fun logout()
 }

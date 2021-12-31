@@ -28,4 +28,8 @@ internal class UserRepositoryImpl @Inject constructor(
     override suspend fun getCurrentUser(): User {
         return dataSource.getCurrentUser()
     }
+
+    override suspend fun logout() {
+        dataSource.logout()
+    }
 }

@@ -97,9 +97,13 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getCurrentUser(): User {
         return requestWrapper {
-            suspendCoroutine { continuation ->
-                continuation.resume(authService.currentUser.toModel())
-            }
+            authService.currentUser.toModel()
+        }
+    }
+
+    override suspend fun logout() {
+        requestWrapper {
+            authService.signOut()
         }
     }
 }

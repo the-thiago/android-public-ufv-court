@@ -31,7 +31,7 @@ class MainViewModel @Inject constructor(
             } else {
                 _initialDestination.emit(Screen.Login.route)
             }
-            delay(100L)
+            delay(400L)
             isReady = true
         }
     }

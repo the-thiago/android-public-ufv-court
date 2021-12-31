@@ -15,7 +15,6 @@ import com.ufv.court.ui_home.home.HomeScreen
 import com.ufv.court.ui_home.home.HomeViewModel
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
-import com.ufv.court.ui_login.register.RegisterViewModel
 import com.ufv.court.ui_profile.ProfileScreen
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -24,7 +23,7 @@ internal fun AppNavigation(navController: NavHostController, startDestination: S
     AnimatedNavHost(navController = navController, startDestination = startDestination) {
         addLoginTopLevel(navController)
         addHomeTopLevel()
-        addProfileTopLevel()
+        addProfileTopLevel(navController)
     }
 }
 
@@ -81,18 +80,23 @@ fun NavGraphBuilder.addHome() {
     }
 }
 
-fun NavGraphBuilder.addProfileTopLevel() {
+fun NavGraphBuilder.addProfileTopLevel(navController: NavController) {
     navigation(
         route = Screen.Profile.route,
         startDestination = LeafScreen.Profile.createRoute()
     ) {
-        addProfile()
+        addProfile(navController)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.addProfile() {
+fun NavGraphBuilder.addProfile(navController: NavController) {
     composable(LeafScreen.Profile.createRoute()) {
-        ProfileScreen()
+        ProfileScreen(openLogin = {
+            navController.navigate(LeafScreen.Login.createRoute()) {
+                popUpTo(Screen.Home.route)
+                launchSingleTop = true
+            }
+        })
     }
 }

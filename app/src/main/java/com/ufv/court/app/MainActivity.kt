@@ -7,10 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.ufv.court.app.theme.UFVCourtTheme
@@ -50,7 +53,12 @@ class MainActivity : ComponentActivity() {
         UFVCourtTheme {
             val navController = rememberAnimatedNavController()
             Scaffold(bottomBar = { BottomBar(navController) }) {
-                AppNavigation(navController = navController, startDestination = startDestination)
+                Column(Modifier.padding(it)) {
+                    AppNavigation(
+                        navController = navController,
+                        startDestination = startDestination
+                    )
+                }
             }
         }
     }

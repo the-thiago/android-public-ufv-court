@@ -1,10 +1,12 @@
 package com.ufv.court.ui_home.home
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 
 @Composable
@@ -22,7 +24,7 @@ fun HomeScreen(
     state: HomeViewState,
     action: (HomeAction) -> Unit
 ) {
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         Text(text = "New Home")
     }
 }

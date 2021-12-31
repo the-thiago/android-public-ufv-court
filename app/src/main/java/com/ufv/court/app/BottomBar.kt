@@ -1,6 +1,9 @@
 package com.ufv.court.app
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -23,7 +26,11 @@ fun BottomBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    if (currentDestination?.route?.substringBefore("/") != Screen.Login.route) {
+    AnimatedVisibility(
+        visible = currentDestination?.route?.substringBefore("/") != Screen.Login.route,
+        enter = slideInVertically(initialOffsetY = { it }),
+        exit = slideOutVertically(targetOffsetY = { it }),
+    ) {
         BottomNavigation {
             bottomBarScreens.forEach { screen ->
                 BottomBarItem(

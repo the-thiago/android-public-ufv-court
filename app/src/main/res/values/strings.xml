@@ -26,4 +26,14 @@
     <string name="email_not_verified_title">E-mail não verificado</string>
     <string name="home_label">Início</string>
     <string name="profile_label">Perfil</string>
+    <string name="change_password">Alterar senha</string>
+    <string name="edit_personal_data">Editar informações pessoais</string>
+    <string name="terms_and_conditions">Termos e condições</string>
+    <string name="version">Versão</string>
+    <string name="logout">Sair</string>
+    <string name="confirm">Confirmar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="confirmation">Confirmação</string>
+    <string name="really_want_to_logout">Tem certeza que deseja sair da sua conta?</string>
+    <string name="could_not_logout">Não foi possível sair da conta</string>
 </resources>
