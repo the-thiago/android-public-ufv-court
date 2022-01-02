@@ -32,4 +32,8 @@ internal class UserRepositoryImpl @Inject constructor(
     override suspend fun logout() {
         dataSource.logout()
     }
+
+    override suspend fun changePassword(oldPassword: String, newPassword: String) {
+        dataSource.changePassword(oldPassword = oldPassword, newPassword = newPassword)
+    }
 }

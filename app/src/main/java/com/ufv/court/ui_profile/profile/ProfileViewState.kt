@@ -4,9 +4,9 @@ data class ProfileViewState(
     val error: Throwable? = null,
     val isLoading: Boolean = false,
     val showConfirmLogoutDialog: Boolean = false,
-    val email: String = "thiago.souza2@ufv.br", // todo get from back
-    val name: String = "Thiago Souza",  // todo get from back
-    val imageUrl: String = "https://picsum.photos/id/46/200/300"
+    val email: String = "",
+    val name: String = "",
+    val imageUrl: String = "https://picsum.photos/id/46/200/300" // todo
 ) {
     companion object {
         val Empty = ProfileViewState()

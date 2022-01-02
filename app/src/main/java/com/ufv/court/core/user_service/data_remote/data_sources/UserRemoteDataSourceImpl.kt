@@ -1,6 +1,5 @@
 package com.ufv.court.core.user_service.data_remote.data_sources
 
-import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.*
 import com.ufv.court.core.core_common.base.requestWrapper
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
@@ -8,10 +7,12 @@ import com.ufv.court.core.user_service.data_remote.mapper.toModel
 import com.ufv.court.core.user_service.domain.model.User
 import com.ufv.court.ui_login.login.LoginError
 import com.ufv.court.ui_login.register.RegisterError
+import com.ufv.court.ui_profile.changepasword.ChangePasswordError
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
 
 internal class UserRemoteDataSourceImpl @Inject constructor(
     private val authService: FirebaseAuth
@@ -104,6 +105,52 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun logout() {
         requestWrapper {
             authService.signOut()
+        }
+    }
+
+    override suspend fun changePassword(oldPassword: String, newPassword: String) {
+        requestWrapper {
+            suspendCoroutine { continuation ->
+                val user = authService.currentUser
+                val credential = EmailAuthProvider.getCredential(
+                    user?.email ?: "", oldPassword
+                )
+                user?.reauthenticate(credential)?.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        user.updatePassword(newPassword).addOnCompleteListener {
+                            if (task.isSuccessful) {
+                                continuation.resume(Unit)
+                            } else {
+                                var exception = Exception()
+                                task.exception?.let { firebaseException ->
+                                    exception = when (firebaseException) {
+                                        is FirebaseAuthWeakPasswordException ->
+                                            ChangePasswordError.AuthWeakPassword
+                                        is FirebaseAuthInvalidUserException ->
+                                            ChangePasswordError.NoUserFound
+                                        else -> Exception()
+                                    }
+                                }
+                                continuation.resumeWithException(exception)
+                            }
+                        }
+                    } else {
+                        var exception = Exception()
+                        task.exception?.let { firebaseException ->
+                            exception = when (firebaseException) {
+                                is FirebaseAuthInvalidCredentialsException ->
+                                    ChangePasswordError.InvalidCredentials
+                                is FirebaseAuthInvalidUserException ->
+                                    ChangePasswordError.NoUserFound
+                                else -> Exception()
+                            }
+                        }
+                        continuation.resumeWithException(exception)
+                    }
+                } ?: run {
+                    continuation.resumeWithException(Exception())
+                }
+            }
         }
     }
 }

@@ -15,4 +15,6 @@ interface UserDataSource {
     suspend fun getCurrentUser(): User
 
     suspend fun logout()
+
+    suspend fun changePassword(oldPassword: String, newPassword: String)
 }

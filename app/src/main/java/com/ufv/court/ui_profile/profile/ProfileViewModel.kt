@@ -3,6 +3,7 @@ package com.ufv.court.ui_profile.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.user_service.domain.usecase.GetCurrentUserUseCase
 import com.ufv.court.core.user_service.domain.usecase.LogoutUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val logoutUserUseCase: LogoutUserUseCase
+    private val logoutUserUseCase: LogoutUserUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<ProfileAction>()
@@ -24,6 +26,7 @@ class ProfileViewModel @Inject constructor(
     val state: StateFlow<ProfileViewState> = _state
 
     init {
+        getCurrentUser()
         viewModelScope.launch {
             pendingActions.collect { action ->
                 when (action) {
@@ -33,6 +36,15 @@ class ProfileViewModel @Inject constructor(
                     }
                     is ProfileAction.ConfirmLogout -> logout(action.onSuccess)
                 }
+            }
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            val result = getCurrentUserUseCase(Unit)
+            if (result is Result.Success) {
+                _state.value = state.value.copy(email = result.data.email, name = result.data.name)
             }
         }
     }
