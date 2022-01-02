@@ -76,7 +76,7 @@ private fun PasswordChangedDialog(
 }
 
 @Composable
-fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
+private fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
     when (error) {
         is ChangePasswordError.EmptyField -> {
             OneButtonErrorDialog(
@@ -160,6 +160,6 @@ private fun TextFieldsAndButton(
 }
 
 @Composable
-fun ChangePasswordSpacer() {
+private fun ChangePasswordSpacer() {
     Spacer(modifier = Modifier.height(24.dp))
 }

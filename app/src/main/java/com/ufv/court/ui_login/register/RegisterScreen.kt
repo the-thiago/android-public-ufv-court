@@ -122,7 +122,7 @@ private fun RegisterScreen(
 }
 
 @Composable
-fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
+private fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
     when (error) {
         is RegisterError.DifferentPassword -> {
             OneButtonErrorDialog(

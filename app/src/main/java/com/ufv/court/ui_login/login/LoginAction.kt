@@ -6,5 +6,4 @@ sealed class LoginAction {
     data class ChangeEmailText(val email: String) : LoginAction()
     data class ChangePasswordText(val password: String) : LoginAction()
     object ChangePasswordVisibility : LoginAction()
-    object ForgotPasswordClick : LoginAction()
 }

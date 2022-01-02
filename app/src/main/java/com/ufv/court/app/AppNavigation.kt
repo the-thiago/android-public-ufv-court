@@ -13,6 +13,7 @@ import com.ufv.court.core.navigation.LeafScreen
 import com.ufv.court.core.navigation.Screen
 import com.ufv.court.ui_home.home.HomeScreen
 import com.ufv.court.ui_home.home.HomeViewModel
+import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
 import com.ufv.court.ui_profile.changepasword.ChangePasswordScreen
@@ -35,6 +36,7 @@ fun NavGraphBuilder.addLoginTopLevel(navController: NavController) {
     ) {
         addLogin(navController)
         addRegister(navController)
+        addForgotPassword(navController)
     }
 }
 
@@ -52,6 +54,11 @@ fun NavGraphBuilder.addLogin(navController: NavController) {
                 navController.navigate(LeafScreen.Register.createRoute()) {
                     launchSingleTop = true
                 }
+            },
+            openForgotPassword = {
+                navController.navigate(LeafScreen.ForgotPassword.createRoute()) {
+                    launchSingleTop = true
+                }
             }
         )
     }
@@ -61,6 +68,13 @@ fun NavGraphBuilder.addLogin(navController: NavController) {
 fun NavGraphBuilder.addRegister(navController: NavController) {
     composable(LeafScreen.Register.createRoute()) {
         RegisterScreen(navigateUp = navController::navigateUp)
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addForgotPassword(navController: NavController) {
+    composable(LeafScreen.ForgotPassword.createRoute()) {
+        ForgotPasswordScreen(navigateUp = navController::navigateUp)
     }
 }
 

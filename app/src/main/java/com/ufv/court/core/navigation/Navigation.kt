@@ -19,6 +19,7 @@ sealed class LeafScreen(
 
     object Login : LeafScreen(Screen.Login, "login")
     object Register : LeafScreen(Screen.Login, "register")
+    object ForgotPassword : LeafScreen(Screen.Login, "forgotpassword")
 
     object Home : LeafScreen(Screen.Home, "home")
 

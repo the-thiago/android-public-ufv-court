@@ -43,9 +43,6 @@ class LoginViewModel @Inject constructor(
                         isPasswordVisible = !state.value.isPasswordVisible
                     )
                     is LoginAction.Login -> doLogin(action.onSuccess)
-                    LoginAction.ForgotPasswordClick -> {
-                        // todo navigate
-                    }
                 }
             }
         }

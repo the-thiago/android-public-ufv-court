@@ -17,4 +17,6 @@ interface UserRepository {
     suspend fun logout()
 
     suspend fun changePassword(oldPassword: String, newPassword: String)
+
+    suspend fun resetPassword(email: String)
 }

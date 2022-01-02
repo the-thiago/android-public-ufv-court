@@ -36,4 +36,8 @@ internal class UserRepositoryImpl @Inject constructor(
     override suspend fun changePassword(oldPassword: String, newPassword: String) {
         dataSource.changePassword(oldPassword = oldPassword, newPassword = newPassword)
     }
+
+    override suspend fun resetPassword(email: String) {
+        dataSource.resetPassword(email = email)
+    }
 }

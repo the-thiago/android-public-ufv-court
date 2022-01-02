@@ -5,6 +5,7 @@ import com.ufv.court.core.core_common.base.requestWrapper
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
 import com.ufv.court.core.user_service.data_remote.mapper.toModel
 import com.ufv.court.core.user_service.domain.model.User
+import com.ufv.court.ui_login.forgotpassword.ForgotPasswordError
 import com.ufv.court.ui_login.login.LoginError
 import com.ufv.court.ui_login.register.RegisterError
 import com.ufv.court.ui_profile.changepasword.ChangePasswordError
@@ -149,6 +150,28 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
                     }
                 } ?: run {
                     continuation.resumeWithException(Exception())
+                }
+            }
+        }
+    }
+
+    override suspend fun resetPassword(email: String) {
+        requestWrapper {
+            suspendCoroutine { continuation ->
+                authService.sendPasswordResetEmail(email).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        continuation.resume(Unit)
+                    } else {
+                        var exception = Exception()
+                        task.exception?.let { firebaseException ->
+                            exception = when (firebaseException) {
+                                is FirebaseAuthInvalidUserException ->
+                                    ForgotPasswordError.NoUserFound
+                                else -> Exception()
+                            }
+                        }
+                        continuation.resumeWithException(exception)
+                    }
                 }
             }
         }

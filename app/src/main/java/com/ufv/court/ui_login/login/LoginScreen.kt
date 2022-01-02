@@ -37,12 +37,14 @@ import com.ufv.court.core.ui.components.OneButtonErrorDialog
 @Composable
 fun LoginScreen(
     openHome: () -> Unit,
-    openRegister: () -> Unit
+    openRegister: () -> Unit,
+    openForgotPassword: () -> Unit
 ) {
     LoginScreen(
         viewModel = hiltViewModel(),
         openHome = openHome,
-        openRegister = openRegister
+        openRegister = openRegister,
+        openForgotPassword = openForgotPassword
     )
 }
 
@@ -50,7 +52,8 @@ fun LoginScreen(
 private fun LoginScreen(
     viewModel: LoginViewModel,
     openHome: () -> Unit,
-    openRegister: () -> Unit
+    openRegister: () -> Unit,
+    openForgotPassword: () -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = LoginViewState.Empty)
@@ -58,7 +61,8 @@ private fun LoginScreen(
     LoginScreen(
         state = viewState,
         openHome = openHome,
-        openRegister = openRegister
+        openRegister = openRegister,
+        openForgotPassword = openForgotPassword,
     ) { action ->
         viewModel.submitAction(action)
     }
@@ -69,6 +73,7 @@ private fun LoginScreen(
     state: LoginViewState,
     openHome: () -> Unit,
     openRegister: () -> Unit,
+    openForgotPassword: () -> Unit,
     action: (LoginAction) -> Unit
 ) {
     Column(
@@ -117,7 +122,7 @@ private fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
-            onClick = { action(LoginAction.ForgotPasswordClick) },
+            onClick = openForgotPassword,
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
@@ -128,7 +133,7 @@ private fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
-            onClick = { openRegister() },
+            onClick = openRegister,
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
@@ -148,7 +153,7 @@ private fun LoginScreen(
 }
 
 @Composable
-fun ErrorTreatment(email: String, error: Throwable, onDismiss: () -> Unit) {
+private fun ErrorTreatment(email: String, error: Throwable, onDismiss: () -> Unit) {
     when (error) {
         is LoginError.EmptyField -> {
             OneButtonErrorDialog(
@@ -185,7 +190,7 @@ fun ErrorTreatment(email: String, error: Throwable, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun PasswordTextField(
+private fun PasswordTextField(
     modifier: Modifier = Modifier,
     isPasswordVisible: Boolean,
     onTrailingIconClick: () -> Unit,
