@@ -48,4 +48,7 @@
     <string name="email_sent_to">Um e-mail para recuperar a senha foi enviado para %s</string>
     <string name="type_a_valid_email">Digite um e-mail válido</string>
     <string name="email_not_registered">E-mail não cadastrado</string>
+    <string name="name">Nome</string>
+    <string name="next">Continuar</string>
+    <string name="type_your_name">Preencha o seu nome</string>
 </resources>

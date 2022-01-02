@@ -7,7 +7,7 @@ import com.ufv.court.core.user_service.data_remote.mapper.toModel
 import com.ufv.court.core.user_service.domain.model.User
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordError
 import com.ufv.court.ui_login.login.LoginError
-import com.ufv.court.ui_login.register.RegisterError
+import com.ufv.court.ui_login.registercredentials.RegisterCredentialsError
 import com.ufv.court.ui_profile.changepasword.ChangePasswordError
 import javax.inject.Inject
 import kotlin.coroutines.resume
@@ -19,22 +19,28 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
     private val authService: FirebaseAuth
 ) : UserDataSource {
 
-    override suspend fun registerUser(email: String, password: String) {
+    override suspend fun registerUser(email: String, password: String, name: String) {
         requestWrapper {
             suspendCoroutine { continuation ->
                 authService.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
+                        val profileInfo = UserProfileChangeRequest.Builder().apply {
+                            displayName = name
+//                            photoUri = Uri.parse("https://picsum.photos/id/46/200/300")
+                        }.build()
+
                         if (task.isSuccessful) {
+                            task.result?.user?.updateProfile(profileInfo)
                             continuation.resume(Unit)
                         } else {
                             var exception = Exception()
                             task.exception?.let { firebaseException ->
                                 exception = when (firebaseException) {
-                                    is FirebaseAuthWeakPasswordException -> RegisterError
+                                    is FirebaseAuthWeakPasswordException -> RegisterCredentialsError
                                         .AuthWeakPassword
-                                    is FirebaseAuthUserCollisionException -> RegisterError
+                                    is FirebaseAuthUserCollisionException -> RegisterCredentialsError
                                         .AuthUserCollision
-                                    is FirebaseAuthInvalidCredentialsException -> RegisterError
+                                    is FirebaseAuthInvalidCredentialsException -> RegisterCredentialsError
                                         .AuthInvalidCredentials
                                     else -> Exception()
                                 }
@@ -51,7 +57,7 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
             suspendCoroutine { continuation ->
                 val user = authService.currentUser
                 if (user == null) {
-                    continuation.resumeWithException(RegisterError.SendEmailVerification)
+                    continuation.resumeWithException(RegisterCredentialsError.SendEmailVerification)
                 } else {
                     user.sendEmailVerification()
                     continuation.resume(Unit)

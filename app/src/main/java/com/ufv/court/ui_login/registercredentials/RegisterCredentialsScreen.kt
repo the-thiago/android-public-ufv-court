@@ -1,4 +1,4 @@
-package com.ufv.court.ui_login.register
+package com.ufv.court.ui_login.registercredentials
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -21,30 +21,41 @@ import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 
 @Composable
-fun RegisterScreen(
-    navigateUp: () -> Unit
+fun RegisterCredentialsScreen(
+    navigateUp: () -> Unit,
+    openLogin: () -> Unit
 ) {
-    RegisterScreen(
+    RegisterCredentialsScreen(
         viewModel = hiltViewModel(),
-        navigateUp = navigateUp
+        navigateUp = navigateUp,
+        openLogin = openLogin
     )
 }
 
 @Composable
-private fun RegisterScreen(viewModel: RegisterViewModel, navigateUp: () -> Unit) {
+private fun RegisterCredentialsScreen(
+    viewModel: RegisterCredentialsViewModel,
+    navigateUp: () -> Unit,
+    openLogin: () -> Unit
+) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
-        .collectAsState(initial = RegisterViewState.Empty)
+        .collectAsState(initial = RegisterCredentialsViewState.Empty)
 
-    RegisterScreen(state = viewState, navigateUp = navigateUp) { action ->
+    RegisterCredentialsScreen(
+        state = viewState,
+        navigateUp = navigateUp,
+        openLogin = openLogin
+    ) { action ->
         viewModel.submitAction(action)
     }
 }
 
 @Composable
-private fun RegisterScreen(
-    state: RegisterViewState,
+private fun RegisterCredentialsScreen(
+    state: RegisterCredentialsViewState,
     navigateUp: () -> Unit,
-    action: (RegisterAction) -> Unit
+    openLogin: () -> Unit,
+    action: (RegisterCredentialsAction) -> Unit
 ) {
     Scaffold(topBar = {
         CustomToolbar(
@@ -70,7 +81,7 @@ private fun RegisterScreen(
                 ),
                 text = state.email
             ) {
-                action(RegisterAction.ChangeEmail(it))
+                action(RegisterCredentialsAction.ChangeEmail(it))
             }
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
@@ -83,7 +94,7 @@ private fun RegisterScreen(
                 text = state.password,
                 visualTransformation = PasswordVisualTransformation()
             ) {
-                action(RegisterAction.ChangePassword(it))
+                action(RegisterCredentialsAction.ChangePassword(it))
             }
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
@@ -96,27 +107,29 @@ private fun RegisterScreen(
                 text = state.confirmPassword,
                 visualTransformation = PasswordVisualTransformation()
             ) {
-                action(RegisterAction.ChangeConfirmPassword(it))
+                action(RegisterCredentialsAction.ChangeConfirmPassword(it))
             }
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             LoadingButton(
                 isLoading = state.isLoading,
                 buttonText = stringResource(R.string.create)
             ) {
-                action(RegisterAction.Register)
+                action(RegisterCredentialsAction.RegisterCredentials)
             }
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
+            SimplePageIndicator(selectedPage = 1, amountOfPages = 2)
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
     state.error?.let {
         ErrorTreatment(state.error) {
-            action(RegisterAction.CleanErrors)
+            action(RegisterCredentialsAction.CleanErrors)
         }
     }
     if (state.showEmailSentDialog) {
         OneButtonSuccessDialog(message = stringResource(R.string.email_sent, state.email)) {
-            action(RegisterAction.ShowEmailSentDialog(false))
-            navigateUp()
+            action(RegisterCredentialsAction.ShowEmailSentDialog(false))
+            openLogin()
         }
     }
 }
@@ -124,43 +137,43 @@ private fun RegisterScreen(
 @Composable
 private fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
     when (error) {
-        is RegisterError.DifferentPassword -> {
+        is RegisterCredentialsError.DifferentPassword -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.different_passwords),
                 onDismiss = onDismiss
             )
         }
-        is RegisterError.EmptyField -> {
+        is RegisterCredentialsError.EmptyField -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.empty_field_error),
                 onDismiss = onDismiss
             )
         }
-        is RegisterError.EmailDomainNotAllowed -> {
+        is RegisterCredentialsError.EmailDomainNotAllowed -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.email_domain_not_allowed),
                 onDismiss = onDismiss
             )
         }
-        is RegisterError.AuthWeakPassword -> {
+        is RegisterCredentialsError.AuthWeakPassword -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.invalid_number_of_characters),
                 onDismiss = onDismiss
             )
         }
-        is RegisterError.AuthUserCollision -> {
+        is RegisterCredentialsError.AuthUserCollision -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.user_already_exists),
                 onDismiss = onDismiss
             )
         }
-        is RegisterError.AuthInvalidCredentials -> {
+        is RegisterCredentialsError.AuthInvalidCredentials -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.invalid_credentials),
                 onDismiss = onDismiss
             )
         }
-        is RegisterError.SendEmailVerification -> {
+        is RegisterCredentialsError.SendEmailVerification -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.verification_email_error),
                 onDismiss = onDismiss

@@ -10,9 +10,13 @@ class RegisterUserUseCase @Inject constructor(
     dispatchers: DispatchersProvider
 ) : UseCase<RegisterUserUseCase.Params, Unit>(dispatchers.io) {
 
-    data class Params(val email: String, val password: String)
+    data class Params(val email: String, val password: String, val name: String)
 
     override suspend fun execute(parameters: Params) {
-        return repository.registerUser(email = parameters.email, password = parameters.password)
+        return repository.registerUser(
+            email = parameters.email,
+            password = parameters.password,
+            name = parameters.name
+        )
     }
 }

@@ -4,7 +4,7 @@ import com.ufv.court.core.user_service.domain.model.User
 
 interface UserDataSource {
 
-    suspend fun registerUser(email: String, password: String)
+    suspend fun registerUser(email: String, password: String, name: String)
 
     suspend fun sendEmailVerification()
 

@@ -9,8 +9,8 @@ internal class UserRepositoryImpl @Inject constructor(
     private val dataSource: UserDataSource
 ) : UserRepository {
 
-    override suspend fun registerUser(email: String, password: String) {
-        dataSource.registerUser(email = email, password = password)
+    override suspend fun registerUser(email: String, password: String, name: String) {
+        dataSource.registerUser(email = email, password = password, name = name)
     }
 
     override suspend fun sendEmailVerification() {
