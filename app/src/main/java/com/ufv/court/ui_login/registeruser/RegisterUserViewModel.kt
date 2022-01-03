@@ -31,6 +31,9 @@ class RegisterUserViewModel @Inject constructor() : ViewModel() {
                         name = action.name
                     )
                     is RegisterUserAction.ContinueClick -> openRegisterCredentials(action.onSuccess)
+                    is RegisterUserAction.ChangeImageUri -> _state.value = state.value.copy(
+                        imageUri = action.uri
+                    )
                 }
             }
         }
