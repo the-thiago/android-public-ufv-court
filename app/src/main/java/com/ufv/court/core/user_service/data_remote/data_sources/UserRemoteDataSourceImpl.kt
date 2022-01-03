@@ -7,7 +7,7 @@ import com.ufv.court.core.user_service.data_remote.mapper.toModel
 import com.ufv.court.core.user_service.domain.model.User
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordError
 import com.ufv.court.ui_login.login.LoginError
-import com.ufv.court.ui_login.registercredentials.RegisterCredentialsError
+import com.ufv.court.ui_login.register.RegisterCredentialsError
 import com.ufv.court.ui_profile.changepasword.ChangePasswordError
 import javax.inject.Inject
 import kotlin.coroutines.resume

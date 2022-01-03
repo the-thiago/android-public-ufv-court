@@ -1,10 +1,10 @@
-package com.ufv.court.ui_login.registercredentials
+package com.ufv.court.ui_login.register
 
 import android.util.Patterns
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.user_service.domain.usecase.LogoutUserUseCase
 import com.ufv.court.core.user_service.domain.usecase.RegisterUserUseCase
 import com.ufv.court.core.user_service.domain.usecase.SendEmailVerificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,39 +16,43 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterCredentialsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class RegisterViewModel @Inject constructor(
     private val registerUserUseCase: RegisterUserUseCase,
-    private val sendEmailVerificationUseCase: SendEmailVerificationUseCase
+    private val sendEmailVerificationUseCase: SendEmailVerificationUseCase,
+    private val logoutUserUseCase: LogoutUserUseCase
 ) : ViewModel() {
 
-    private val pendingActions = MutableSharedFlow<RegisterCredentialsAction>()
+    private val pendingActions = MutableSharedFlow<RegisterAction>()
 
-    private val _state: MutableStateFlow<RegisterCredentialsViewState> = MutableStateFlow(
-        RegisterCredentialsViewState.Empty
+    private val _state: MutableStateFlow<RegisterViewState> = MutableStateFlow(
+        RegisterViewState.Empty
     )
-    val state: StateFlow<RegisterCredentialsViewState> = _state
-
-    private val name = savedStateHandle.get<String>("name") ?: ""
+    val state: StateFlow<RegisterViewState> = _state
 
     init {
         viewModelScope.launch {
             pendingActions.collect { action ->
                 when (action) {
-                    RegisterCredentialsAction.CleanErrors -> {
+                    RegisterAction.CleanErrors -> {
                         _state.value = state.value.copy(error = null)
                     }
-                    is RegisterCredentialsAction.ChangeEmail -> _state.value = state.value.copy(
+                    is RegisterAction.ChangeName -> _state.value = state.value.copy(
+                        name = action.name
+                    )
+                    is RegisterAction.ChangeImageUri -> _state.value = state.value.copy(
+                        imageUri = action.uri
+                    )
+                    is RegisterAction.ChangeEmail -> _state.value = state.value.copy(
                         email = action.email
                     )
-                    is RegisterCredentialsAction.ChangePassword -> _state.value = state.value.copy(
+                    is RegisterAction.ChangePassword -> _state.value = state.value.copy(
                         password = action.password
                     )
-                    is RegisterCredentialsAction.ChangeConfirmPassword -> {
+                    is RegisterAction.ChangeConfirmPassword -> {
                         _state.value = state.value.copy(confirmPassword = action.confirmPassword)
                     }
-                    RegisterCredentialsAction.RegisterCredentials -> register()
-                    is RegisterCredentialsAction.ShowEmailSentDialog -> {
+                    RegisterAction.RegisterCredentials -> register()
+                    is RegisterAction.ShowEmailSentDialog -> {
                         _state.value = state.value.copy(showEmailSentDialog = action.show)
                     }
                 }
@@ -58,13 +62,13 @@ class RegisterCredentialsViewModel @Inject constructor(
 
     private fun register() {
         viewModelScope.launch {
-            if (areValidCredentials()) {
+            if (areValidInformation()) {
                 _state.value = state.value.copy(isLoading = true)
                 val result = registerUserUseCase(
                     parameters = RegisterUserUseCase.Params(
                         email = state.value.email,
                         password = state.value.password,
-                        name = name
+                        name = state.value.name
                     )
                 )
                 if (result is Result.Success) {
@@ -72,6 +76,7 @@ class RegisterCredentialsViewModel @Inject constructor(
                 } else if (result is Result.Error) {
                     _state.value = state.value.copy(isLoading = false, error = result.exception)
                 }
+                logoutUserUseCase(Unit)
             }
         }
     }
@@ -85,10 +90,11 @@ class RegisterCredentialsViewModel @Inject constructor(
         }
     }
 
-    private fun areValidCredentials(): Boolean {
+    private fun areValidInformation(): Boolean {
         if (state.value.email.isBlank() ||
             state.value.password.isBlank() ||
-            state.value.confirmPassword.isBlank()
+            state.value.confirmPassword.isBlank() ||
+            state.value.name.isBlank()
         ) {
             _state.value = state.value.copy(error = RegisterCredentialsError.EmptyField)
             return false
@@ -104,7 +110,7 @@ class RegisterCredentialsViewModel @Inject constructor(
         return true
     }
 
-    fun submitAction(credentialsAction: RegisterCredentialsAction) {
+    fun submitAction(credentialsAction: RegisterAction) {
         viewModelScope.launch {
             pendingActions.emit(credentialsAction)
         }

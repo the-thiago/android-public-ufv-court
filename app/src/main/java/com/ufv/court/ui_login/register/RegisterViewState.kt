@@ -1,15 +1,19 @@
-package com.ufv.court.ui_login.registercredentials
+package com.ufv.court.ui_login.register
 
-data class RegisterCredentialsViewState(
+import android.net.Uri
+
+data class RegisterViewState(
     val error: Throwable? = null,
     val isLoading: Boolean = false,
+    val name: String = "",
+    val imageUri: Uri? = null,
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
     val showEmailSentDialog: Boolean = false
 ) {
     companion object {
-        val Empty = RegisterCredentialsViewState()
+        val Empty = RegisterViewState()
     }
 }
 

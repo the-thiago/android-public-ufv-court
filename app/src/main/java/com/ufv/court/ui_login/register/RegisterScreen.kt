@@ -1,17 +1,35 @@
-package com.ufv.court.ui_login.registercredentials
+package com.ufv.court.ui_login.register
 
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -21,11 +39,11 @@ import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 
 @Composable
-fun RegisterCredentialsScreen(
+fun RegisterScreen(
     navigateUp: () -> Unit,
     openLogin: () -> Unit
 ) {
-    RegisterCredentialsScreen(
+    RegisterScreen(
         viewModel = hiltViewModel(),
         navigateUp = navigateUp,
         openLogin = openLogin
@@ -33,15 +51,15 @@ fun RegisterCredentialsScreen(
 }
 
 @Composable
-private fun RegisterCredentialsScreen(
-    viewModel: RegisterCredentialsViewModel,
+private fun RegisterScreen(
+    viewModel: RegisterViewModel,
     navigateUp: () -> Unit,
     openLogin: () -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
-        .collectAsState(initial = RegisterCredentialsViewState.Empty)
+        .collectAsState(initial = RegisterViewState.Empty)
 
-    RegisterCredentialsScreen(
+    RegisterScreen(
         state = viewState,
         navigateUp = navigateUp,
         openLogin = openLogin
@@ -51,11 +69,11 @@ private fun RegisterCredentialsScreen(
 }
 
 @Composable
-private fun RegisterCredentialsScreen(
-    state: RegisterCredentialsViewState,
+private fun RegisterScreen(
+    state: RegisterViewState,
     navigateUp: () -> Unit,
     openLogin: () -> Unit,
-    action: (RegisterCredentialsAction) -> Unit
+    action: (RegisterAction) -> Unit
 ) {
     Scaffold(topBar = {
         CustomToolbar(
@@ -72,6 +90,19 @@ private fun RegisterCredentialsScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(24.dp))
+            AddProfileImage(profileUri = state.imageUri, action = action)
+            Spacer(modifier = Modifier.height(24.dp))
+            CustomTextField(
+                labelText = stringResource(R.string.name),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next
+                ),
+                text = state.name
+            ) {
+                action(RegisterAction.ChangeName(it))
+            }
+            Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
                 labelText = stringResource(R.string.email),
                 keyboardOptions = KeyboardOptions(
@@ -81,7 +112,7 @@ private fun RegisterCredentialsScreen(
                 ),
                 text = state.email
             ) {
-                action(RegisterCredentialsAction.ChangeEmail(it))
+                action(RegisterAction.ChangeEmail(it))
             }
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
@@ -94,7 +125,7 @@ private fun RegisterCredentialsScreen(
                 text = state.password,
                 visualTransformation = PasswordVisualTransformation()
             ) {
-                action(RegisterCredentialsAction.ChangePassword(it))
+                action(RegisterAction.ChangePassword(it))
             }
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
@@ -107,32 +138,97 @@ private fun RegisterCredentialsScreen(
                 text = state.confirmPassword,
                 visualTransformation = PasswordVisualTransformation()
             ) {
-                action(RegisterCredentialsAction.ChangeConfirmPassword(it))
+                action(RegisterAction.ChangeConfirmPassword(it))
             }
             Spacer(modifier = Modifier.height(32.dp))
             LoadingButton(
                 isLoading = state.isLoading,
                 buttonText = stringResource(R.string.create)
             ) {
-                action(RegisterCredentialsAction.RegisterCredentials)
+                action(RegisterAction.RegisterCredentials)
             }
-            Spacer(modifier = Modifier.height(40.dp))
-            SimplePageIndicator(selectedPage = 1, amountOfPages = 2)
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
     state.error?.let {
         ErrorTreatment(state.error) {
-            action(RegisterCredentialsAction.CleanErrors)
+            action(RegisterAction.CleanErrors)
         }
     }
     if (state.showEmailSentDialog) {
         OneButtonSuccessDialog(message = stringResource(R.string.email_sent, state.email)) {
-            action(RegisterCredentialsAction.ShowEmailSentDialog(false))
+            action(RegisterAction.ShowEmailSentDialog(false))
             openLogin()
         }
     }
 }
+
+@Composable
+fun AddProfileImage(profileUri: Uri?, action: (RegisterAction) -> Unit) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (uri != null) action(RegisterAction.ChangeImageUri(uri))
+        }
+    )
+    Box {
+        TextFieldLabel(text = stringResource(R.string.photo))
+        if (profileUri != null) {
+            PreviewImage(uri = profileUri, onClick = { launcher.launch("image/*") })
+        } else {
+            RoundedPlaceHolder(onClick = { launcher.launch("image/*") })
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.PreviewImage(uri: Uri, onClick: () -> Unit) {
+    val context = LocalContext.current
+    val bitmap by remember(uri) {
+        if (Build.VERSION.SDK_INT < 28) {
+            mutableStateOf(
+                MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            )
+        } else {
+            val source = ImageDecoder.createSource(context.contentResolver, uri)
+            mutableStateOf(ImageDecoder.decodeBitmap(source))
+        }
+    }
+    Image(
+        modifier = Modifier
+            .roundedUserPhoto(onClick)
+            .align(Alignment.Center),
+        bitmap = bitmap.asImageBitmap(),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+        colorFilter = ColorFilter.colorMatrix(colorMatrix = ColorMatrix().apply {
+            setToSaturation(.25F)
+        })
+    )
+    Text(
+        modifier = Modifier.align(Alignment.Center),
+        text = stringResource(id = R.string.change),
+        color = Color.White,
+        style = MaterialTheme.typography.h5
+    )
+}
+
+@Composable
+private fun BoxScope.RoundedPlaceHolder(onClick: () -> Unit) {
+    Image(
+        modifier = Modifier
+            .roundedUserPhoto(onClick)
+            .align(Alignment.Center),
+        painter = painterResource(id = R.drawable.user_photo_placeholder),
+        contentScale = ContentScale.Crop,
+        contentDescription = null
+    )
+}
+
+private fun Modifier.roundedUserPhoto(onClick: () -> Unit): Modifier = this
+    .size(152.dp)
+    .clip(CircleShape)
+    .clickable { onClick() }
 
 @Composable
 private fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {

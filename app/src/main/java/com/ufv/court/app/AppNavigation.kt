@@ -15,8 +15,7 @@ import com.ufv.court.ui_home.home.HomeScreen
 import com.ufv.court.ui_home.home.HomeViewModel
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
-import com.ufv.court.ui_login.registercredentials.RegisterCredentialsScreen
-import com.ufv.court.ui_login.registeruser.RegisterUserScreen
+import com.ufv.court.ui_login.register.RegisterScreen
 import com.ufv.court.ui_profile.changepasword.ChangePasswordScreen
 import com.ufv.court.ui_profile.profile.ProfileScreen
 
@@ -36,8 +35,7 @@ fun NavGraphBuilder.addLoginTopLevel(navController: NavController) {
         startDestination = LeafScreen.Login.createRoute()
     ) {
         addLogin(navController)
-        addRegisterCredentials(navController)
-        addRegisterUser(navController)
+        addRegister(navController)
         addForgotPassword(navController)
     }
 }
@@ -52,8 +50,8 @@ fun NavGraphBuilder.addLogin(navController: NavController) {
                     launchSingleTop = true
                 }
             },
-            openRegisterUser = {
-                navController.navigate(LeafScreen.RegisterUser.createRoute()) {
+            openRegister = {
+                navController.navigate(LeafScreen.Register.createRoute()) {
                     launchSingleTop = true
                     restoreState = true
                 }
@@ -68,29 +66,14 @@ fun NavGraphBuilder.addLogin(navController: NavController) {
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.addRegisterCredentials(navController: NavController) {
-    composable(LeafScreen.RegisterCredentials.createRoute()) {
-        RegisterCredentialsScreen(
+fun NavGraphBuilder.addRegister(navController: NavController) {
+    composable(LeafScreen.Register.createRoute()) {
+        RegisterScreen(
             navigateUp = navController::navigateUp,
             openLogin = {
                 navController.navigate(LeafScreen.Login.createRoute()) {
                     popUpTo(0)
                     launchSingleTop = true
-                }
-            }
-        )
-    }
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.addRegisterUser(navController: NavController) {
-    composable(LeafScreen.RegisterUser.createRoute()) {
-        RegisterUserScreen(
-            navigateUp = navController::navigateUp,
-            openRegisterCredentials = { name ->
-                navController.navigate(LeafScreen.RegisterCredentials.createRoute(name)) {
-                    launchSingleTop = true
-                    restoreState = true
                 }
             }
         )

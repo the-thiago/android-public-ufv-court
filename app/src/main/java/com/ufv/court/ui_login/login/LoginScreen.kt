@@ -37,13 +37,13 @@ import com.ufv.court.core.ui.components.OneButtonErrorDialog
 @Composable
 fun LoginScreen(
     openHome: () -> Unit,
-    openRegisterUser: () -> Unit,
+    openRegister: () -> Unit,
     openForgotPassword: () -> Unit
 ) {
     LoginScreen(
         viewModel = hiltViewModel(),
         openHome = openHome,
-        openRegisterUser = openRegisterUser,
+        openRegister = openRegister,
         openForgotPassword = openForgotPassword
     )
 }
@@ -52,7 +52,7 @@ fun LoginScreen(
 private fun LoginScreen(
     viewModel: LoginViewModel,
     openHome: () -> Unit,
-    openRegisterUser: () -> Unit,
+    openRegister: () -> Unit,
     openForgotPassword: () -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
@@ -61,7 +61,7 @@ private fun LoginScreen(
     LoginScreen(
         state = viewState,
         openHome = openHome,
-        openRegisterUser = openRegisterUser,
+        openRegister = openRegister,
         openForgotPassword = openForgotPassword,
     ) { action ->
         viewModel.submitAction(action)
@@ -72,7 +72,7 @@ private fun LoginScreen(
 private fun LoginScreen(
     state: LoginViewState,
     openHome: () -> Unit,
-    openRegisterUser: () -> Unit,
+    openRegister: () -> Unit,
     openForgotPassword: () -> Unit,
     action: (LoginAction) -> Unit
 ) {
@@ -133,7 +133,7 @@ private fun LoginScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         TextButton(
-            onClick = openRegisterUser,
+            onClick = openRegister,
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
