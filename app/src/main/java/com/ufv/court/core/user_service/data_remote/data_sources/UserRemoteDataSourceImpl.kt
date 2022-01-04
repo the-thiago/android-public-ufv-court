@@ -2,7 +2,10 @@ package com.ufv.court.core.user_service.data_remote.data_sources
 
 import android.net.Uri
 import com.google.firebase.auth.*
-import com.google.firebase.storage.StorageReference
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import com.ufv.court.core.core_common.base.requestWrapper
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
 import com.ufv.court.core.user_service.data_remote.mapper.toModel
@@ -17,15 +20,12 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-internal class UserRemoteDataSourceImpl @Inject constructor(
-    private val authService: FirebaseAuth,
-    private val storage: StorageReference
-) : UserDataSource {
+internal class UserRemoteDataSourceImpl @Inject constructor() : UserDataSource {
 
     override suspend fun registerUser(user: RegisterUser) {
         requestWrapper {
             suspendCoroutine { continuation ->
-                authService.createUserWithEmailAndPassword(user.email, user.password)
+                Firebase.auth.createUserWithEmailAndPassword(user.email, user.password)
                     .addOnCompleteListener { task ->
                         val profileInfo = UserProfileChangeRequest.Builder().apply {
                             displayName = user.name
@@ -33,11 +33,18 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
                         if (task.isSuccessful) {
                             val newUser = task.result?.user
                             newUser?.updateProfile(profileInfo)
-                            if (user.photo != Uri.EMPTY && newUser != null) {
-                                storage.child("images/user/${newUser.uid}/profile")
-                                    .putFile(user.photo)
-                            }
-                            continuation.resume(Unit)
+                            Firebase.auth.signInWithEmailAndPassword(user.email, user.password)
+                                .addOnCompleteListener {
+                                    if (user.photo != Uri.EMPTY) {
+                                        FirebaseStorage.getInstance().reference
+                                            .child("images/user/${Firebase.auth.currentUser?.uid}/profile")
+                                            .putFile(user.photo).addOnCompleteListener {
+                                                continuation.resume(Unit)
+                                            }
+                                    } else {
+                                        continuation.resume(Unit)
+                                    }
+                                }
                         } else {
                             var exception = Exception()
                             task.exception?.let { firebaseException ->
@@ -61,7 +68,7 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun sendEmailVerification() {
         requestWrapper {
             suspendCoroutine { continuation ->
-                val user = authService.currentUser
+                val user = Firebase.auth.currentUser
                 if (user == null) {
                     continuation.resumeWithException(RegisterCredentialsError.SendEmailVerification)
                 } else {
@@ -75,7 +82,7 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun login(email: String, password: String) {
         requestWrapper {
             suspendCoroutine { continuation ->
-                authService.signInWithEmailAndPassword(email, password)
+                Firebase.auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             continuation.resume(Unit)
@@ -99,7 +106,7 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun isEmailVerified(): Boolean {
         return requestWrapper {
             suspendCoroutine { continuation ->
-                val user = authService.currentUser
+                val user = Firebase.auth.currentUser
                 if (user == null) {
                     continuation.resumeWithException(Exception())
                 } else {
@@ -112,15 +119,17 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun getCurrentUser(): User {
         return requestWrapper {
             suspendCoroutine { continuation ->
-                val user = authService.currentUser
-                storage.child("images/user/${user?.uid}/profile")
+                val user = Firebase.auth.currentUser
+                Firebase.storage.reference.child("images/user/${user?.uid}/profile")
                     .downloadUrl.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             continuation.resume(
-                                authService.currentUser.toModel(image = task.result.toString())
+                                Firebase.auth.currentUser.toModel(image = task.result.toString())
                             )
                         } else {
-                            continuation.resumeWithException(task.exception ?: Exception())
+                            continuation.resume(
+                                Firebase.auth.currentUser.toModel(image = "")
+                            )
                         }
                     }
             }
@@ -129,14 +138,14 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun logout() {
         requestWrapper {
-            authService.signOut()
+            Firebase.auth.signOut()
         }
     }
 
     override suspend fun changePassword(oldPassword: String, newPassword: String) {
         requestWrapper {
             suspendCoroutine { continuation ->
-                val user = authService.currentUser
+                val user = Firebase.auth.currentUser
                 val credential = EmailAuthProvider.getCredential(
                     user?.email ?: "", oldPassword
                 )
@@ -182,7 +191,7 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun resetPassword(email: String) {
         requestWrapper {
             suspendCoroutine { continuation ->
-                authService.sendPasswordResetEmail(email).addOnCompleteListener { task ->
+                Firebase.auth.sendPasswordResetEmail(email).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         continuation.resume(Unit)
                     } else {
