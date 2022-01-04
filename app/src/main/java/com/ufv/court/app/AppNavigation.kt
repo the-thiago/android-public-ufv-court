@@ -17,6 +17,7 @@ import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
 import com.ufv.court.ui_profile.changepasword.ChangePasswordScreen
+import com.ufv.court.ui_profile.editprofile.EditProfileScreen
 import com.ufv.court.ui_profile.profile.ProfileScreen
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -111,6 +112,7 @@ fun NavGraphBuilder.addProfileTopLevel(navController: NavController) {
     ) {
         addProfile(navController)
         addChangePassword(navController)
+        addEditProfile(navController)
     }
 }
 
@@ -128,6 +130,11 @@ fun NavGraphBuilder.addProfile(navController: NavController) {
                 navController.navigate(LeafScreen.ChangePassword.createRoute()) {
                     launchSingleTop = true
                 }
+            },
+            openEditProfile = {
+                navController.navigate(LeafScreen.EditProfile.createRoute()) {
+                    launchSingleTop = true
+                }
             }
         )
     }
@@ -137,5 +144,12 @@ fun NavGraphBuilder.addProfile(navController: NavController) {
 fun NavGraphBuilder.addChangePassword(navController: NavController) {
     composable(LeafScreen.ChangePassword.createRoute()) {
         ChangePasswordScreen(navigateUp = navController::navigateUp)
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addEditProfile(navController: NavController) {
+    composable(LeafScreen.EditProfile.createRoute()) {
+        EditProfileScreen(navigateUp = navController::navigateUp)
     }
 }

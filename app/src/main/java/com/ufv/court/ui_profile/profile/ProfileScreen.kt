@@ -39,12 +39,14 @@ import com.ufv.court.core.ui.components.TwoButtonsDialog
 @Composable
 fun ProfileScreen(
     openLogin: () -> Unit,
-    openChangePassword: () -> Unit
+    openChangePassword: () -> Unit,
+    openEditProfile: () -> Unit
 ) {
     ProfileScreen(
         viewModel = hiltViewModel(),
         openLogin = openLogin,
-        openChangePassword = openChangePassword
+        openChangePassword = openChangePassword,
+        openEditProfile = openEditProfile
     )
 }
 
@@ -52,7 +54,8 @@ fun ProfileScreen(
 private fun ProfileScreen(
     viewModel: ProfileViewModel,
     openLogin: () -> Unit,
-    openChangePassword: () -> Unit
+    openChangePassword: () -> Unit,
+    openEditProfile: () -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = ProfileViewState.Empty)
@@ -60,7 +63,8 @@ private fun ProfileScreen(
     ProfileScreen(
         state = viewState,
         openLogin = openLogin,
-        openChangePassword = openChangePassword
+        openChangePassword = openChangePassword,
+        openEditProfile = openEditProfile
     ) { action ->
         viewModel.submitAction(action)
     }
@@ -71,6 +75,7 @@ private fun ProfileScreen(
     state: ProfileViewState,
     openLogin: () -> Unit,
     openChangePassword: () -> Unit,
+    openEditProfile: () -> Unit,
     action: (ProfileAction) -> Unit
 ) {
     Column(
@@ -84,8 +89,7 @@ private fun ProfileScreen(
         ProfileHorizontalDivisor()
         ChangePasswordItem(onClick = openChangePassword)
         ProfileHorizontalDivisor()
-        ChangePersonalDataItem {
-        }
+        ChangePersonalDataItem(onClick = openEditProfile)
         ProfileHorizontalDivisor()
         TermsItem {
         }

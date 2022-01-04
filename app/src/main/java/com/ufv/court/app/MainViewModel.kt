@@ -2,9 +2,8 @@ package com.ufv.court.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ufv.court.core.core_common.base.Result
+import com.google.firebase.auth.FirebaseAuth
 import com.ufv.court.core.navigation.Screen
-import com.ufv.court.core.user_service.domain.usecase.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val getCurrentUserUseCase: GetCurrentUserUseCase
+
 ) : ViewModel() {
 
     private val _initialDestination = MutableStateFlow(Screen.Login.route)
@@ -25,8 +24,7 @@ class MainViewModel @Inject constructor(
 
     fun doInitialWork() {
         viewModelScope.launch {
-            val result = getCurrentUserUseCase(Unit)
-            if (result is Result.Success && result.data.isLogged) {
+            if (FirebaseAuth.getInstance().currentUser != null) {
                 _initialDestination.emit(Screen.Home.route)
             } else {
                 _initialDestination.emit(Screen.Login.route)
