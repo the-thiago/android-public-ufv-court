@@ -44,7 +44,11 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val result = getCurrentUserUseCase(Unit)
             if (result is Result.Success) {
-                _state.value = state.value.copy(email = result.data.email, name = result.data.name)
+                _state.value = state.value.copy(
+                    email = result.data.email,
+                    name = result.data.name,
+                    image = result.data.image
+                )
             }
         }
     }

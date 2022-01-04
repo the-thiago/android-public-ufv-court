@@ -1,9 +1,11 @@
 package com.ufv.court.ui_login.register
 
+import android.net.Uri
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.user_service.data_remote.request.RegisterUser
 import com.ufv.court.core.user_service.domain.usecase.LogoutUserUseCase
 import com.ufv.court.core.user_service.domain.usecase.RegisterUserUseCase
 import com.ufv.court.core.user_service.domain.usecase.SendEmailVerificationUseCase
@@ -66,9 +68,12 @@ class RegisterViewModel @Inject constructor(
                 _state.value = state.value.copy(isLoading = true)
                 val result = registerUserUseCase(
                     parameters = RegisterUserUseCase.Params(
-                        email = state.value.email,
-                        password = state.value.password,
-                        name = state.value.name
+                        RegisterUser(
+                            email = state.value.email,
+                            password = state.value.password,
+                            name = state.value.name,
+                            photo = state.value.imageUri ?: Uri.EMPTY
+                        )
                     )
                 )
                 if (result is Result.Success) {

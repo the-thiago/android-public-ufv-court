@@ -6,7 +6,7 @@ data class ProfileViewState(
     val showConfirmLogoutDialog: Boolean = false,
     val email: String = "",
     val name: String = "",
-    val imageUrl: String = "https://thispersondoesnotexist.com/image" // todo
+    val image: String = ""
 ) {
     companion object {
         val Empty = ProfileViewState()

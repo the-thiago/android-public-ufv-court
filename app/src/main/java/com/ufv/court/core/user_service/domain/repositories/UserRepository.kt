@@ -1,10 +1,11 @@
 package com.ufv.court.core.user_service.domain.repositories
 
+import com.ufv.court.core.user_service.data_remote.request.RegisterUser
 import com.ufv.court.core.user_service.domain.model.User
 
 interface UserRepository {
 
-    suspend fun registerUser(email: String, password: String, name: String)
+    suspend fun registerUser(user: RegisterUser)
 
     suspend fun sendEmailVerification()
 

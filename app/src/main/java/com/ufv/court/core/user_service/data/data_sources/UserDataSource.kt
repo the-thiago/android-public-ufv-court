@@ -1,10 +1,11 @@
 package com.ufv.court.core.user_service.data.data_sources
 
+import com.ufv.court.core.user_service.data_remote.request.RegisterUser
 import com.ufv.court.core.user_service.domain.model.User
 
 interface UserDataSource {
 
-    suspend fun registerUser(email: String, password: String, name: String)
+    suspend fun registerUser(user: RegisterUser)
 
     suspend fun sendEmailVerification()
 

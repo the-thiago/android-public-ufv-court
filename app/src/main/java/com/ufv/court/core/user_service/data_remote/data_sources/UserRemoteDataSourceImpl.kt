@@ -1,9 +1,12 @@
 package com.ufv.court.core.user_service.data_remote.data_sources
 
+import android.net.Uri
 import com.google.firebase.auth.*
+import com.google.firebase.storage.StorageReference
 import com.ufv.court.core.core_common.base.requestWrapper
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
 import com.ufv.court.core.user_service.data_remote.mapper.toModel
+import com.ufv.court.core.user_service.data_remote.request.RegisterUser
 import com.ufv.court.core.user_service.domain.model.User
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordError
 import com.ufv.court.ui_login.login.LoginError
@@ -14,23 +17,26 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-
 internal class UserRemoteDataSourceImpl @Inject constructor(
-    private val authService: FirebaseAuth
+    private val authService: FirebaseAuth,
+    private val storage: StorageReference
 ) : UserDataSource {
 
-    override suspend fun registerUser(email: String, password: String, name: String) {
+    override suspend fun registerUser(user: RegisterUser) {
         requestWrapper {
             suspendCoroutine { continuation ->
-                authService.createUserWithEmailAndPassword(email, password)
+                authService.createUserWithEmailAndPassword(user.email, user.password)
                     .addOnCompleteListener { task ->
                         val profileInfo = UserProfileChangeRequest.Builder().apply {
-                            displayName = name
-//                            photoUri = Uri.parse("https://picsum.photos/id/46/200/300")
+                            displayName = user.name
                         }.build()
-
                         if (task.isSuccessful) {
-                            task.result?.user?.updateProfile(profileInfo)
+                            val newUser = task.result?.user
+                            newUser?.updateProfile(profileInfo)
+                            if (user.photo != Uri.EMPTY && newUser != null) {
+                                storage.child("images/user/${newUser.uid}/profile")
+                                    .putFile(user.photo)
+                            }
                             continuation.resume(Unit)
                         } else {
                             var exception = Exception()
@@ -105,7 +111,19 @@ internal class UserRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getCurrentUser(): User {
         return requestWrapper {
-            authService.currentUser.toModel()
+            suspendCoroutine { continuation ->
+                val user = authService.currentUser
+                storage.child("images/user/${user?.uid}/profile")
+                    .downloadUrl.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            continuation.resume(
+                                authService.currentUser.toModel(image = task.result.toString())
+                            )
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
         }
     }
 

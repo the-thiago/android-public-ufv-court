@@ -1,6 +1,7 @@
 package com.ufv.court.core.user_service.data.repositories
 
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
+import com.ufv.court.core.user_service.data_remote.request.RegisterUser
 import com.ufv.court.core.user_service.domain.model.User
 import com.ufv.court.core.user_service.domain.repositories.UserRepository
 import javax.inject.Inject
@@ -9,8 +10,8 @@ internal class UserRepositoryImpl @Inject constructor(
     private val dataSource: UserDataSource
 ) : UserRepository {
 
-    override suspend fun registerUser(email: String, password: String, name: String) {
-        dataSource.registerUser(email = email, password = password, name = name)
+    override suspend fun registerUser(user: RegisterUser) {
+        dataSource.registerUser(user = user)
     }
 
     override suspend fun sendEmailVerification() {
