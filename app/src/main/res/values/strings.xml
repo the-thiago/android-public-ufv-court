@@ -53,4 +53,6 @@
     <string name="type_your_name">Preencha o seu nome</string>
     <string name="photo">Foto</string>
     <string name="edit_profile">Editar perfil</string>
+    <string name="schedule_time">Agendar horário</string>
+    <string name="select_a_day">Selecione um dia</string>
 </resources>

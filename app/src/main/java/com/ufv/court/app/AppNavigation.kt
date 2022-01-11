@@ -2,7 +2,6 @@ package com.ufv.court.app
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -11,8 +10,8 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.ufv.court.core.navigation.LeafScreen
 import com.ufv.court.core.navigation.Screen
+import com.ufv.court.ui_home.calendar.CalendarScreen
 import com.ufv.court.ui_home.home.HomeScreen
-import com.ufv.court.ui_home.home.HomeViewModel
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
@@ -25,7 +24,7 @@ import com.ufv.court.ui_profile.profile.ProfileScreen
 internal fun AppNavigation(navController: NavHostController, startDestination: String) {
     AnimatedNavHost(navController = navController, startDestination = startDestination) {
         addLoginTopLevel(navController)
-        addHomeTopLevel()
+        addHomeTopLevel(navController)
         addProfileTopLevel(navController)
     }
 }
@@ -88,20 +87,33 @@ fun NavGraphBuilder.addForgotPassword(navController: NavController) {
     }
 }
 
-fun NavGraphBuilder.addHomeTopLevel() {
+fun NavGraphBuilder.addHomeTopLevel(navController: NavController) {
     navigation(
         route = Screen.Home.route,
         startDestination = LeafScreen.Home.createRoute()
     ) {
-        addHome()
+        addHome(navController)
+        addCalendar(navController)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.addHome() {
+fun NavGraphBuilder.addHome(navController: NavController) {
     composable(LeafScreen.Home.createRoute()) {
-        val viewModel = hiltViewModel<HomeViewModel>()
-        HomeScreen(viewModel)
+        HomeScreen(
+            openCalendar = {
+                navController.navigate(LeafScreen.Calendar.createRoute()) {
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addCalendar(navController: NavController) {
+    composable(LeafScreen.Calendar.createRoute()) {
+        CalendarScreen(navigateUp = navController::navigateUp)
     }
 }
 
