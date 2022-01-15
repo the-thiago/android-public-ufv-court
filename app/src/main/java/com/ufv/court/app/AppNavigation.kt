@@ -8,10 +8,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
+import com.ufv.court.core.core_common.util.toEncodedString
 import com.ufv.court.core.navigation.LeafScreen
 import com.ufv.court.core.navigation.Screen
 import com.ufv.court.ui_home.calendar.CalendarScreen
 import com.ufv.court.ui_home.home.HomeScreen
+import com.ufv.court.ui_home.schedule.ScheduleScreen
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
@@ -94,6 +96,7 @@ fun NavGraphBuilder.addHomeTopLevel(navController: NavController) {
     ) {
         addHome(navController)
         addCalendar(navController)
+        addSchedule(navController)
     }
 }
 
@@ -113,7 +116,21 @@ fun NavGraphBuilder.addHome(navController: NavController) {
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.addCalendar(navController: NavController) {
     composable(LeafScreen.Calendar.createRoute()) {
-        CalendarScreen(navigateUp = navController::navigateUp)
+        CalendarScreen(
+            navigateUp = navController::navigateUp,
+            openSchedule = {
+                navController.navigate(LeafScreen.Schedule.createRoute(date = it.toEncodedString())) {
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addSchedule(navController: NavController) {
+    composable(LeafScreen.Schedule.createRoute()) {
+        ScheduleScreen(navigateUp = navController::navigateUp)
     }
 }
 

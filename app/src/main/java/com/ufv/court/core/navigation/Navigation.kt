@@ -1,6 +1,8 @@
 package com.ufv.court.core.navigation
 
 import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -23,6 +25,18 @@ sealed class LeafScreen(
 
     object Home : LeafScreen(Screen.Home, "home")
     object Calendar : LeafScreen(Screen.Home, "calendar")
+    object Schedule : LeafScreen(Screen.Home, "schedule/{date}") {
+
+        override val arguments = listOf(
+            navArgument("date") {
+                type = NavType.StringType
+            }
+        )
+
+        fun createRoute(date: String): String {
+            return "${root.route}/schedule/$date"
+        }
+    }
 
     object Profile : LeafScreen(Screen.Profile, "profile")
     object ChangePassword : LeafScreen(Screen.Profile, "changepassword")

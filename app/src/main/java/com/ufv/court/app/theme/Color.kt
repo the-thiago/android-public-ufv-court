@@ -44,3 +44,5 @@ val LinkWater = Color(0xFFCCD2E0)
  * Color for use in tabs
  */
 val BlueGrey = Color(0xFF4D556A)
+
+val DarkGreen = Color(0xFF1FB312)

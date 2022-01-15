@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ufv.court.ui_home.calendar.CalendarAction
 import com.ufv.court.ui_home.calendar.CalendarHorizontalDivisor
 import com.ufv.court.ui_home.calendar.CalendarViewModel
 import com.ufv.court.ui_home.calendar.CalendarWeek
@@ -21,7 +20,7 @@ fun FirstWeekOfMonthItem(
     modifier: Modifier = Modifier,
     firstWeek: () -> CalendarWeek,
     index: Int,
-    action: (CalendarAction) -> Unit
+    onDayClick: (String) -> Unit
 ) {
     Row(modifier = modifier) {
         val firstWeekSize = firstWeek().days.size
@@ -31,7 +30,7 @@ fun FirstWeekOfMonthItem(
         }
         firstWeek().days.forEach { day ->
             DayItem(day = { day }) {
-                action(CalendarAction.ChangeSelectedDay(day = day, monthIndex = index))
+                onDayClick(day.number)
             }
         }
     }
@@ -41,14 +40,14 @@ fun FirstWeekOfMonthItem(
 fun MiddleWeekOfMonthItem(
     modifier: Modifier = Modifier,
     week: () -> CalendarWeek,
-    action: (CalendarAction) -> Unit,
+    onDayClick: (String) -> Unit,
     index: Int
 ) {
     CalendarHorizontalDivisor()
     Row(modifier = modifier) {
         week().days.forEach { day ->
             DayItem(day = { day }) {
-                action(CalendarAction.ChangeSelectedDay(day = day, monthIndex = index))
+                onDayClick(day.number)
             }
         }
     }
@@ -58,14 +57,14 @@ fun MiddleWeekOfMonthItem(
 fun LastWeekOfMonthItem(
     modifier: Modifier = Modifier,
     lastWeek: () -> CalendarWeek,
-    action: (CalendarAction) -> Unit,
+    onDayClick: (String) -> Unit,
     index: Int
 ) {
     Row(modifier = modifier) {
         val lastWeekSize = lastWeek().days.size
         lastWeek().days.forEach { day ->
             DayItem(day = { day }) {
-                action(CalendarAction.ChangeSelectedDay(day = day, monthIndex = index))
+                onDayClick(day.number)
             }
         }
         if (lastWeekSize < CalendarViewModel.NUMBER_OF_DAYS_IN_A_WEEK) {

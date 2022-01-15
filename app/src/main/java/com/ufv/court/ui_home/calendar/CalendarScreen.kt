@@ -2,7 +2,6 @@ package com.ufv.court.ui_home.calendar
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.MaterialTheme
@@ -30,16 +29,20 @@ import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
 
 @Composable
-fun CalendarScreen(navigateUp: () -> Unit) {
-    CalendarScreen(hiltViewModel(), navigateUp)
+fun CalendarScreen(navigateUp: () -> Unit, openSchedule: (String) -> Unit) {
+    CalendarScreen(hiltViewModel(), navigateUp, openSchedule)
 }
 
 @Composable
-private fun CalendarScreen(viewModel: CalendarViewModel, navigateUp: () -> Unit) {
+private fun CalendarScreen(
+    viewModel: CalendarViewModel,
+    navigateUp: () -> Unit,
+    openSchedule: (String) -> Unit
+) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = CalendarViewState.Empty)
 
-    CalendarScreen(viewState, navigateUp) { action ->
+    CalendarScreen(viewState, navigateUp, openSchedule) { action ->
         viewModel.submitAction(action)
     }
 }
@@ -49,13 +52,14 @@ private fun CalendarScreen(viewModel: CalendarViewModel, navigateUp: () -> Unit)
 private fun CalendarScreen(
     state: CalendarViewState,
     navigateUp: () -> Unit,
+    openSchedule: (String) -> Unit,
     action: (CalendarAction) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     LaunchedEffect(lazyListState.firstVisibleItemIndex) {
         action(CalendarAction.LoadEventsOfMonth(index = lazyListState.firstVisibleItemIndex))
     }
-    Scaffold(topBar = { CalendarToolbar(state, lazyListState, navigateUp, action) }) {
+    Scaffold(topBar = { CalendarToolbar(navigateUp) }) {
         Box(modifier = Modifier.fillMaxSize()) {
             val contentPadding = PaddingValues(bottom = 36.dp)
             LazyColumn(
@@ -72,7 +76,9 @@ private fun CalendarScreen(
                 verticalArrangement = Arrangement.spacedBy(32.dp),
             ) {
                 itemsIndexed(state.calendarMonths) { index, month ->
-                    MonthItem(month = { month }, index = index, action = action)
+                    MonthItem(month = { month }, index = index) { day ->
+                        openSchedule("$day/${month.monthNumber}/${month.year}")
+                    }
                 }
             }
         }
@@ -81,17 +87,8 @@ private fun CalendarScreen(
 
 @Composable
 private fun CalendarToolbar(
-    state: CalendarViewState,
-    lazyListState: LazyListState,
-    navigateUp: () -> Unit,
-    action: (CalendarAction) -> Unit
+    navigateUp: () -> Unit
 ) {
-//    val months = state.calendarMonths
-//    val toolbarText = if (months.isNotEmpty()) {
-//        months[lazyListState.firstVisibleItemIndex].year
-//    } else {
-//        ""
-//    }
     CustomToolbar(
         toolbarText = stringResource(R.string.select_a_day),
         onLeftButtonClick = navigateUp
@@ -99,7 +96,7 @@ private fun CalendarToolbar(
 }
 
 @Composable
-private fun MonthItem(month: () -> CalendarMonth, index: Int, action: (CalendarAction) -> Unit) {
+private fun MonthItem(month: () -> CalendarMonth, index: Int, onDayClick: (String) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth()) {
         MonthItemTitle(monthName = month().name)
         Spacer(modifier = Modifier.height(8.dp))
@@ -108,13 +105,13 @@ private fun MonthItem(month: () -> CalendarMonth, index: Int, action: (CalendarA
             modifier = Modifier.weekModifier(),
             firstWeek = { month().weeks.first() },
             index = index,
-            action = action
+            onDayClick = onDayClick
         )
         month().weeks.subList(1, month().weeks.size - 1).forEach { week ->
             MiddleWeekOfMonthItem(
                 modifier = Modifier.weekModifier(),
                 week = { week },
-                action = action,
+                onDayClick = onDayClick,
                 index = index
             )
         }
@@ -122,7 +119,7 @@ private fun MonthItem(month: () -> CalendarMonth, index: Int, action: (CalendarA
         LastWeekOfMonthItem(
             modifier = Modifier.weekModifier(),
             lastWeek = { month().weeks.last() },
-            action = action,
+            onDayClick = onDayClick,
             index = index
         )
         CalendarHorizontalDivisor()
