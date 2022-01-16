@@ -130,7 +130,9 @@ fun NavGraphBuilder.addCalendar(navController: NavController) {
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.addSchedule(navController: NavController) {
     composable(LeafScreen.Schedule.createRoute()) {
-        ScheduleScreen(navigateUp = navController::navigateUp)
+        ScheduleScreen(navigateUp = navController::navigateUp, openHome = {
+            navController.popBackStack(route = LeafScreen.Home.createRoute(), inclusive = false)
+        })
     }
 }
 

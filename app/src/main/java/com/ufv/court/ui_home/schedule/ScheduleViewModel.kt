@@ -27,9 +27,20 @@ class ScheduleViewModel @Inject constructor(
     private var numbOfSelected = 0
 
     init {
-        _state.value = state.value.copy(date = this.date)
+        formatDate()
         getSchedules()
         handleActions()
+    }
+
+    private fun formatDate() {
+        viewModelScope.launch {
+            val dateInfo = date.split("/")
+            var formattedDate = ""
+            dateInfo.forEach {
+                formattedDate += "${it.padStart(2, '0')}/"
+            }
+            _state.value = state.value.copy(date = formattedDate.dropLast(1))
+        }
     }
 
     private fun getSchedules() {
@@ -54,20 +65,36 @@ class ScheduleViewModel @Inject constructor(
             pendingActions.collect { action ->
                 when (action) {
                     ScheduleAction.CleanErrors -> _state.value = state.value.copy(error = null)
-                    is ScheduleAction.ScheduleClick -> scheduleClick(action.index)
+                    is ScheduleAction.ScheduleTimeClick -> scheduleTimeClick(action.index)
+                    is ScheduleAction.ChangeScheduleType -> _state.value = state.value.copy(
+                        scheduleType = action.type
+                    )
+                    is ScheduleAction.ChangeTitle -> _state.value = state.value.copy(
+                        title = action.title
+                    )
+                    is ScheduleAction.ChangeDescription -> _state.value = state.value.copy(
+                        description = action.description
+                    )
+                    is ScheduleAction.ChangeHasFreeSpace -> _state.value = state.value.copy(
+                        hasFreeSpace = action.has
+                    )
+                    is ScheduleAction.ChangeFreeSpace -> _state.value = state.value.copy(
+                        freeSpaces = action.freeSpace
+                    )
+                    ScheduleAction.CreateScheduleClick -> createSchedule()
                 }
             }
         }
     }
 
-    private fun scheduleClick(indexClick: Int) {
+    private fun scheduleTimeClick(indexClick: Int) {
         viewModelScope.launch {
             val newSchedules = state.value.schedules.mapIndexed { index, schedule ->
                 if (indexClick == index && !schedule.isScheduled) {
                     if (schedule.selected) {
-                        unselect(indexClick = indexClick, schedule = schedule)
+                        unselectTime(indexClick = indexClick, schedule = schedule)
                     } else {
-                        select(indexClick = indexClick, schedule = schedule)
+                        selectTime(indexClick = indexClick, schedule = schedule)
                     }
                 } else {
                     schedule
@@ -77,7 +104,7 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun unselect(indexClick: Int, schedule: Schedule): Schedule {
+    private fun unselectTime(indexClick: Int, schedule: Schedule): Schedule {
         val schedules = state.value.schedules
         if (numbOfSelected == 1) {
             numbOfSelected--
@@ -102,7 +129,7 @@ class ScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun select(indexClick: Int, schedule: Schedule): Schedule {
+    private fun selectTime(indexClick: Int, schedule: Schedule): Schedule {
         val schedules = state.value.schedules
         if (numbOfSelected > 0) {
             var previousOrNextScheduleIsSelected = false
@@ -122,6 +149,32 @@ class ScheduleViewModel @Inject constructor(
             numbOfSelected++
             return schedule.copy(selected = !schedule.selected)
         }
+    }
+
+    private fun createSchedule() {
+        viewModelScope.launch {
+            if (validInfo()) {
+                // todo schedule backend
+                // on success
+                _state.value = state.value.copy(showScheduledDialog = true)
+            }
+        }
+    }
+
+    private fun validInfo(): Boolean {
+        with(state.value) {
+            if (title.isBlank() || scheduleType.isEmpty() || (hasFreeSpace && freeSpaces.isEmpty())) {
+                _state.value = state.value.copy(error = ScheduleError.EmptyField)
+                return@with false
+            }
+            val selectedTimes = schedules.filter { it.selected }
+            if (selectedTimes.isEmpty()) {
+                _state.value = state.value.copy(error = ScheduleError.UnselectTimeField)
+                return@with false
+            }
+            return@with true
+        }
+        return true
     }
 
     fun submitAction(action: ScheduleAction) {

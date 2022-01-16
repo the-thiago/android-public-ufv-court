@@ -59,4 +59,27 @@
     <string name="schedule_hours">%s:00 às %s:00</string>
     <string name="Scheduled">Agendado</string>
     <string name="Available">Disponível</string>
+    <string name="select">Selecione</string>
+    <string name="soccer">Futsal</string>
+    <string name="volley">Volley</string>
+    <string name="basket">Basquete</string>
+    <string name="event">Evento</string>
+    <string name="other">Outro</string>
+    <string name="unselected">Selecione</string>
+    <string name="event_type">Tipo de evento</string>
+    <string name="title">Título</string>
+    <string name="description_optional">Descrição (opcional)</string>
+    <string name="there_are_free_spaces">Há vagas livres:</string>
+    <string name="free_spaces">Vagas livres</string>
+    <string name="schedule_text">Agendar</string>
+    <string-array name="ScheduleTypes">
+        <item>Futsal</item>
+        <item>Volley</item>
+        <item>Basquete</item>
+        <item>Handebol</item>
+        <item>Evento</item>
+        <item>Outro</item>
+    </string-array>
+    <string name="select_a_time_error">Selecione um horário disponível</string>
+    <string name="scheduled_message">O horário foi agendado para %s!</string>
 </resources>
