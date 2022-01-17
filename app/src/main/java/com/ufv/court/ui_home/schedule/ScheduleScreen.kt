@@ -36,13 +36,6 @@ import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 
-data class Schedule(
-    val hourStart: Int,
-    val hourEnd: Int,
-    val isScheduled: Boolean,
-    val selected: Boolean
-)
-
 @Composable
 fun ScheduleScreen(navigateUp: () -> Unit, openHome: () -> Unit) {
     ScheduleScreen(hiltViewModel(), navigateUp, openHome)
@@ -171,16 +164,18 @@ private fun ScheduledDialog(show: Boolean, date: String, onDismiss: () -> Unit) 
 private fun ErrorTreatment(error: Throwable?, onDismiss: () -> Unit) {
     error?.let {
         when (it) {
-            ScheduleError.EmptyField -> {
-                OneButtonErrorDialog(message = stringResource(id = R.string.empty_field_error)) {
-                    onDismiss()
-                }
-            }
-            ScheduleError.UnselectTimeField -> {
-                OneButtonErrorDialog(message = stringResource(id = R.string.select_a_time_error)) {
-                    onDismiss()
-                }
-            }
+            ScheduleError.EmptyField -> OneButtonErrorDialog(
+                message = stringResource(id = R.string.empty_field_error),
+                onDismiss = onDismiss
+            )
+            ScheduleError.UnselectTimeField -> OneButtonErrorDialog(
+                message = stringResource(id = R.string.select_a_time_error),
+                onDismiss = onDismiss
+            )
+            else -> OneButtonErrorDialog(
+                message = it.message ?: stringResource(id = R.string.unknown_error),
+                onDismiss = onDismiss
+            )
         }
     }
 }

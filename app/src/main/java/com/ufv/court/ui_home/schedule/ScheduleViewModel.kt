@@ -3,6 +3,10 @@ package com.ufv.court.ui_home.schedule
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
+import com.ufv.court.core.schedule_service.domain.usecases.CreateScheduleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val createScheduleUseCase: CreateScheduleUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<ScheduleAction>()
@@ -155,9 +160,26 @@ class ScheduleViewModel @Inject constructor(
         viewModelScope.launch {
             if (validInfo()) {
                 _state.value = state.value.copy(isLoading = true)
-                // todo schedule backend
-                // on success
-                _state.value = state.value.copy(showScheduledDialog = true, isLoading = false)
+                val selectedTimes = state.value.schedules.filter { it.selected }
+                val newTime = ScheduleModel(
+                    ownerId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+                    day = state.value.date.split("/")[0],
+                    month = state.value.date.split("/")[1],
+                    year = state.value.date.split("/")[2],
+                    hourStart = selectedTimes[0].hourStart,
+                    hourEnd = selectedTimes[selectedTimes.lastIndex].hourEnd,
+                    title = state.value.title,
+                    description = state.value.description,
+                    scheduleType = state.value.scheduleType,
+                    hasFreeSpace = state.value.hasFreeSpace,
+                    freeSpaces = state.value.freeSpaces
+                )
+                val result = createScheduleUseCase(CreateScheduleUseCase.Params(newTime))
+                if (result is Result.Success) {
+                    _state.value = state.value.copy(showScheduledDialog = true, isLoading = false)
+                } else if (result is Result.Error) {
+                    _state.value = state.value.copy(error = result.exception, isLoading = false)
+                }
             }
         }
     }

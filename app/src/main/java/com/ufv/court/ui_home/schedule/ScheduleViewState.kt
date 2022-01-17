@@ -21,3 +21,10 @@ sealed class ScheduleError : Exception() {
     object EmptyField : ScheduleError()
     object UnselectTimeField : ScheduleError()
 }
+
+data class Schedule(
+    val hourStart: Int,
+    val hourEnd: Int,
+    val isScheduled: Boolean,
+    val selected: Boolean
+)
