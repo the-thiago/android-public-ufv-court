@@ -82,4 +82,7 @@
     </string-array>
     <string name="select_a_time_error">Selecione um horário disponível</string>
     <string name="scheduled_message">O horário foi agendado para %s!</string>
+    <string name="my_schedule">Agenda</string>
+    <string name="time_as_participant">Horários como participante</string>
+    <string name="times_scheduled">Horários agendados</string>
 </resources>

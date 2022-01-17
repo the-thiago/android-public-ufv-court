@@ -7,8 +7,10 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EventAvailable
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,6 +31,7 @@ fun BottomBar(navController: NavHostController) {
 
     AnimatedVisibility(
         visible = currentDestination?.route == LeafScreen.Home.createRoute() ||
+                currentDestination?.route == LeafScreen.MySchedule.createRoute() ||
                 currentDestination?.route == LeafScreen.Profile.createRoute(),
         enter = slideInVertically(initialOffsetY = { it }),
         exit = slideOutVertically(targetOffsetY = { it }),
@@ -82,6 +85,11 @@ val bottomBarScreens = listOf(
         screen = Screen.Home,
         label = R.string.home_label,
         icon = Icons.Default.Home
+    ),
+    BottomBarScreen(
+        screen = Screen.MySchedule,
+        label = R.string.my_schedule,
+        icon = Icons.Default.EventAvailable
     ),
     BottomBarScreen(
         screen = Screen.Profile,

@@ -7,6 +7,7 @@ import androidx.navigation.navArgument
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Home : Screen("home")
+    object MySchedule : Screen("myschedule")
     object Profile : Screen("profile")
 }
 
@@ -22,6 +23,8 @@ sealed class LeafScreen(
     object Login : LeafScreen(Screen.Login, "login")
     object Register : LeafScreen(Screen.Login, "register")
     object ForgotPassword : LeafScreen(Screen.Login, "forgotpassword")
+
+    object MySchedule : LeafScreen(Screen.MySchedule, "myschedule")
 
     object Home : LeafScreen(Screen.Home, "home")
     object Calendar : LeafScreen(Screen.Home, "calendar")

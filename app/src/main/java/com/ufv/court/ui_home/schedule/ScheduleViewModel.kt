@@ -154,15 +154,16 @@ class ScheduleViewModel @Inject constructor(
     private fun createSchedule() {
         viewModelScope.launch {
             if (validInfo()) {
+                _state.value = state.value.copy(isLoading = true)
                 // todo schedule backend
                 // on success
-                _state.value = state.value.copy(showScheduledDialog = true)
+                _state.value = state.value.copy(showScheduledDialog = true, isLoading = false)
             }
         }
     }
 
     private fun validInfo(): Boolean {
-        with(state.value) {
+        return with(state.value) {
             if (title.isBlank() || scheduleType.isEmpty() || (hasFreeSpace && freeSpaces.isEmpty())) {
                 _state.value = state.value.copy(error = ScheduleError.EmptyField)
                 return@with false
@@ -174,7 +175,6 @@ class ScheduleViewModel @Inject constructor(
             }
             return@with true
         }
-        return true
     }
 
     fun submitAction(action: ScheduleAction) {
