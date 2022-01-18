@@ -85,4 +85,7 @@
     <string name="my_schedule">Agenda</string>
     <string name="time_as_participant">Horários como participante</string>
     <string name="times_scheduled">Horários agendados</string>
+    <string name="no_schedule_here">Não há horários aqui</string>
+    <string name="x_free_spaces">%s vagas</string>
+    <string name="x_free_space">%s vaga</string>
 </resources>

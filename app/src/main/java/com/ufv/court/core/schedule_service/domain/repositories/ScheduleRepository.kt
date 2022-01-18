@@ -11,4 +11,6 @@ interface ScheduleRepository {
         month: String,
         year: String
     ): List<ScheduleModel>
+
+    suspend fun getScheduledByUserUseCase(): List<ScheduleModel>
 }

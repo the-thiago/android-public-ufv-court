@@ -1,6 +1,7 @@
 package com.ufv.court.core.schedule_service.domain.model
 
 data class ScheduleModel(
+    val id: String = "",
     val ownerId: String = "",
     val day: String = "",
     val month: String = "",

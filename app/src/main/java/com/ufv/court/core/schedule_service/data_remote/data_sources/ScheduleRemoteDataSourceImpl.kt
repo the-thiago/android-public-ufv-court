@@ -1,5 +1,6 @@
 package com.ufv.court.core.schedule_service.data_remote.data_sources
 
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -44,6 +45,26 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
                         if (task.isSuccessful) {
                             val schedules = task.result?.documents?.mapNotNull {
                                 it.toObject<ScheduleModel>()
+                            } ?: listOf()
+                            continuation.resume(schedules)
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
+        }
+    }
+
+    override suspend fun getScheduledByUserUseCase(): List<ScheduleModel> {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(schedulesPath)
+                    .whereEqualTo("ownerId", Firebase.auth.currentUser?.uid ?: "x")
+                    .get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val schedules = task.result?.documents?.mapNotNull {
+                                val schedule = it.toObject<ScheduleModel>()
+                                schedule?.copy(id = it.id)
                             } ?: listOf()
                             continuation.resume(schedules)
                         } else {
