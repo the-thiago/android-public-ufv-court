@@ -70,77 +70,83 @@ private fun ScheduleScreen(
             }
         }
     ) {
-        LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            item {
-                SelectTime(state.schedules, action)
+        if (state.placeholder) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
-            item {
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CustomTextField(
-                        text = state.title,
-                        labelText = stringResource(R.string.title),
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                item {
+                    SelectTime(state.schedules, action)
+                }
+                item {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        action(ScheduleAction.ChangeTitle(it))
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CustomTextField(
-                        text = state.description,
-                        labelText = stringResource(R.string.description_optional),
-                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
-                    ) {
-                        action(ScheduleAction.ChangeDescription(it))
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    var typeIsExpanded by remember { mutableStateOf(false) }
-                    SingleChoiceDropDown(
-                        items = stringArrayResource(id = R.array.ScheduleTypes).toList(),
-                        selectedItem = state.scheduleType,
-                        isExpanded = typeIsExpanded,
-                        changeIsExpanded = { typeIsExpanded = !typeIsExpanded },
-                        onItemClick = { action(ScheduleAction.ChangeScheduleType(it)) },
-                        label = stringResource(R.string.event_type)
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(start = 4.dp),
-                            text = stringResource(R.string.there_are_free_spaces),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Checkbox(
-                            checked = state.hasFreeSpace,
-                            onCheckedChange = { action(ScheduleAction.ChangeHasFreeSpace(it)) },
-                            colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
-                        )
-                    }
-                    if (state.hasFreeSpace) {
-                        Spacer(modifier = Modifier.height(8.dp))
                         CustomTextField(
-                            text = state.freeSpaces,
-                            labelText = stringResource(R.string.free_spaces),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            text = state.title,
+                            labelText = stringResource(R.string.title),
+                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
                         ) {
-                            if (it.isDigitsOnly() && it.length < 3) {
-                                action(ScheduleAction.ChangeFreeSpace(it))
+                            action(ScheduleAction.ChangeTitle(it))
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomTextField(
+                            text = state.description,
+                            labelText = stringResource(R.string.description_optional),
+                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                        ) {
+                            action(ScheduleAction.ChangeDescription(it))
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        var typeIsExpanded by remember { mutableStateOf(false) }
+                        SingleChoiceDropDown(
+                            items = stringArrayResource(id = R.array.ScheduleTypes).toList(),
+                            selectedItem = state.scheduleType,
+                            isExpanded = typeIsExpanded,
+                            changeIsExpanded = { typeIsExpanded = !typeIsExpanded },
+                            onItemClick = { action(ScheduleAction.ChangeScheduleType(it)) },
+                            label = stringResource(R.string.event_type)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(start = 4.dp),
+                                text = stringResource(R.string.there_are_free_spaces),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Checkbox(
+                                checked = state.hasFreeSpace,
+                                onCheckedChange = { action(ScheduleAction.ChangeHasFreeSpace(it)) },
+                                colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
+                            )
+                        }
+                        if (state.hasFreeSpace) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            CustomTextField(
+                                text = state.freeSpaces,
+                                labelText = stringResource(R.string.free_spaces),
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                            ) {
+                                if (it.isDigitsOnly() && it.length < 3) {
+                                    action(ScheduleAction.ChangeFreeSpace(it))
+                                }
                             }
                         }
+                        Spacer(modifier = Modifier.height(32.dp))
+                        LoadingButton(
+                            isLoading = state.isLoading,
+                            buttonText = stringResource(R.string.schedule_text),
+                            onButtonClick = { action(ScheduleAction.CreateScheduleClick) }
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
-                    Spacer(modifier = Modifier.height(32.dp))
-                    LoadingButton(
-                        isLoading = state.isLoading,
-                        buttonText = stringResource(R.string.schedule_text),
-                        onButtonClick = { action(ScheduleAction.CreateScheduleClick) }
-                    )
-                    Spacer(modifier = Modifier.height(32.dp))
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.ufv.court.ui_home.schedule
 data class ScheduleViewState(
     val error: Throwable? = null,
     val isLoading: Boolean = false,
+    val placeholder: Boolean = true,
     val date: String = "",
     val title: String = "",
     val description: String = "",

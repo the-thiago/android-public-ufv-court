@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.schedule_service.domain.usecases.CreateScheduleUseCase
+import com.ufv.court.core.schedule_service.domain.usecases.GetScheduleByDayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val createScheduleUseCase: CreateScheduleUseCase
+    private val createScheduleUseCase: CreateScheduleUseCase,
+    private val getScheduleByDayUseCase: GetScheduleByDayUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<ScheduleAction>()
@@ -32,36 +34,53 @@ class ScheduleViewModel @Inject constructor(
     private var numbOfSelected = 0
 
     init {
-        formatDate()
-        getSchedules()
+        getAlreadySchedulesTimes()
         handleActions()
     }
 
-    private fun formatDate() {
+    private fun getAlreadySchedulesTimes() {
         viewModelScope.launch {
-            val dateInfo = date.split("/")
+            var dateInfo = date.split("/")
             var formattedDate = ""
+            dateInfo = dateInfo.map { it.padStart(2, '0') }
             dateInfo.forEach {
-                formattedDate += "${it.padStart(2, '0')}/"
+                formattedDate += "$it/"
             }
             _state.value = state.value.copy(date = formattedDate.dropLast(1))
+            val result = getScheduleByDayUseCase(
+                GetScheduleByDayUseCase.Params(
+                    day = dateInfo[0],
+                    month = dateInfo[1],
+                    year = dateInfo[2]
+                )
+            )
+            if (result is Result.Success) {
+                var schedules = getPossibleSchedulesTimes()
+                schedules = schedules.map { it ->
+                    for (scheduled in result.data) {
+                        val itHourEnd = if (it.hourEnd == 0) 24 else it.hourEnd
+                        val scheduledHourEnd = if (scheduled.hourEnd == 0) 24 else scheduled.hourEnd
+                        if (it.hourStart >= scheduled.hourStart && itHourEnd <= scheduledHourEnd) {
+                            return@map it.copy(isScheduled = true)
+                        }
+                    }
+                    it
+                }
+                _state.value = state.value.copy(schedules = schedules, placeholder = false)
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception, placeholder = false)
+            }
         }
     }
 
-    private fun getSchedules() {
-        viewModelScope.launch {
-            val schedules = mutableListOf<Schedule>()
-            (7..23).forEach {
-                schedules.add(
-                    Schedule(
-                        hourStart = it,
-                        hourEnd = if (it + 1 == 24) 0 else it + 1,
-                        isScheduled = false,
-                        selected = false
-                    )
-                )
-            }
-            _state.value = state.value.copy(schedules = schedules)
+    private fun getPossibleSchedulesTimes(): List<Schedule> {
+        return (7..23).map {
+            Schedule(
+                hourStart = it,
+                hourEnd = if (it + 1 == 24) 0 else it + 1,
+                isScheduled = false,
+                selected = false
+            )
         }
     }
 

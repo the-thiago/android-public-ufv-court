@@ -12,4 +12,12 @@ internal class ScheduleRepositoryImpl @Inject constructor(
     override suspend fun createSchedule(schedule: ScheduleModel) {
         dataSource.createSchedule(schedule = schedule)
     }
+
+    override suspend fun getScheduleByDayUseCase(
+        day: String,
+        month: String,
+        year: String
+    ): List<ScheduleModel> {
+        return dataSource.getScheduleByDayUseCase(day = day, month = month, year = year)
+    }
 }

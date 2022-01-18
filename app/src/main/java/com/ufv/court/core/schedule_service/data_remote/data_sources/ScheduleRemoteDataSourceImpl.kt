@@ -1,6 +1,7 @@
 package com.ufv.court.core.schedule_service.data_remote.data_sources
 
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.ufv.court.core.core_common.base.requestWrapper
 import com.ufv.court.core.schedule_service.data.data_sources.ScheduleDataSource
@@ -24,6 +25,31 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
                         continuation.resumeWithException(it.exception ?: Exception())
                     }
                 }
+            }
+        }
+    }
+
+    override suspend fun getScheduleByDayUseCase(
+        day: String,
+        month: String,
+        year: String
+    ): List<ScheduleModel> {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(schedulesPath)
+                    .whereEqualTo("day", day)
+                    .whereEqualTo("month", month)
+                    .whereEqualTo("year", year)
+                    .get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val schedules = task.result?.documents?.mapNotNull {
+                                it.toObject<ScheduleModel>()
+                            } ?: listOf()
+                            continuation.resume(schedules)
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
             }
         }
     }
