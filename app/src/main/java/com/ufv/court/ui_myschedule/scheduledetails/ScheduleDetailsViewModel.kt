@@ -64,6 +64,12 @@ class ScheduleDetailsViewModel @Inject constructor(
                     ScheduleDetailsAction.CleanErrors -> {
                         _state.value = state.value.copy(error = null)
                     }
+                    is ScheduleDetailsAction.ChangeShowCancellationDialog -> {
+                        _state.value = state.value.copy(showCancellationDialog = action.show)
+                    }
+                    ScheduleDetailsAction.ConfirmEventCancellation -> {
+                        // todo
+                    }
                 }
             }
         }

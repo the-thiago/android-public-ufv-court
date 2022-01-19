@@ -13,4 +13,5 @@ data class ScheduleModel(
     val scheduleType: String = "",
     val hasFreeSpace: Boolean = false,
     val freeSpaces: String = "",
+    val cancelled: Boolean = false
 )

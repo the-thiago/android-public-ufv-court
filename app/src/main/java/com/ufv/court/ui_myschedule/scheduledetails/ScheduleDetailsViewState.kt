@@ -7,7 +7,8 @@ data class ScheduleDetailsViewState(
     val error: Throwable? = null,
     val isLoading: Boolean = false,
     val schedule: ScheduleModel? = null,
-    val user: User? = null
+    val user: User? = null,
+    val showCancellationDialog: Boolean = false
 ) {
     companion object {
         val Empty = ScheduleDetailsViewState()

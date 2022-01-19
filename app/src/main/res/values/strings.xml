@@ -88,4 +88,7 @@
     <string name="no_schedule_here">Não há horários aqui</string>
     <string name="x_free_spaces">%s vagas</string>
     <string name="x_free_space">%s vaga</string>
+    <string name="edit_event">Editar evento</string>
+    <string name="cancel_event">Cancelar evento</string>
+    <string name="after_confirm_cant_go_back">Após a confirmação, não será possível voltar atrás</string>
 </resources>
