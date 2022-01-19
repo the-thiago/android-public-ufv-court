@@ -25,6 +25,18 @@ sealed class LeafScreen(
     object ForgotPassword : LeafScreen(Screen.Login, "forgotpassword")
 
     object MySchedule : LeafScreen(Screen.MySchedule, "myschedule")
+    object ScheduleDetails : LeafScreen(Screen.MySchedule, "scheduledetails/{id}") {
+
+        override val arguments = listOf(
+            navArgument("id") {
+                type = NavType.StringType
+            }
+        )
+
+        fun createRoute(id: String): String {
+            return "${root.route}/scheduledetails/$id"
+        }
+    }
 
     object Home : LeafScreen(Screen.Home, "home")
     object Calendar : LeafScreen(Screen.Home, "calendar")

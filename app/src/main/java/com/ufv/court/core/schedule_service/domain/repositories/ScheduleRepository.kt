@@ -6,11 +6,13 @@ interface ScheduleRepository {
 
     suspend fun createSchedule(schedule: ScheduleModel)
 
-    suspend fun getScheduleByDayUseCase(
+    suspend fun getScheduleByDay(
         day: String,
         month: String,
         year: String
     ): List<ScheduleModel>
 
-    suspend fun getScheduledByUserUseCase(): List<ScheduleModel>
+    suspend fun getScheduledByUser(): List<ScheduleModel>
+
+    suspend fun getSchedule(id: String): ScheduleModel
 }

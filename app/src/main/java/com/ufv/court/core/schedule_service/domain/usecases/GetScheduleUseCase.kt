@@ -6,12 +6,14 @@ import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.schedule_service.domain.repositories.ScheduleRepository
 import javax.inject.Inject
 
-class GetScheduledByUserUseCase @Inject constructor(
+class GetScheduleUseCase @Inject constructor(
     private val repository: ScheduleRepository,
     dispatchers: DispatchersProvider
-) : UseCase<Unit, List<ScheduleModel>>(dispatchers.io) {
+) : UseCase<GetScheduleUseCase.Params, ScheduleModel>(dispatchers.io) {
 
-    override suspend fun execute(parameters: Unit): List<ScheduleModel> {
-        return repository.getScheduledByUser()
+    data class Params(val id: String)
+
+    override suspend fun execute(parameters: Params): ScheduleModel {
+        return repository.getSchedule(id = parameters.id)
     }
 }

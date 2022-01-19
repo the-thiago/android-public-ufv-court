@@ -1,7 +1,6 @@
 package com.ufv.court.app
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -19,6 +18,7 @@ import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
 import com.ufv.court.ui_myschedule.myschedule.MyScheduleScreen
+import com.ufv.court.ui_myschedule.scheduledetails.ScheduleDetailsScreen
 import com.ufv.court.ui_profile.changepasword.ChangePasswordScreen
 import com.ufv.court.ui_profile.editprofile.EditProfileScreen
 import com.ufv.court.ui_profile.profile.ProfileScreen
@@ -145,13 +145,25 @@ fun NavGraphBuilder.addMyScheduleTopLevel(navController: NavController) {
         startDestination = LeafScreen.MySchedule.createRoute()
     ) {
         addMySchedule(navController)
+        addScheduleDetails(navController)
     }
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.addMySchedule(navController: NavController) {
     composable(LeafScreen.MySchedule.createRoute()) {
-        MyScheduleScreen()
+        MyScheduleScreen(openScheduleDetails = {
+            navController.navigate(LeafScreen.ScheduleDetails.createRoute(id = it)) {
+                launchSingleTop = true
+            }
+        })
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addScheduleDetails(navController: NavController) {
+    composable(LeafScreen.ScheduleDetails.createRoute()) {
+        ScheduleDetailsScreen(navController::navigateUp)
     }
 }
 

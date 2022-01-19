@@ -30,7 +30,7 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
         }
     }
 
-    override suspend fun getScheduleByDayUseCase(
+    override suspend fun getScheduleByDay(
         day: String,
         month: String,
         year: String
@@ -55,7 +55,7 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
         }
     }
 
-    override suspend fun getScheduledByUserUseCase(): List<ScheduleModel> {
+    override suspend fun getScheduledByUser(): List<ScheduleModel> {
         return requestWrapper {
             suspendCoroutine { continuation ->
                 Firebase.firestore.collection(schedulesPath)
@@ -67,6 +67,21 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
                                 schedule?.copy(id = it.id)
                             } ?: listOf()
                             continuation.resume(schedules)
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
+        }
+    }
+
+    override suspend fun getSchedule(id: String): ScheduleModel {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(schedulesPath).document(id)
+                    .get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            continuation.resume(task.result?.toObject() ?: ScheduleModel())
                         } else {
                             continuation.resumeWithException(task.exception ?: Exception())
                         }

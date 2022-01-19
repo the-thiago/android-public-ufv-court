@@ -13,15 +13,19 @@ internal class ScheduleRepositoryImpl @Inject constructor(
         dataSource.createSchedule(schedule = schedule)
     }
 
-    override suspend fun getScheduleByDayUseCase(
+    override suspend fun getScheduleByDay(
         day: String,
         month: String,
         year: String
     ): List<ScheduleModel> {
-        return dataSource.getScheduleByDayUseCase(day = day, month = month, year = year)
+        return dataSource.getScheduleByDay(day = day, month = month, year = year)
     }
 
-    override suspend fun getScheduledByUserUseCase(): List<ScheduleModel> {
-        return dataSource.getScheduledByUserUseCase()
+    override suspend fun getScheduledByUser(): List<ScheduleModel> {
+        return dataSource.getScheduledByUser()
+    }
+
+    override suspend fun getSchedule(id: String): ScheduleModel {
+        return dataSource.getSchedule(id = id)
     }
 }

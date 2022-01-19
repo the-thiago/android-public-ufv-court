@@ -138,7 +138,7 @@ private fun LoginScreen(
         ) {
             Text(
                 modifier = Modifier.testTag("RegisterTextButton"),
-                text = stringResource(R.string.I_want_to_register),
+                text = stringResource(R.string.i_want_to_register),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )

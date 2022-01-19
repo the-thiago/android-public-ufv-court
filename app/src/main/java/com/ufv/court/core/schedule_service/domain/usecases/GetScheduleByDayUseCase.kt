@@ -14,7 +14,7 @@ class GetScheduleByDayUseCase @Inject constructor(
     data class Params(val day: String, val month: String, val year: String)
 
     override suspend fun execute(parameters: Params): List<ScheduleModel> {
-        return repository.getScheduleByDayUseCase(
+        return repository.getScheduleByDay(
             day = parameters.day,
             month = parameters.month,
             year = parameters.year

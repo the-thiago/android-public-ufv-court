@@ -33,16 +33,19 @@ import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.OneButtonErrorDialog
 
 @Composable
-fun MyScheduleScreen() {
-    MyScheduleScreen(hiltViewModel())
+fun MyScheduleScreen(openScheduleDetails: (String) -> Unit) {
+    MyScheduleScreen(hiltViewModel(), openScheduleDetails)
 }
 
 @Composable
-private fun MyScheduleScreen(viewModel: MyScheduleViewModel) {
+private fun MyScheduleScreen(
+    viewModel: MyScheduleViewModel,
+    openScheduleDetails: (String) -> Unit
+) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = MyScheduleViewState.Empty)
 
-    MyScheduleScreen(state = viewState) { action ->
+    MyScheduleScreen(viewState, openScheduleDetails) { action ->
         viewModel.submitAction(action)
     }
 }
@@ -50,6 +53,7 @@ private fun MyScheduleScreen(viewModel: MyScheduleViewModel) {
 @Composable
 private fun MyScheduleScreen(
     state: MyScheduleViewState,
+    openScheduleDetails: (String) -> Unit,
     action: (MyScheduleAction) -> Unit
 ) {
     Column(
@@ -63,9 +67,11 @@ private fun MyScheduleScreen(
             if (state.scheduledAsParticipant.isEmpty()) {
                 NoScheduleHereText()
             } else {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 state.scheduledAsParticipant.forEach {
-                    ScheduledItem(it)
+                    ScheduledItem(it) {
+                        openScheduleDetails(it.id)
+                    }
                 }
             }
         }
@@ -73,9 +79,11 @@ private fun MyScheduleScreen(
             if (state.scheduled.isEmpty()) {
                 NoScheduleHereText()
             } else {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 state.scheduled.forEach {
-                    ScheduledItem(it)
+                    ScheduledItem(it) {
+                        openScheduleDetails(it.id)
+                    }
                 }
             }
         }
@@ -86,14 +94,14 @@ private fun MyScheduleScreen(
 }
 
 @Composable
-private fun ScheduledItem(scheduleModel: ScheduleModel) {
+private fun ScheduledItem(scheduleModel: ScheduleModel, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .background(color = Solitude, shape = RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
-            .clickable { }
+            .clickable { onClick() }
             .padding(16.dp)
     ) {
         Text(
@@ -103,17 +111,6 @@ private fun ScheduledItem(scheduleModel: ScheduleModel) {
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
         )
-//        val freeSpaceId by remember(scheduleModel.freeSpaces) {
-//            if (scheduleModel.freeSpaces > "1") {
-//                mutableStateOf(R.string.x_free_spaces)
-//            } else {
-//                mutableStateOf(R.string.x_free_space)
-//            }
-//        }
-//        Text(
-//            text = stringResource(id = freeSpaceId, scheduleModel.freeSpaces),
-//            style = MaterialTheme.typography.button
-//        )
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 text = scheduleModel.scheduleType,

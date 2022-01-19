@@ -71,9 +71,7 @@ private fun ScheduleScreen(
         }
     ) {
         if (state.placeholder) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            CircularLoading()
         } else {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 item {
@@ -280,13 +278,13 @@ private fun ScheduleItem(schedule: Schedule, onClick: () -> Unit) {
         Row {
             if (schedule.isScheduled) {
                 Text(
-                    text = stringResource(R.string.Scheduled),
+                    text = stringResource(R.string.scheduled),
                     color = color,
                     style = MaterialTheme.typography.subtitle2
                 )
             } else {
                 Text(
-                    text = stringResource(R.string.Available),
+                    text = stringResource(R.string.available),
                     color = DarkGreen,
                     style = MaterialTheme.typography.subtitle2
                 )
