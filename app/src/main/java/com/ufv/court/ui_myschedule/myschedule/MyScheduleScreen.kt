@@ -31,6 +31,8 @@ import com.ufv.court.app.theme.Solitude
 import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.OneButtonErrorDialog
+import com.ufv.court.core.ui.components.TimeInMillisDateInfo
+import java.util.*
 
 @Composable
 fun MyScheduleScreen(openScheduleDetails: (String) -> Unit) {
@@ -116,10 +118,12 @@ private fun ScheduledItem(scheduleModel: ScheduleModel, onClick: () -> Unit) {
                 text = scheduleModel.scheduleType,
                 style = MaterialTheme.typography.button
             )
-            Text(
-                text = "${scheduleModel.day}/${scheduleModel.month}/${scheduleModel.year}",
-                style = MaterialTheme.typography.button
-            )
+            TimeInMillisDateInfo(scheduleModel.timeInMillis) { day, month, year ->
+                Text(
+                    text = "${day}/${month}/${year}",
+                    style = MaterialTheme.typography.button
+                )
+            }
         }
     }
     Spacer(modifier = Modifier.height(16.dp))

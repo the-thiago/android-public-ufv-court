@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -179,19 +180,22 @@ class ScheduleViewModel @Inject constructor(
         viewModelScope.launch {
             if (validInfo()) {
                 _state.value = state.value.copy(isLoading = true)
+                val splitDate = state.value.date.split("/")
+                val calendar = Calendar.getInstance()
+                calendar.set(Calendar.DAY_OF_MONTH, splitDate[0].toInt())
+                calendar.set(Calendar.MONTH, splitDate[1].toInt() - 1)
+                calendar.set(Calendar.YEAR, splitDate[2].toInt())
                 val selectedTimes = state.value.schedules.filter { it.selected }
                 val newTime = ScheduleModel(
                     ownerId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
-                    day = state.value.date.split("/")[0],
-                    month = state.value.date.split("/")[1],
-                    year = state.value.date.split("/")[2],
                     hourStart = selectedTimes[0].hourStart,
                     hourEnd = selectedTimes[selectedTimes.lastIndex].hourEnd,
                     title = state.value.title,
                     description = state.value.description,
                     scheduleType = state.value.scheduleType,
                     hasFreeSpace = state.value.hasFreeSpace,
-                    freeSpaces = state.value.freeSpaces
+                    freeSpaces = getFreeSpaces(),
+                    timeInMillis = calendar.timeInMillis
                 )
                 val result = createScheduleUseCase(CreateScheduleUseCase.Params(newTime))
                 if (result is Result.Success) {
@@ -201,6 +205,11 @@ class ScheduleViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun getFreeSpaces(): Int {
+        if (!state.value.hasFreeSpace) return 0
+        return state.value.freeSpaces.toInt()
     }
 
     private fun validInfo(): Boolean {
