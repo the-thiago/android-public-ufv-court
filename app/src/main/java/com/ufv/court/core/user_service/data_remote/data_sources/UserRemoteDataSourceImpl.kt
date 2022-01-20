@@ -3,14 +3,14 @@ package com.ufv.court.core.user_service.data_remote.data_sources
 import android.net.Uri
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 import com.ufv.court.core.core_common.base.requestWrapper
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
-import com.ufv.court.core.user_service.data_remote.mapper.toModel
 import com.ufv.court.core.user_service.data_remote.request.RegisterUser
-import com.ufv.court.core.user_service.domain.model.User
+import com.ufv.court.core.user_service.domain.model.UserModel
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordError
 import com.ufv.court.ui_login.login.LoginError
 import com.ufv.court.ui_login.register.RegisterCredentialsError
@@ -22,45 +22,102 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class UserRemoteDataSourceImpl @Inject constructor() : UserDataSource {
 
-    override suspend fun registerUser(user: RegisterUser) {
+    private val usersPath = "users"
+
+    override suspend fun registerUser(userRequest: RegisterUser) {
         requestWrapper {
             suspendCoroutine { continuation ->
-                Firebase.auth.createUserWithEmailAndPassword(user.email, user.password)
-                    .addOnCompleteListener { task ->
-                        val profileInfo = UserProfileChangeRequest.Builder().apply {
-                            displayName = user.name
-                        }.build()
-                        if (task.isSuccessful) {
-                            val newUser = task.result?.user
-                            newUser?.updateProfile(profileInfo)
-                            Firebase.auth.signInWithEmailAndPassword(user.email, user.password)
-                                .addOnCompleteListener {
-                                    if (user.photo != Uri.EMPTY) {
-                                        FirebaseStorage.getInstance().reference
-                                            .child("images/user/${Firebase.auth.currentUser?.uid}/profile")
-                                            .putFile(user.photo).addOnCompleteListener {
-                                                continuation.resume(Unit)
+                Firebase.auth.createUserWithEmailAndPassword(
+                    userRequest.email,
+                    userRequest.password
+                ).addOnCompleteListener { authTask ->
+                    if (authTask.isSuccessful) {
+                        val newUser = authTask.result?.user
+                        val userModel = UserModel(
+                            id = newUser?.uid ?: "",
+                            name = userRequest.name,
+                            email = userRequest.email,
+                            image = ""
+                        )
+                        if (userRequest.photo != Uri.EMPTY) {
+                            FirebaseStorage.getInstance().reference
+                                .child("images/user/${Firebase.auth.currentUser?.uid}/profile")
+                                .putFile(userRequest.photo)
+                                .addOnCompleteListener { photoTask ->
+                                    if (photoTask.isSuccessful) {
+                                        photoTask.result?.storage?.downloadUrl?.addOnCompleteListener { urlTask ->
+                                            if (urlTask.isSuccessful) {
+                                                Firebase.firestore.collection(usersPath)
+                                                    .add(userModel.copy(image = urlTask.result.toString()))
+                                                    .addOnCompleteListener { userStoreTask ->
+                                                        if (userStoreTask.isSuccessful) {
+                                                            continuation.resume(Unit)
+                                                        } else {
+                                                            continuation.resumeWithException(
+                                                                userStoreTask.exception
+                                                                    ?: Exception()
+                                                            )
+                                                        }
+                                                    }
+                                            } else {
+                                                Firebase.firestore.collection(usersPath)
+                                                    .add(userModel)
+                                                    .addOnCompleteListener { userStoreTask ->
+                                                        if (userStoreTask.isSuccessful) {
+                                                            continuation.resume(Unit)
+                                                        } else {
+                                                            continuation.resumeWithException(
+                                                                userStoreTask.exception
+                                                                    ?: Exception()
+                                                            )
+                                                        }
+                                                    }
                                             }
+                                        }
                                     } else {
-                                        continuation.resume(Unit)
+                                        Firebase.firestore.collection(usersPath)
+                                            .add(userModel)
+                                            .addOnCompleteListener { userStoreTask ->
+                                                if (userStoreTask.isSuccessful) {
+                                                    continuation.resume(Unit)
+                                                } else {
+                                                    continuation.resumeWithException(
+                                                        userStoreTask.exception
+                                                            ?: Exception()
+                                                    )
+                                                }
+                                            }
                                     }
                                 }
                         } else {
-                            var exception = Exception()
-                            task.exception?.let { firebaseException ->
-                                exception = when (firebaseException) {
-                                    is FirebaseAuthWeakPasswordException -> RegisterCredentialsError
-                                        .AuthWeakPassword
-                                    is FirebaseAuthUserCollisionException -> RegisterCredentialsError
-                                        .AuthUserCollision
-                                    is FirebaseAuthInvalidCredentialsException -> RegisterCredentialsError
-                                        .AuthInvalidCredentials
-                                    else -> Exception()
+                            Firebase.firestore.collection(usersPath)
+                                .add(userModel)
+                                .addOnCompleteListener { userStoreTask ->
+                                    if (userStoreTask.isSuccessful) {
+                                        continuation.resume(Unit)
+                                    } else {
+                                        continuation.resumeWithException(
+                                            userStoreTask.exception ?: Exception()
+                                        )
+                                    }
                                 }
-                            }
-                            continuation.resumeWithException(exception)
                         }
+                    } else {
+                        var exception = Exception()
+                        authTask.exception?.let { firebaseException ->
+                            exception = when (firebaseException) {
+                                is FirebaseAuthWeakPasswordException -> RegisterCredentialsError
+                                    .AuthWeakPassword
+                                is FirebaseAuthUserCollisionException -> RegisterCredentialsError
+                                    .AuthUserCollision
+                                is FirebaseAuthInvalidCredentialsException -> RegisterCredentialsError
+                                    .AuthInvalidCredentials
+                                else -> Exception()
+                            }
+                        }
+                        continuation.resumeWithException(exception)
                     }
+                }
             }
         }
     }
@@ -116,22 +173,31 @@ internal class UserRemoteDataSourceImpl @Inject constructor() : UserDataSource {
         }
     }
 
-    override suspend fun getCurrentUser(): User {
+    override suspend fun getCurrentUser(): UserModel {
         return requestWrapper {
             suspendCoroutine { continuation ->
-                val user = Firebase.auth.currentUser
-                Firebase.storage.reference.child("images/user/${user?.uid}/profile")
-                    .downloadUrl.addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            continuation.resume(
-                                Firebase.auth.currentUser.toModel(image = task.result.toString())
-                            )
-                        } else {
-                            continuation.resume(
-                                Firebase.auth.currentUser.toModel(image = "")
-                            )
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                if (uid?.isEmpty() == true) {
+                    continuation.resumeWithException(Exception())
+                } else {
+                    Firebase.firestore.collection(usersPath)
+                        .whereEqualTo("id", uid)
+                        .limit(1)
+                        .get()
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val usersDocs = task.result?.documents
+                                if (usersDocs?.isNotEmpty() == true) {
+                                    val user = usersDocs[0].toObject<UserModel>() ?: UserModel()
+                                    continuation.resume(user)
+                                } else {
+                                    continuation.resumeWithException(Exception())
+                                }
+                            } else {
+                                continuation.resumeWithException(task.exception ?: Exception())
+                            }
                         }
-                    }
+                }
             }
         }
     }

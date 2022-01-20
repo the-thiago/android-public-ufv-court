@@ -1,7 +1,7 @@
 package com.ufv.court.core.user_service.domain.repositories
 
 import com.ufv.court.core.user_service.data_remote.request.RegisterUser
-import com.ufv.court.core.user_service.domain.model.User
+import com.ufv.court.core.user_service.domain.model.UserModel
 
 interface UserRepository {
 
@@ -13,7 +13,7 @@ interface UserRepository {
 
     suspend fun isEmailVerified(): Boolean
 
-    suspend fun getCurrentUser(): User
+    suspend fun getCurrentUser(): UserModel
 
     suspend fun logout()
 

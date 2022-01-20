@@ -2,7 +2,7 @@ package com.ufv.court.core.user_service.data.repositories
 
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
 import com.ufv.court.core.user_service.data_remote.request.RegisterUser
-import com.ufv.court.core.user_service.domain.model.User
+import com.ufv.court.core.user_service.domain.model.UserModel
 import com.ufv.court.core.user_service.domain.repositories.UserRepository
 import javax.inject.Inject
 
@@ -11,7 +11,7 @@ internal class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
 
     override suspend fun registerUser(user: RegisterUser) {
-        dataSource.registerUser(user = user)
+        dataSource.registerUser(userRequest = user)
     }
 
     override suspend fun sendEmailVerification() {
@@ -26,7 +26,7 @@ internal class UserRepositoryImpl @Inject constructor(
         return dataSource.isEmailVerified()
     }
 
-    override suspend fun getCurrentUser(): User {
+    override suspend fun getCurrentUser(): UserModel {
         return dataSource.getCurrentUser()
     }
 
