@@ -6,11 +6,7 @@ interface ScheduleRepository {
 
     suspend fun createSchedule(schedule: ScheduleModel)
 
-    suspend fun getScheduleByDay(
-        day: String,
-        month: String,
-        year: String
-    ): List<ScheduleModel>
+    suspend fun getScheduleByDay(timeInMillis: Long): List<ScheduleModel>
 
     suspend fun getScheduledByUser(): List<ScheduleModel>
 

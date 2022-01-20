@@ -30,17 +30,11 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
         }
     }
 
-    override suspend fun getScheduleByDay(
-        day: String,
-        month: String,
-        year: String
-    ): List<ScheduleModel> {
+    override suspend fun getScheduleByDay(timeInMillis: Long): List<ScheduleModel> {
         return requestWrapper {
             suspendCoroutine { continuation ->
                 Firebase.firestore.collection(schedulesPath)
-                    .whereEqualTo("day", day)
-                    .whereEqualTo("month", month)
-                    .whereEqualTo("year", year)
+                    .whereEqualTo("timeInMillis", timeInMillis)
                     .get().addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val schedules = task.result?.documents?.mapNotNull {

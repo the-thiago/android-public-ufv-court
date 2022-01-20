@@ -50,9 +50,11 @@ class ScheduleViewModel @Inject constructor(
             _state.value = state.value.copy(date = formattedDate.dropLast(1))
             val result = getScheduleByDayUseCase(
                 GetScheduleByDayUseCase.Params(
-                    day = dateInfo[0],
-                    month = dateInfo[1],
-                    year = dateInfo[2]
+                    timeInMillis = getTimeInMillisFromDate(
+                        day = dateInfo[0].toInt(),
+                        month = dateInfo[1].toInt(),
+                        year = dateInfo[2].toInt()
+                    )
                 )
             )
             if (result is Result.Success) {
@@ -181,10 +183,6 @@ class ScheduleViewModel @Inject constructor(
             if (validInfo()) {
                 _state.value = state.value.copy(isLoading = true)
                 val splitDate = state.value.date.split("/")
-                val calendar = Calendar.getInstance()
-                calendar.set(Calendar.DAY_OF_MONTH, splitDate[0].toInt())
-                calendar.set(Calendar.MONTH, splitDate[1].toInt() - 1)
-                calendar.set(Calendar.YEAR, splitDate[2].toInt())
                 val selectedTimes = state.value.schedules.filter { it.selected }
                 val newTime = ScheduleModel(
                     ownerId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
@@ -194,7 +192,11 @@ class ScheduleViewModel @Inject constructor(
                     description = state.value.description,
                     scheduleType = state.value.scheduleType,
                     freeSpaces = getFreeSpaces(),
-                    timeInMillis = calendar.timeInMillis
+                    timeInMillis = getTimeInMillisFromDate(
+                        day = splitDate[0].toInt(),
+                        month = splitDate[1].toInt(),
+                        year = splitDate[2].toInt()
+                    )
                 )
                 val result = createScheduleUseCase(CreateScheduleUseCase.Params(newTime))
                 if (result is Result.Success) {
@@ -204,6 +206,18 @@ class ScheduleViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun getTimeInMillisFromDate(day: Int, month: Int, year: Int): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_MONTH, day)
+        calendar.set(Calendar.MONTH, month - 1)
+        calendar.set(Calendar.YEAR, year)
+        calendar.set(Calendar.HOUR_OF_DAY, 1)
+        calendar.set(Calendar.MINUTE, 1)
+        calendar.set(Calendar.SECOND, 1)
+        calendar.set(Calendar.MILLISECOND, 1)
+        return calendar.timeInMillis
     }
 
     private fun getFreeSpaces(): Int {

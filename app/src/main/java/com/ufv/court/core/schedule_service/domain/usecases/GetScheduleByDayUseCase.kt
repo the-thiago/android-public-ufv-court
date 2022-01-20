@@ -11,13 +11,9 @@ class GetScheduleByDayUseCase @Inject constructor(
     dispatchers: DispatchersProvider
 ) : UseCase<GetScheduleByDayUseCase.Params, List<ScheduleModel>>(dispatchers.io) {
 
-    data class Params(val day: String, val month: String, val year: String)
+    data class Params(val timeInMillis: Long)
 
     override suspend fun execute(parameters: Params): List<ScheduleModel> {
-        return repository.getScheduleByDay(
-            day = parameters.day,
-            month = parameters.month,
-            year = parameters.year
-        )
+        return repository.getScheduleByDay(timeInMillis = parameters.timeInMillis)
     }
 }
