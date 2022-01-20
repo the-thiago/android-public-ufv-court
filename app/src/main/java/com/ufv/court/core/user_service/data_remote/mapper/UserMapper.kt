@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.ufv.court.core.user_service.domain.model.User
 
 fun FirebaseUser?.toModel(image: String): User = User(
+    id = this?.uid ?: "",
     isLogged = this != null,
     name = this?.displayName ?: "",
     email = this?.email ?: "",

@@ -91,4 +91,5 @@
     <string name="edit_event">Editar evento</string>
     <string name="cancel_event">Cancelar evento</string>
     <string name="after_confirm_cant_go_back">Após a confirmação, não será possível voltar atrás</string>
+    <string name="event_cancelled">Evento cancelado</string>
 </resources>

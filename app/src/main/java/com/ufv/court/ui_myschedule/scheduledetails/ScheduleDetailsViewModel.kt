@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.schedule_service.domain.usecases.GetScheduleUseCase
+import com.ufv.court.core.schedule_service.domain.usecases.UpdateScheduleUseCase
 import com.ufv.court.core.user_service.domain.usecase.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class ScheduleDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getScheduleUseCase: GetScheduleUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val updateScheduleUseCase: UpdateScheduleUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<ScheduleDetailsAction>()
@@ -30,30 +32,30 @@ class ScheduleDetailsViewModel @Inject constructor(
     private val scheduleId: String = savedStateHandle.get<String>("id") ?: ""
 
     init {
-        getSchedule()
-        getCurrentUser()
+        getScheduleAndUser()
         handleActions()
     }
 
-    private fun getCurrentUser() {
+    private fun getScheduleAndUser() {
         viewModelScope.launch {
-            val result = getCurrentUserUseCase(Unit)
-            if (result is Result.Success) {
-                _state.value = state.value.copy(user = result.data)
-            } else if (result is Result.Error) {
-                _state.value = state.value.copy(error = result.exception)
+            val scheduleResult = getScheduleUseCase(GetScheduleUseCase.Params(id = scheduleId))
+            if (scheduleResult is Result.Success) {
+                _state.value = state.value.copy(schedule = scheduleResult.data)
+            } else if (scheduleResult is Result.Error) {
+                _state.value = state.value.copy(error = scheduleResult.exception)
             }
-        }
-    }
-
-    private fun getSchedule() {
-        viewModelScope.launch {
-            val result = getScheduleUseCase(GetScheduleUseCase.Params(id = scheduleId))
-            if (result is Result.Success) {
-                _state.value = state.value.copy(schedule = result.data)
-            } else if (result is Result.Error) {
-                _state.value = state.value.copy(error = result.exception)
+            val userResult = getCurrentUserUseCase(Unit)
+            if (userResult is Result.Success) {
+                _state.value = state.value.copy(user = userResult.data)
+            } else if (userResult is Result.Error) {
+                _state.value = state.value.copy(error = userResult.exception)
             }
+            if (scheduleResult is Result.Success && userResult is Result.Success) {
+                _state.value = state.value.copy(
+                    isTheOwner = scheduleResult.data.ownerId == userResult.data.id
+                )
+            }
+            _state.value = state.value.copy(placeholder = false)
         }
     }
 
@@ -67,10 +69,30 @@ class ScheduleDetailsViewModel @Inject constructor(
                     is ScheduleDetailsAction.ChangeShowCancellationDialog -> {
                         _state.value = state.value.copy(showCancellationDialog = action.show)
                     }
-                    ScheduleDetailsAction.ConfirmEventCancellation -> {
-                        // todo
+                    ScheduleDetailsAction.ConfirmEventCancellation -> cancelEvent()
+                    is ScheduleDetailsAction.ChangeShowCancelledDialog -> {
+                        _state.value = state.value.copy(showCancelledDialog = action.show)
                     }
                 }
+            }
+        }
+    }
+
+    private fun cancelEvent() {
+        viewModelScope.launch {
+            val schedule = state.value.schedule ?: return@launch
+            _state.value = state.value.copy(showCancellationDialog = false)
+            val newSchedule = schedule.copy(cancelled = true)
+            val result = updateScheduleUseCase(
+                UpdateScheduleUseCase.Params(
+                    id = schedule.id,
+                    newSchedule = newSchedule
+                )
+            )
+            if (result is Result.Success) {
+                _state.value = state.value.copy(showCancelledDialog = true, schedule = newSchedule)
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception)
             }
         }
     }

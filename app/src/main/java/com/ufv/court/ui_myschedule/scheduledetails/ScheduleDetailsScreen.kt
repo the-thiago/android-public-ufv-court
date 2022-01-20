@@ -108,9 +108,14 @@ private fun ScheduleDetailsScreen(
     action: (ScheduleDetailsAction) -> Unit
 ) {
     Scaffold(topBar = {
-        ScheduleDetailsToolbar(navigateUp, showBottomSheet)
+        ScheduleDetailsToolbar(
+            navigateUp = navigateUp,
+            showBottomSheet = showBottomSheet,
+            isTheOwner = state.isTheOwner,
+            cancelled = state.schedule?.cancelled ?: true
+        )
     }) {
-        if (state.schedule == null) {
+        if (state.placeholder || state.schedule == null) {
             CircularLoading()
         } else {
             Column(
@@ -139,7 +144,17 @@ private fun ScheduleDetailsScreen(
     ErrorTreatment(state.error) {
         action(ScheduleDetailsAction.CleanErrors)
     }
+    ConfirmCancelledDialog(show = state.showCancelledDialog, action = action)
     ConfirmCancellationDialog(show = state.showCancellationDialog, action = action)
+}
+
+@Composable
+private fun ConfirmCancelledDialog(show: Boolean, action: (ScheduleDetailsAction) -> Unit) {
+    if (show) {
+        OneButtonSuccessDialog(message = stringResource(R.string.event_cancelled)) {
+            action(ScheduleDetailsAction.ChangeShowCancelledDialog(false))
+        }
+    }
 }
 
 @Composable
@@ -162,18 +177,29 @@ private fun ConfirmCancellationDialog(show: Boolean, action: (ScheduleDetailsAct
 }
 
 @Composable
-private fun ScheduleDetailsToolbar(navigateUp: () -> Unit, showBottomSheet: () -> Unit) {
+private fun ScheduleDetailsToolbar(
+    navigateUp: () -> Unit,
+    showBottomSheet: () -> Unit,
+    isTheOwner: Boolean,
+    cancelled: Boolean
+) {
     CustomToolbar(
         toolbarText = stringResource(id = R.string.scheduled),
         onLeftButtonClick = navigateUp,
-        rightIcon = {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = null,
-                tint = MaterialTheme.colors.primary
-            )
-        },
-        onRightButtonClick = showBottomSheet
+        rightIcon = if (isTheOwner && !cancelled) {
+            {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary
+                )
+            }
+        } else null,
+        onRightButtonClick = if (isTheOwner && !cancelled) {
+            showBottomSheet
+        } else {
+            {}
+        }
     )
 }
 

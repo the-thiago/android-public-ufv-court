@@ -44,7 +44,8 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
                     .get().addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val schedules = task.result?.documents?.mapNotNull {
-                                it.toObject<ScheduleModel>()
+                                val schedule = it.toObject<ScheduleModel>()
+                                schedule?.copy(id = it.id)
                             } ?: listOf()
                             continuation.resume(schedules)
                         } else {
@@ -81,7 +82,24 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
                 Firebase.firestore.collection(schedulesPath).document(id)
                     .get().addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            continuation.resume(task.result?.toObject() ?: ScheduleModel())
+                            val document = task.result
+                            val schedule = document?.toObject<ScheduleModel>() ?: ScheduleModel()
+                            continuation.resume(schedule.copy(id = document?.id ?: ""))
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
+        }
+    }
+
+    override suspend fun updateSchedule(id: String, newSchedule: ScheduleModel) {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(schedulesPath).document(id).set(newSchedule)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            continuation.resume(Unit)
                         } else {
                             continuation.resumeWithException(task.exception ?: Exception())
                         }

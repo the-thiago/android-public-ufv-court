@@ -28,4 +28,8 @@ internal class ScheduleRepositoryImpl @Inject constructor(
     override suspend fun getSchedule(id: String): ScheduleModel {
         return dataSource.getSchedule(id = id)
     }
+
+    override suspend fun updateSchedule(id: String, newSchedule: ScheduleModel) {
+        return dataSource.updateSchedule(id = id, newSchedule = newSchedule)
+    }
 }
