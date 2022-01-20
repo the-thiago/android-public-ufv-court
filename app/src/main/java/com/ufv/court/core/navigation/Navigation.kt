@@ -38,6 +38,18 @@ sealed class LeafScreen(
         }
     }
 
+    object EditEvent : LeafScreen(Screen.MySchedule, "editevent/{id}") {
+        override val arguments = listOf(
+            navArgument("id") {
+                type = NavType.StringType
+            }
+        )
+
+        fun createRoute(id: String): String {
+            return "${root.route}/editevent/$id"
+        }
+    }
+
     object Home : LeafScreen(Screen.Home, "home")
     object Calendar : LeafScreen(Screen.Home, "calendar")
     object Schedule : LeafScreen(Screen.Home, "schedule/{date}") {

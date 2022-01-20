@@ -71,6 +71,7 @@
     <string name="description_optional">Descrição (opcional)</string>
     <string name="there_are_free_spaces">Há vagas livres:</string>
     <string name="free_spaces">Vagas livres</string>
+    <string name="remaining_free_spaces">Vagas livres restantes</string>
     <string name="schedule_text">Agendar</string>
     <string-array name="ScheduleTypes">
         <item>Futsal</item>
@@ -89,7 +90,10 @@
     <string name="x_free_spaces">%s vagas</string>
     <string name="x_free_space">%s vaga</string>
     <string name="edit_event">Editar evento</string>
+    <string name="editing_event">Editando evento</string>
     <string name="cancel_event">Cancelar evento</string>
     <string name="after_confirm_cant_go_back">Após a confirmação, não será possível voltar atrás</string>
     <string name="event_cancelled">Evento cancelado</string>
+    <string name="save">Salvar</string>
+    <string name="event_saved">O evento foi atualizado</string>
 </resources>

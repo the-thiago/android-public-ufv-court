@@ -8,7 +8,6 @@ data class ScheduleModel(
     val title: String = "",
     val description: String = "",
     val scheduleType: String = "",
-    val hasFreeSpace: Boolean = false,
     val freeSpaces: Int = 0,
     val filledSpaces: Int = 0,
     val cancelled: Boolean = false,

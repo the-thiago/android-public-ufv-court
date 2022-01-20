@@ -5,6 +5,7 @@ import com.ufv.court.core.user_service.domain.model.User
 
 data class ScheduleDetailsViewState(
     val error: Throwable? = null,
+    val scheduleId: String = "",
     val isLoading: Boolean = false,
     val placeholder: Boolean = true,
     val schedule: ScheduleModel? = null,

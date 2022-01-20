@@ -17,6 +17,7 @@ import com.ufv.court.ui_home.schedule.ScheduleScreen
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
+import com.ufv.court.ui_myschedule.editevent.EditEventScreen
 import com.ufv.court.ui_myschedule.myschedule.MyScheduleScreen
 import com.ufv.court.ui_myschedule.scheduledetails.ScheduleDetailsScreen
 import com.ufv.court.ui_profile.changepasword.ChangePasswordScreen
@@ -146,6 +147,7 @@ fun NavGraphBuilder.addMyScheduleTopLevel(navController: NavController) {
     ) {
         addMySchedule(navController)
         addScheduleDetails(navController)
+        addEditEvent(navController)
     }
 }
 
@@ -163,7 +165,21 @@ fun NavGraphBuilder.addMySchedule(navController: NavController) {
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.addScheduleDetails(navController: NavController) {
     composable(LeafScreen.ScheduleDetails.createRoute()) {
-        ScheduleDetailsScreen(navController::navigateUp)
+        ScheduleDetailsScreen(
+            navigateUp = navController::navigateUp,
+            openEditEvent = {
+                navController.navigate(LeafScreen.EditEvent.createRoute(id = it)) {
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addEditEvent(navController: NavController) {
+    composable(LeafScreen.EditEvent.createRoute()) {
+        EditEventScreen(navController::navigateUp)
     }
 }
 

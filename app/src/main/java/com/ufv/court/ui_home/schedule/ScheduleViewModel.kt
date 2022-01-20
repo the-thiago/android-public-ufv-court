@@ -193,7 +193,6 @@ class ScheduleViewModel @Inject constructor(
                     title = state.value.title,
                     description = state.value.description,
                     scheduleType = state.value.scheduleType,
-                    hasFreeSpace = state.value.hasFreeSpace,
                     freeSpaces = getFreeSpaces(),
                     timeInMillis = calendar.timeInMillis
                 )

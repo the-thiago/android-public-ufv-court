@@ -32,7 +32,7 @@ class ScheduleDetailsViewModel @Inject constructor(
     private val scheduleId: String = savedStateHandle.get<String>("id") ?: ""
 
     init {
-        getScheduleAndUser()
+        _state.value = state.value.copy(scheduleId = scheduleId)
         handleActions()
     }
 
@@ -73,6 +73,7 @@ class ScheduleDetailsViewModel @Inject constructor(
                     is ScheduleDetailsAction.ChangeShowCancelledDialog -> {
                         _state.value = state.value.copy(showCancelledDialog = action.show)
                     }
+                    ScheduleDetailsAction.ReloadData -> getScheduleAndUser()
                 }
             }
         }

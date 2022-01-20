@@ -8,14 +8,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
@@ -23,21 +23,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun ScheduleDetailsScreen(navigateUp: () -> Unit) {
-    ScheduleDetailsScreen(hiltViewModel(), navigateUp)
+fun ScheduleDetailsScreen(navigateUp: () -> Unit, openEditEvent: (String) -> Unit) {
+    ScheduleDetailsScreen(hiltViewModel(), navigateUp, openEditEvent)
 }
 
 @Composable
 private fun ScheduleDetailsScreen(
     viewModel: ScheduleDetailsViewModel,
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
+    openEditEvent: (String) -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = ScheduleDetailsViewState.Empty)
 
     ScheduleDetailsScreen(
         state = viewState,
-        navigateUp = navigateUp
+        navigateUp = navigateUp,
+        openEditEvent = openEditEvent
     ) { action ->
         viewModel.submitAction(action)
     }
@@ -48,6 +50,7 @@ private fun ScheduleDetailsScreen(
 private fun ScheduleDetailsScreen(
     state: ScheduleDetailsViewState,
     navigateUp: () -> Unit,
+    openEditEvent: (String) -> Unit,
     action: (ScheduleDetailsAction) -> Unit
 ) {
     val modalBottomSheetState = rememberModalBottomSheetState(
@@ -57,7 +60,12 @@ private fun ScheduleDetailsScreen(
     ModalBottomSheetLayout(
         sheetState = modalBottomSheetState,
         sheetContent = {
-            ScheduleDetailsBottomSheet(scope, modalBottomSheetState, action)
+            ScheduleDetailsBottomSheet(
+                scope = scope,
+                modalBottomSheetState = modalBottomSheetState,
+                action = action,
+                openEditEvent = { openEditEvent(state.scheduleId) }
+            )
         }
     ) {
         ScheduleDetailsScreen(
@@ -74,7 +82,8 @@ private fun ScheduleDetailsScreen(
 private fun ScheduleDetailsBottomSheet(
     scope: CoroutineScope,
     modalBottomSheetState: ModalBottomSheetState,
-    action: (ScheduleDetailsAction) -> Unit
+    action: (ScheduleDetailsAction) -> Unit,
+    openEditEvent: () -> Unit
 ) {
     CustomBottomSheetContent(
         onHideBottomSheet = { scope.launch { modalBottomSheetState.hide() } }
@@ -86,7 +95,7 @@ private fun ScheduleDetailsBottomSheet(
             imageVector = Icons.Outlined.Edit
         ) {
             scope.launch { modalBottomSheetState.hide() }
-//            action(FilesAction.CheckPermission(true))
+            openEditEvent()
         }
         HorizontalDivisor(modifier = Modifier.padding(start = 16.dp))
         CustomBottomSheetOption(
@@ -146,6 +155,23 @@ private fun ScheduleDetailsScreen(
     }
     ConfirmCancelledDialog(show = state.showCancelledDialog, action = action)
     ConfirmCancellationDialog(show = state.showCancellationDialog, action = action)
+    OnLifecycleEvent(action = action)
+}
+
+@Composable
+private fun OnLifecycleEvent(action: (ScheduleDetailsAction) -> Unit) {
+    val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
+    DisposableEffect(lifecycleOwner) {
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                action(ScheduleDetailsAction.ReloadData)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+        }
+    }
 }
 
 @Composable
