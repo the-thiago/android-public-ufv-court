@@ -1,5 +1,6 @@
 package com.ufv.court.core.user_service.data.repositories
 
+import android.net.Uri
 import com.ufv.court.core.user_service.data.data_sources.UserDataSource
 import com.ufv.court.core.user_service.data_remote.request.RegisterUser
 import com.ufv.court.core.user_service.domain.model.UserModel
@@ -40,5 +41,9 @@ internal class UserRepositoryImpl @Inject constructor(
 
     override suspend fun resetPassword(email: String) {
         dataSource.resetPassword(email = email)
+    }
+
+    override suspend fun updateUser(user: UserModel, imageUri: Uri?) {
+        dataSource.updateUser(user = user, imageUri = imageUri)
     }
 }

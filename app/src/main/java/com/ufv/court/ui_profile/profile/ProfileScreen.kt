@@ -1,11 +1,8 @@
 package com.ufv.court.ui_profile.profile
 
-import android.graphics.Bitmap
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -17,24 +14,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberImagePainter
 import com.ufv.court.R
 import com.ufv.court.app.theme.BlackRock
 import com.ufv.court.app.theme.Manatee
 import com.ufv.court.app.theme.ShipCove
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
-import com.ufv.court.core.ui.components.HorizontalDivisor
-import com.ufv.court.core.ui.components.OneButtonErrorDialog
-import com.ufv.court.core.ui.components.TwoButtonsDialog
+import com.ufv.court.core.ui.components.*
 
 @Composable
 fun ProfileScreen(
@@ -78,27 +69,31 @@ private fun ProfileScreen(
     openEditProfile: () -> Unit,
     action: (ProfileAction) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .padding(bottom = 56.dp) // toolbar height
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        ProfileTopBar(state)
-        ProfileHorizontalDivisor()
-        ChangePasswordItem(onClick = openChangePassword)
-        ProfileHorizontalDivisor()
-        ChangePersonalDataItem(onClick = openEditProfile)
-        ProfileHorizontalDivisor()
-        TermsItem {
+    if (state.placeholder) {
+        CircularLoading()
+    } else {
+        Column(
+            modifier = Modifier
+                .padding(bottom = 56.dp) // toolbar height
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            ProfileTopBar(state)
+            ProfileHorizontalDivisor()
+            ChangePasswordItem(onClick = openChangePassword)
+            ProfileHorizontalDivisor()
+            ChangePersonalDataItem(onClick = openEditProfile)
+            ProfileHorizontalDivisor()
+            TermsItem {
+            }
+            ProfileHorizontalDivisor()
+            VersionItem {
+            }
+            ProfileHorizontalDivisor()
+            LogoutItem(onClick = { action(ProfileAction.ChangeShowConfirmLogoutDialog(true)) })
+            Spacer(modifier = Modifier.height(16.dp))
         }
-        ProfileHorizontalDivisor()
-        VersionItem {
-        }
-        ProfileHorizontalDivisor()
-        LogoutItem(onClick = { action(ProfileAction.ChangeShowConfirmLogoutDialog(true)) })
-        Spacer(modifier = Modifier.height(16.dp))
     }
     ConfirmLogoutDialog(
         showDialog = state.showConfirmLogoutDialog,
@@ -117,50 +112,6 @@ private fun ProfileTopBar(state: ProfileViewState) {
     Spacer(modifier = Modifier.height(4.dp))
     Text(text = state.email, style = MaterialTheme.typography.body1, color = ShipCove)
     Spacer(modifier = Modifier.height(32.dp))
-}
-
-@Composable
-private fun RoundedImage(image: String) {
-//    val bitmap: Bitmap = MediaStore.Images.Media.getBitmap(
-//        LocalContext.current.contentResolver, Uri.parse(uri.path)
-//    )
-
-//
-
-//    AndroidView(modifier = Modifier.size(60.dp),
-//        factory = {
-//        ImageView(it).apply {
-//            this.setImageURI(uri)
-//        }
-//    },
-//        update = {
-//            it.setImageURI(uri)
-//        }
-//    )
-
-
-    Image(
-        modifier = Modifier
-            .size(152.dp)
-            .clip(CircleShape),
-        painter = rememberImagePainter(
-            data = image,
-            builder = {
-                placeholder(R.drawable.user_photo_placeholder)
-                error(R.drawable.user_photo_placeholder)
-            }
-        ),
-        contentScale = ContentScale.Crop,
-        contentDescription = null
-    )
-//    Image(
-//        modifier = Modifier
-//            .size(152.dp)
-//            .clip(CircleShape),
-//        bitmap = ImageBitmap(),
-//        contentScale = ContentScale.Crop,
-//        contentDescription = null
-//    )
 }
 
 @Composable

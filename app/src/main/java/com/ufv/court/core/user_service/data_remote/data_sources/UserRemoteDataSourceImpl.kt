@@ -275,4 +275,89 @@ internal class UserRemoteDataSourceImpl @Inject constructor() : UserDataSource {
             }
         }
     }
+
+    override suspend fun updateUser(user: UserModel, imageUri: Uri?) {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(usersPath).whereEqualTo("id", user.id)
+                    .limit(1)
+                    .get()
+                    .addOnCompleteListener { task -> // getting user data id
+                        if (task.isSuccessful) {
+                            val documents = task.result?.documents
+                            if (documents?.isNotEmpty() == true) {
+                                if (imageUri != null) {
+                                    FirebaseStorage.getInstance().reference
+                                        .child("images/user/${Firebase.auth.currentUser?.uid}/profile")
+                                        .putFile(imageUri)
+                                        .addOnCompleteListener { photoTask ->
+                                            if (photoTask.isSuccessful) {
+                                                photoTask.result?.storage?.downloadUrl?.addOnCompleteListener { urlTask ->
+                                                    if (urlTask.isSuccessful) {
+                                                        Firebase.firestore.collection(usersPath)
+                                                            .document(documents[0].id)
+                                                            .set(user.copy(image = urlTask.result.toString()))
+                                                            .addOnCompleteListener { updateTask ->
+                                                                if (updateTask.isSuccessful) {
+                                                                    continuation.resume(Unit)
+                                                                } else {
+                                                                    continuation.resumeWithException(
+                                                                        task.exception
+                                                                            ?: Exception()
+                                                                    )
+                                                                }
+                                                            }
+                                                    } else {
+                                                        Firebase.firestore.collection(usersPath)
+                                                            .document(documents[0].id)
+                                                            .set(user)
+                                                            .addOnCompleteListener { updateTask ->
+                                                                if (updateTask.isSuccessful) {
+                                                                    continuation.resume(Unit)
+                                                                } else {
+                                                                    continuation.resumeWithException(
+                                                                        task.exception
+                                                                            ?: Exception()
+                                                                    )
+                                                                }
+                                                            }
+                                                    }
+                                                }
+                                            } else {
+                                                Firebase.firestore.collection(usersPath)
+                                                    .document(documents[0].id)
+                                                    .set(user).addOnCompleteListener { updateTask ->
+                                                        if (updateTask.isSuccessful) {
+                                                            continuation.resume(Unit)
+                                                        } else {
+                                                            continuation.resumeWithException(
+                                                                task.exception ?: Exception()
+                                                            )
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                } else {
+                                    Firebase.firestore.collection(usersPath)
+                                        .document(documents[0].id)
+                                        .set(user).addOnCompleteListener { updateTask ->
+                                            if (updateTask.isSuccessful) {
+                                                continuation.resume(Unit)
+                                            } else {
+                                                continuation.resumeWithException(
+                                                    task.exception ?: Exception()
+                                                )
+                                            }
+                                        }
+                                }
+                            } else {
+                                continuation.resumeWithException(task.exception ?: Exception())
+                            }
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
+        }
+    }
 }

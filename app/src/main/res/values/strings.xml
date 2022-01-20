@@ -97,4 +97,5 @@
     <string name="save">Salvar</string>
     <string name="event_saved">O evento foi atualizado</string>
     <string name="there_is_no_description">Não há descrição</string>
+    <string name="profile_saved">Perfil salvo!</string>
 </resources>

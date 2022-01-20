@@ -27,6 +27,10 @@ class ProfileViewModel @Inject constructor(
 
     init {
         getCurrentUser()
+        handleActions()
+    }
+
+    private fun handleActions() {
         viewModelScope.launch {
             pendingActions.collect { action ->
                 when (action) {
@@ -47,7 +51,8 @@ class ProfileViewModel @Inject constructor(
                 _state.value = state.value.copy(
                     email = result.data.email,
                     name = result.data.name,
-                    image = result.data.image
+                    image = result.data.image,
+                    placeholder = false
                 )
             }
         }

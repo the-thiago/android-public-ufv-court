@@ -1,5 +1,6 @@
 package com.ufv.court.core.user_service.data.data_sources
 
+import android.net.Uri
 import com.ufv.court.core.user_service.data_remote.request.RegisterUser
 import com.ufv.court.core.user_service.domain.model.UserModel
 
@@ -20,4 +21,6 @@ interface UserDataSource {
     suspend fun changePassword(oldPassword: String, newPassword: String)
 
     suspend fun resetPassword(email: String)
+
+    suspend fun updateUser(user: UserModel, imageUri: Uri?)
 }

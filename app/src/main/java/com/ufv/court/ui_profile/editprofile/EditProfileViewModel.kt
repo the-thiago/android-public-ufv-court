@@ -2,6 +2,10 @@ package com.ufv.court.ui_profile.editprofile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.user_service.domain.model.UserModel
+import com.ufv.court.core.user_service.domain.usecase.GetCurrentUserUseCase
+import com.ufv.court.core.user_service.domain.usecase.UpdateUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val updateUserUseCase: UpdateUserUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<EditProfileAction>()
@@ -21,12 +26,72 @@ class EditProfileViewModel @Inject constructor(
         MutableStateFlow(EditProfileViewState.Empty)
     val state: StateFlow<EditProfileViewState> = _state
 
+    private var oldUser: UserModel? = null
+
     init {
+        getCurrentUser()
+        handleActions()
+    }
+
+    private fun handleActions() {
         viewModelScope.launch {
             pendingActions.collect { action ->
                 when (action) {
                     EditProfileAction.CleanErrors -> _state.value = state.value.copy(error = null)
+                    is EditProfileAction.ChangeImageUri -> {
+                        _state.value = state.value.copy(newImageUri = action.uri)
+                    }
+                    is EditProfileAction.ChangeName -> {
+                        _state.value = state.value.copy(name = action.name)
+                    }
+                    EditProfileAction.SaveProfile -> saveProfile()
                 }
+            }
+        }
+    }
+
+    private fun saveProfile() {
+        viewModelScope.launch {
+            if (validInfo()) {
+                _state.value = state.value.copy(isLoading = true)
+                val oldUser = oldUser ?: return@launch
+                val result = updateUserUseCase(
+                    UpdateUserUseCase.Params(
+                        user = oldUser.copy(name = state.value.name),
+                        imageUri = state.value.newImageUri
+                    )
+                )
+                if (result is Result.Success) {
+                    _state.value = state.value.copy(isLoading = false, profileEditedDialog = true)
+                } else if (result is Result.Error) {
+                    _state.value = state.value.copy(isLoading = false, error = result.exception)
+                }
+            }
+        }
+    }
+
+    private fun validInfo(): Boolean {
+        return with(state.value) {
+            if (name.isBlank()) {
+                _state.value = state.value.copy(error = EditProfileError.EmptyField)
+                return@with false
+            }
+            return@with true
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            val result = getCurrentUserUseCase(Unit)
+            if (result is Result.Success) {
+                oldUser = result.data
+                _state.value = state.value.copy(
+                    name = result.data.name,
+                    currentImage = result.data.image,
+                    placeholder = false
+                )
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception)
             }
         }
     }
