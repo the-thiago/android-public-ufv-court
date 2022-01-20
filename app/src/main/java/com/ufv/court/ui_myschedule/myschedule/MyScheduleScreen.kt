@@ -12,6 +12,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,9 +31,9 @@ import com.ufv.court.app.theme.ShipCove
 import com.ufv.court.app.theme.Solitude
 import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
+import com.ufv.court.core.ui.components.HorizontalDivisor
 import com.ufv.court.core.ui.components.OneButtonErrorDialog
 import com.ufv.court.core.ui.components.TimeInMillisDateInfo
-import java.util.*
 
 @Composable
 fun MyScheduleScreen(openScheduleDetails: (String) -> Unit) {
@@ -77,6 +78,7 @@ private fun MyScheduleScreen(
                 }
             }
         }
+        HorizontalDivisor(modifier = Modifier.padding(start = 16.dp))
         ExpandableSection(textRes = R.string.times_scheduled) {
             if (state.scheduled.isEmpty()) {
                 NoScheduleHereText()
@@ -106,13 +108,24 @@ private fun ScheduledItem(scheduleModel: ScheduleModel, onClick: () -> Unit) {
             .clickable { onClick() }
             .padding(16.dp)
     ) {
-        Text(
-            text = scheduleModel.title,
-            style = MaterialTheme.typography.h6,
-            color = BlackRock,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = scheduleModel.title,
+                style = MaterialTheme.typography.h6,
+                color = BlackRock,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (scheduleModel.cancelled) {
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Default.EventBusy,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary
+                )
+            }
+        }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
                 text = scheduleModel.scheduleType,
@@ -153,10 +166,14 @@ private fun ErrorTreatment(error: Throwable?, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun ExpandableSection(textRes: Int, content: @Composable ColumnScope.() -> Unit) {
+private fun ExpandableSection(
+    modifier: Modifier = Modifier,
+    textRes: Int,
+    content: @Composable ColumnScope.() -> Unit
+) {
     var expanded by rememberSaveable { mutableStateOf(true) }
     val arrowIconRotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
-    Column {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .clickable { expanded = !expanded }

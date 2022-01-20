@@ -9,9 +9,11 @@ import androidx.compose.material.icons.filled.EventBusy
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -131,22 +133,73 @@ private fun ScheduleDetailsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
             ) {
+                Text(
+                    text = state.schedule.title,
+                    style = MaterialTheme.typography.h5,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (state.schedule.cancelled) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.EventBusy,
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.primary
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.event_cancelled),
+                            style = MaterialTheme.typography.button,
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = state.schedule.title)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    TimeInMillisDateInfo(state.schedule.timeInMillis) { day, month, year ->
+                        Text(
+                            text = "${day}/${month}/${year}",
+                            style = MaterialTheme.typography.button
+                        )
+                    }
+                    Text(
+                        text = stringResource(
+                            id = R.string.schedule_hours,
+                            state.schedule.hourStart.toString().padStart(2, '0'),
+                            state.schedule.hourEnd.toString().padStart(2, '0'),
+                        ),
+                        style = MaterialTheme.typography.button
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "todo")
-                //        val freeSpaceId by remember(scheduleModel.freeSpaces) {
-//            if (scheduleModel.freeSpaces > "1") {
-//                mutableStateOf(R.string.x_free_spaces)
-//            } else {
-//                mutableStateOf(R.string.x_free_space)
-//            }
-//        }
-//        Text(
-//            text = stringResource(id = freeSpaceId, scheduleModel.freeSpaces),
-//            style = MaterialTheme.typography.button
-//        )
+                val freeSpaceId by remember(state.schedule.freeSpaces) {
+                    if (state.schedule.freeSpaces > 1) {
+                        mutableStateOf(R.string.x_free_spaces)
+                    } else {
+                        mutableStateOf(R.string.x_free_space)
+                    }
+                }
+                Text(
+                    text = "${state.schedule.scheduleType} - ${
+                        stringResource(id = freeSpaceId, state.schedule.freeSpaces)
+                    }",
+                    style = MaterialTheme.typography.button
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = if (state.schedule.description.isBlank()) {
+                        stringResource(id = R.string.there_is_no_description)
+                    } else state.schedule.description,
+                    style = MaterialTheme.typography.body1
+                )
+
             }
         }
     }
@@ -210,7 +263,7 @@ private fun ScheduleDetailsToolbar(
     cancelled: Boolean
 ) {
     CustomToolbar(
-        toolbarText = stringResource(id = R.string.scheduled),
+        toolbarText = stringResource(id = R.string.event),
         onLeftButtonClick = navigateUp,
         rightIcon = if (isTheOwner && !cancelled) {
             {

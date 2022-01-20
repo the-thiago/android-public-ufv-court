@@ -55,6 +55,8 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
             suspendCoroutine { continuation ->
                 Firebase.firestore.collection(schedulesPath)
                     .whereEqualTo("ownerId", Firebase.auth.currentUser?.uid ?: "x")
+                    .orderBy("timeInMillis")
+                    .orderBy("hourStart")
                     .get().addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val schedules = task.result?.documents?.mapNotNull {

@@ -59,8 +59,9 @@ class ScheduleViewModel @Inject constructor(
             )
             if (result is Result.Success) {
                 var schedules = getPossibleSchedulesTimes()
+                val notCancelledEvents = result.data.filter { !it.cancelled }
                 schedules = schedules.map { it ->
-                    for (scheduled in result.data) {
+                    for (scheduled in notCancelledEvents) {
                         val itHourEnd = if (it.hourEnd == 0) 24 else it.hourEnd
                         val scheduledHourEnd = if (scheduled.hourEnd == 0) 24 else scheduled.hourEnd
                         if (it.hourStart >= scheduled.hourStart && itHourEnd <= scheduledHourEnd) {
