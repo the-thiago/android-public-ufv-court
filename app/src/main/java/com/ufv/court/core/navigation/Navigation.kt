@@ -25,7 +25,7 @@ sealed class LeafScreen(
     object ForgotPassword : LeafScreen(Screen.Login, "forgotpassword")
 
     object MySchedule : LeafScreen(Screen.MySchedule, "myschedule")
-    object ScheduleDetails : LeafScreen(Screen.MySchedule, "scheduledetails/{id}") {
+    class ScheduleDetails(screen: Screen) : LeafScreen(screen, "scheduledetails/{id}") {
 
         override val arguments = listOf(
             navArgument("id") {

@@ -23,20 +23,29 @@ import com.ufv.court.core.ui.components.ScheduledItem
 @Composable
 fun HomeScreen(
     openCalendar: () -> Unit,
+    openScheduleDetails: (String) -> Unit,
 ) {
     HomeScreen(
         viewModel = hiltViewModel(),
-        openCalendar = openCalendar
+        openCalendar = openCalendar,
+        openScheduleDetails = openScheduleDetails
     )
 }
 
-
 @Composable
-private fun HomeScreen(viewModel: HomeViewModel, openCalendar: () -> Unit) {
+private fun HomeScreen(
+    viewModel: HomeViewModel,
+    openCalendar: () -> Unit,
+    openScheduleDetails: (String) -> Unit
+) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = HomeViewState.Empty)
 
-    HomeScreen(viewState, openCalendar) { action ->
+    HomeScreen(
+        state = viewState,
+        openCalendar = openCalendar,
+        openScheduleDetails = openScheduleDetails
+    ) { action ->
         viewModel.submitAction(action)
     }
 }
@@ -45,6 +54,7 @@ private fun HomeScreen(viewModel: HomeViewModel, openCalendar: () -> Unit) {
 private fun HomeScreen(
     state: HomeViewState,
     openCalendar: () -> Unit,
+    openScheduleDetails: (String) -> Unit,
     action: (HomeAction) -> Unit
 ) {
     LazyColumn(
@@ -59,9 +69,15 @@ private fun HomeScreen(
                 openCalendar()
             }
         }
+        item {
+            Text(
+                text = stringResource(R.string.join_a_event),
+                style = MaterialTheme.typography.h5
+            )
+        }
         items(state.schedules) {
             ScheduledItem(it) {
-                // todo
+                openScheduleDetails(it.id)
             }
         }
     }

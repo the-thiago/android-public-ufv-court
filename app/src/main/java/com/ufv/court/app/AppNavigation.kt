@@ -101,6 +101,7 @@ fun NavGraphBuilder.addHomeTopLevel(navController: NavController) {
         addHome(navController)
         addCalendar(navController)
         addSchedule(navController)
+        addScheduleDetails(screen = Screen.Home, navController = navController)
     }
 }
 
@@ -110,6 +111,13 @@ fun NavGraphBuilder.addHome(navController: NavController) {
         HomeScreen(
             openCalendar = {
                 navController.navigate(LeafScreen.Calendar.createRoute()) {
+                    launchSingleTop = true
+                }
+            },
+            openScheduleDetails = { scheduleId ->
+                navController.navigate(
+                    LeafScreen.ScheduleDetails(Screen.Home).createRoute(id = scheduleId)
+                ) {
                     launchSingleTop = true
                 }
             }
@@ -146,7 +154,7 @@ fun NavGraphBuilder.addMyScheduleTopLevel(navController: NavController) {
         startDestination = LeafScreen.MySchedule.createRoute()
     ) {
         addMySchedule(navController)
-        addScheduleDetails(navController)
+        addScheduleDetails(screen = Screen.MySchedule, navController = navController)
         addEditEvent(navController)
     }
 }
@@ -155,7 +163,9 @@ fun NavGraphBuilder.addMyScheduleTopLevel(navController: NavController) {
 fun NavGraphBuilder.addMySchedule(navController: NavController) {
     composable(LeafScreen.MySchedule.createRoute()) {
         MyScheduleScreen(openScheduleDetails = {
-            navController.navigate(LeafScreen.ScheduleDetails.createRoute(id = it)) {
+            navController.navigate(
+                LeafScreen.ScheduleDetails(Screen.MySchedule).createRoute(id = it)
+            ) {
                 launchSingleTop = true
             }
         })
@@ -163,8 +173,8 @@ fun NavGraphBuilder.addMySchedule(navController: NavController) {
 }
 
 @OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.addScheduleDetails(navController: NavController) {
-    composable(LeafScreen.ScheduleDetails.createRoute()) {
+fun NavGraphBuilder.addScheduleDetails(screen: Screen, navController: NavController) {
+    composable(LeafScreen.ScheduleDetails(screen).createRoute()) {
         ScheduleDetailsScreen(
             navigateUp = navController::navigateUp,
             openEditEvent = {

@@ -98,4 +98,5 @@
     <string name="event_saved">O evento foi atualizado</string>
     <string name="there_is_no_description">Não há descrição</string>
     <string name="profile_saved">Perfil salvo!</string>
+    <string name="join_a_event">Se junte a um evento...</string>
 </resources>
