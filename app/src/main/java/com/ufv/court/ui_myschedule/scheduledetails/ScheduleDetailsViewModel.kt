@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -75,6 +74,9 @@ class ScheduleDetailsViewModel @Inject constructor(
                         _state.value = state.value.copy(showCancelledDialog = action.show)
                     }
                     ScheduleDetailsAction.ReloadData -> getScheduleAndUser()
+                    ScheduleDetailsAction.ParticipateClick -> {
+                        // TODO
+                    }
                 }
             }
         }

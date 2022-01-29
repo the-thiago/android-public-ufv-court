@@ -6,4 +6,5 @@ sealed class ScheduleDetailsAction {
     data class ChangeShowCancelledDialog(val show: Boolean) : ScheduleDetailsAction()
     object ConfirmEventCancellation : ScheduleDetailsAction()
     object ReloadData : ScheduleDetailsAction()
+    object ParticipateClick : ScheduleDetailsAction()
 }

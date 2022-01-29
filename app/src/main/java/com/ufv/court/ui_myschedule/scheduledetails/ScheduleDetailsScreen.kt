@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.ufv.court.R
+import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 import kotlinx.coroutines.CoroutineScope
@@ -135,71 +136,10 @@ private fun ScheduleDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                Text(
-                    text = state.schedule.title,
-                    style = MaterialTheme.typography.h5,
-                    maxLines = 3,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (state.schedule.cancelled) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.EventBusy,
-                            contentDescription = null,
-                            tint = MaterialTheme.colors.primary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(id = R.string.event_cancelled),
-                            style = MaterialTheme.typography.button,
-                            color = MaterialTheme.colors.primary
-                        )
-                    }
+                ScheduleInfo(state.schedule)
+                if (!state.isTheOwner && state.schedule.hasFreeSpace) {
+                    ParticipateButton(isLoading = state.isLoading, action = action)
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    TimeInMillisDateInfo(state.schedule.timeInMillis) { day, month, year ->
-                        Text(
-                            text = "${day}/${month}/${year}",
-                            style = MaterialTheme.typography.button
-                        )
-                    }
-                    Text(
-                        text = stringResource(
-                            id = R.string.schedule_hours,
-                            state.schedule.hourStart.toString().padStart(2, '0'),
-                            state.schedule.hourEnd.toString().padStart(2, '0'),
-                        ),
-                        style = MaterialTheme.typography.button
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                val freeSpaceId by remember(state.schedule.freeSpaces) {
-                    if (state.schedule.freeSpaces > 1) {
-                        mutableStateOf(R.string.x_free_spaces)
-                    } else {
-                        mutableStateOf(R.string.x_free_space)
-                    }
-                }
-                Text(
-                    text = "${state.schedule.scheduleType} - ${
-                        stringResource(id = freeSpaceId, state.schedule.freeSpaces)
-                    }",
-                    style = MaterialTheme.typography.button
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = if (state.schedule.description.isBlank()) {
-                        stringResource(id = R.string.there_is_no_description)
-                    } else state.schedule.description,
-                    style = MaterialTheme.typography.body1
-                )
-
             }
         }
     }
@@ -209,6 +149,91 @@ private fun ScheduleDetailsScreen(
     ConfirmCancelledDialog(show = state.showCancelledDialog, action = action)
     ConfirmCancellationDialog(show = state.showCancellationDialog, action = action)
     OnLifecycleEvent(action = action)
+}
+
+@Composable
+private fun ParticipateButton(isLoading: Boolean, action: (ScheduleDetailsAction) -> Unit) {
+    Spacer(modifier = Modifier.height(32.dp))
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        LoadingButton(
+            isLoading = isLoading,
+            buttonText = stringResource(R.string.participate)
+        ) {
+            action(ScheduleDetailsAction.ParticipateClick)
+        }
+    }
+    Spacer(modifier = Modifier.height(24.dp))
+}
+
+@Composable
+private fun ScheduleInfo(schedule: ScheduleModel) {
+    Text(
+        text = schedule.title,
+        style = MaterialTheme.typography.h5,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis
+    )
+    if (schedule.cancelled) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = Icons.Default.EventBusy,
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(id = R.string.event_cancelled),
+                style = MaterialTheme.typography.button,
+                color = MaterialTheme.colors.primary
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        TimeInMillisDateInfo(schedule.timeInMillis) { day, month, year ->
+            Text(
+                text = "${day}/${month}/${year}",
+                style = MaterialTheme.typography.button
+            )
+        }
+        Text(
+            text = stringResource(
+                id = R.string.schedule_hours,
+                schedule.hourStart.toString().padStart(2, '0'),
+                schedule.hourEnd.toString().padStart(2, '0'),
+            ),
+            style = MaterialTheme.typography.button
+        )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+    val freeSpaceId by remember(schedule.freeSpaces) {
+        if (schedule.freeSpaces > 1) {
+            mutableStateOf(R.string.x_free_spaces)
+        } else {
+            mutableStateOf(R.string.x_free_space)
+        }
+    }
+    Text(
+        text = "${schedule.scheduleType} - ${
+            stringResource(id = freeSpaceId, schedule.freeSpaces)
+        }",
+        style = MaterialTheme.typography.button
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = if (schedule.description.isBlank()) {
+            stringResource(id = R.string.there_is_no_description)
+        } else schedule.description,
+        style = MaterialTheme.typography.body1
+    )
 }
 
 @Composable
