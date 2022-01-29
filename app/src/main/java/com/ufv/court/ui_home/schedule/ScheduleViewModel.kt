@@ -185,6 +185,7 @@ class ScheduleViewModel @Inject constructor(
                 _state.value = state.value.copy(isLoading = true)
                 val splitDate = state.value.date.split("/")
                 val selectedTimes = state.value.schedules.filter { it.selected }
+                val freeSpace = getFreeSpaces()
                 val newTime = ScheduleModel(
                     ownerId = FirebaseAuth.getInstance().currentUser?.uid ?: "",
                     hourStart = selectedTimes[0].hourStart,
@@ -192,12 +193,13 @@ class ScheduleViewModel @Inject constructor(
                     title = state.value.title,
                     description = state.value.description,
                     scheduleType = state.value.scheduleType,
-                    freeSpaces = getFreeSpaces(),
+                    freeSpaces = freeSpace,
                     timeInMillis = getTimeInMillisFromDate(
                         day = splitDate[0].toInt(),
                         month = splitDate[1].toInt(),
                         year = splitDate[2].toInt()
-                    )
+                    ),
+                    hasFreeSpace = freeSpace != 0
                 )
                 val result = createScheduleUseCase(CreateScheduleUseCase.Params(newTime))
                 if (result is Result.Success) {

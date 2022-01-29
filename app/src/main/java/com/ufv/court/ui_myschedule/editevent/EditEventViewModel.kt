@@ -39,11 +39,10 @@ class EditEventViewModel @Inject constructor(
             val result = getScheduleUseCase(GetScheduleUseCase.Params(id = scheduleId))
             if (result is Result.Success) {
                 val schedule = result.data
-                val remainingFreeSpaces = schedule.freeSpaces - schedule.filledSpaces
                 _state.value = state.value.copy(
                     schedule = schedule,
                     placeholder = false,
-                    remainingFreeSpaces = remainingFreeSpaces.toString()
+                    remainingFreeSpaces = schedule.freeSpaces.toString()
                 )
             } else if (result is Result.Error) {
                 _state.value = state.value.copy(error = result.exception)
@@ -94,7 +93,8 @@ class EditEventViewModel @Inject constructor(
             if (validInfo() && schedule != null) {
                 _state.value = state.value.copy(isLoading = true)
                 val newSchedule = schedule.copy(
-                    freeSpaces = schedule.filledSpaces + state.value.remainingFreeSpaces.toInt()
+                    freeSpaces = state.value.remainingFreeSpaces.toInt(),
+                    hasFreeSpace = state.value.remainingFreeSpaces.toInt() != 0
                 )
                 val result = updateScheduleUseCase(
                     UpdateScheduleUseCase.Params(

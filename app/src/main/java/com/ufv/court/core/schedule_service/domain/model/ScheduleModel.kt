@@ -9,7 +9,7 @@ data class ScheduleModel(
     val description: String = "",
     val scheduleType: String = "",
     val freeSpaces: Int = 0,
-    val filledSpaces: Int = 0,
+    val hasFreeSpace: Boolean = false,
     val cancelled: Boolean = false,
     val timeInMillis: Long = -1L // millis
 )

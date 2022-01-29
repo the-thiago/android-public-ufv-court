@@ -13,4 +13,6 @@ interface ScheduleRepository {
     suspend fun getSchedule(id: String): ScheduleModel
 
     suspend fun updateSchedule(id: String, newSchedule: ScheduleModel)
+
+    suspend fun getSchedulesFreeSpace(): List<ScheduleModel>
 }

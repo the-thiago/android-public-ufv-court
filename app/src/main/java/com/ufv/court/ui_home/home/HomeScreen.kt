@@ -2,9 +2,9 @@ package com.ufv.court.ui_home.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
+import com.ufv.court.core.ui.components.ScheduledItem
 
 @Composable
 fun HomeScreen(
@@ -46,16 +47,22 @@ private fun HomeScreen(
     openCalendar: () -> Unit,
     action: (HomeAction) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .padding(bottom = 56.dp) // toolbar height
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState())
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        HeaderCreateEvent {
-            openCalendar()
+        item {
+            HeaderCreateEvent {
+                openCalendar()
+            }
+        }
+        items(state.schedules) {
+            ScheduledItem(it) {
+                // todo
+            }
         }
     }
 }
