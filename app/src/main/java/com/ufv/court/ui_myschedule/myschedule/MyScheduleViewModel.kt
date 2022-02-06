@@ -3,6 +3,7 @@ package com.ufv.court.ui_myschedule.myschedule
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.schedule_service.domain.usecases.GetScheduledAsParticipantUseCase
 import com.ufv.court.core.schedule_service.domain.usecases.GetScheduledByUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -10,12 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class MyScheduleViewModel @Inject constructor(
-    val getScheduledByUserUseCase: GetScheduledByUserUseCase
+    private val getScheduledByUserUseCase: GetScheduledByUserUseCase,
+    private val getScheduledAsParticipantUseCase: GetScheduledAsParticipantUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<MyScheduleAction>()
@@ -26,7 +27,19 @@ class MyScheduleViewModel @Inject constructor(
 
     init {
         handleActions()
+        getScheduledAsParticipant()
         getScheduled()
+    }
+
+    private fun getScheduledAsParticipant() {
+        viewModelScope.launch {
+            val result = getScheduledAsParticipantUseCase(Unit)
+            if (result is Result.Success) {
+                _state.value = state.value.copy(scheduledAsParticipant = result.data)
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception)
+            }
+        }
     }
 
     private fun getScheduled() {

@@ -137,8 +137,8 @@ private fun ScheduleDetailsScreen(
                     .padding(16.dp)
             ) {
                 ScheduleInfo(state.schedule)
-                if ((!state.isTheOwner && state.schedule.hasFreeSpace && !state.schedule.cancelled) ||
-                    state.isParticipating
+                if (((!state.isTheOwner && state.schedule.hasFreeSpace) || state.isParticipating) &&
+                    !state.schedule.cancelled
                 ) {
                     ParticipateButton(
                         isParticipating = state.isParticipating,

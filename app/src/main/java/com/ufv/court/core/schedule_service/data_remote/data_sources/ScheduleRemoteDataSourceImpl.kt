@@ -72,6 +72,28 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
         }
     }
 
+    override suspend fun getScheduledAsParticipant(): List<ScheduleModel> {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(schedulesPath)
+                    .whereArrayContains("participantsId", Firebase.auth.currentUser?.uid ?: "x")
+                    .orderBy("timeInMillis")
+                    .orderBy("hourStart")
+                    .get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val schedules = task.result?.documents?.mapNotNull {
+                                val schedule = it.toObject<ScheduleModel>()
+                                schedule?.copy(id = it.id)
+                            } ?: listOf()
+                            continuation.resume(schedules)
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
+        }
+    }
+
     override suspend fun getSchedule(id: String): ScheduleModel {
         return requestWrapper {
             suspendCoroutine { continuation ->

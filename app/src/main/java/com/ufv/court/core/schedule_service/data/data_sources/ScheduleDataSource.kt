@@ -10,6 +10,8 @@ interface ScheduleDataSource {
 
     suspend fun getScheduledByUser(): List<ScheduleModel>
 
+    suspend fun getScheduledAsParticipant(): List<ScheduleModel>
+
     suspend fun getSchedule(id: String): ScheduleModel
 
     suspend fun updateSchedule(id: String, newSchedule: ScheduleModel)

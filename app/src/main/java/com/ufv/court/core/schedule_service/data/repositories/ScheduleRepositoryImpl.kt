@@ -21,6 +21,10 @@ internal class ScheduleRepositoryImpl @Inject constructor(
         return dataSource.getScheduledByUser()
     }
 
+    override suspend fun getScheduledAsParticipant(): List<ScheduleModel> {
+        return dataSource.getScheduledAsParticipant()
+    }
+
     override suspend fun getSchedule(id: String): ScheduleModel {
         return dataSource.getSchedule(id = id)
     }
