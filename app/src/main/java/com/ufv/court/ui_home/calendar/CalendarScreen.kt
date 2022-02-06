@@ -8,7 +8,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import com.ufv.court.ui_home.calendar.components.weekModifier
 import dev.chrisbanes.snapper.ExperimentalSnapperApi
 import dev.chrisbanes.snapper.SnapOffsets
 import dev.chrisbanes.snapper.rememberSnapperFlingBehavior
+import java.util.*
 
 @Composable
 fun CalendarScreen(navigateUp: () -> Unit, openSchedule: (String) -> Unit) {
@@ -42,9 +42,10 @@ private fun CalendarScreen(
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = CalendarViewState.Empty)
 
-    CalendarScreen(viewState, navigateUp, openSchedule) { action ->
-        viewModel.submitAction(action)
-    }
+    CalendarScreen(viewState, navigateUp, openSchedule)
+//    { action ->
+//        viewModel.submitAction(action)
+//    }
 }
 
 @OptIn(ExperimentalSnapperApi::class)
@@ -52,13 +53,9 @@ private fun CalendarScreen(
 private fun CalendarScreen(
     state: CalendarViewState,
     navigateUp: () -> Unit,
-    openSchedule: (String) -> Unit,
-    action: (CalendarAction) -> Unit
+    openSchedule: (String) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
-    LaunchedEffect(lazyListState.firstVisibleItemIndex) {
-        action(CalendarAction.LoadEventsOfMonth(index = lazyListState.firstVisibleItemIndex))
-    }
     Scaffold(topBar = { CalendarToolbar(navigateUp) }) {
         Box(modifier = Modifier.fillMaxSize()) {
             val contentPadding = PaddingValues(bottom = 36.dp)
@@ -77,7 +74,19 @@ private fun CalendarScreen(
             ) {
                 itemsIndexed(state.calendarMonths) { index, month ->
                     MonthItem(month = { month }, index = index) { day ->
-                        openSchedule("$day/${month.monthNumber}/${month.year}")
+                        val calendar = Calendar.getInstance()
+                        calendar.set(Calendar.DAY_OF_MONTH, state.todayDay)
+                        calendar.set(Calendar.MONTH, state.todayMonth - 1)
+                        calendar.set(Calendar.YEAR, state.todayYear)
+                        val todayInMillis = calendar.timeInMillis
+                        calendar.set(Calendar.DAY_OF_MONTH, day.toInt())
+                        calendar.set(Calendar.MONTH, month.monthNumber - 1)
+                        calendar.set(Calendar.YEAR, month.year.toInt())
+                        val selectedInMillis = calendar.timeInMillis
+                        val validDate = selectedInMillis >= todayInMillis
+                        if (validDate) {
+                            openSchedule("$day/${month.monthNumber}/${month.year}")
+                        }
                     }
                 }
             }

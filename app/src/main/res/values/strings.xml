@@ -100,4 +100,5 @@
     <string name="profile_saved">Perfil salvo!</string>
     <string name="join_a_event">Se junte a um evento…</string>
     <string name="participate">Participar</string>
+    <string name="home_empty_schedules">Nada aqui\nAgende um horário!</string>
 </resources>

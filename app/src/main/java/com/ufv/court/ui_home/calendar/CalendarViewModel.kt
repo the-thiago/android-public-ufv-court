@@ -23,8 +23,21 @@ class CalendarViewModel @Inject constructor(
     val state: StateFlow<CalendarViewState> = _state
 
     init {
+        getTodayDate()
         setupCalendarMonths()
         handleActions()
+    }
+
+    private fun getTodayDate() {
+        viewModelScope.launch {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = System.currentTimeMillis()
+            _state.value = state.value.copy(
+                todayDay = calendar.get(Calendar.DAY_OF_MONTH),
+                todayMonth = calendar.get(Calendar.MONTH) + 1,
+                todayYear = calendar.get(Calendar.YEAR)
+            )
+        }
     }
 
     private fun setupCalendarMonths() {

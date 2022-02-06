@@ -5,7 +5,10 @@ data class CalendarViewState(
     val isLoading: Boolean = false,
     val calendarMonths: List<CalendarMonth> = emptyList(),
     val selectedDay: CalendarDay? = null,
-    val selectedMonthIndex: Int? = null
+    val selectedMonthIndex: Int? = null,
+    val todayDay: Int = 0,
+    val todayMonth: Int = 0,
+    val todayYear: Int = 0,
 ) {
     companion object {
         val Empty = CalendarViewState()

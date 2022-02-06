@@ -220,6 +220,7 @@ class ScheduleViewModel @Inject constructor(
         calendar.set(Calendar.MINUTE, 1)
         calendar.set(Calendar.SECOND, 1)
         calendar.set(Calendar.MILLISECOND, 1)
+        calendar.set(Calendar.HOUR, 1)
         return calendar.timeInMillis
     }
 
