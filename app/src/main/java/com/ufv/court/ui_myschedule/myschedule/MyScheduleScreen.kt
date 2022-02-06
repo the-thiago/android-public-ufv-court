@@ -20,9 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ufv.court.R
 import com.ufv.court.app.theme.ShipCove
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
+import com.ufv.court.core.ui.components.CircularLoading
 import com.ufv.court.core.ui.components.HorizontalDivisor
 import com.ufv.court.core.ui.components.OneButtonErrorDialog
 import com.ufv.court.core.ui.components.ScheduledItem
@@ -51,9 +55,38 @@ private fun MyScheduleScreen(
     openScheduleDetails: (String) -> Unit,
     action: (MyScheduleAction) -> Unit
 ) {
-    Column(
+    SwipeRefresh(
         modifier = Modifier
             .padding(bottom = 56.dp) // toolbar height
+            .fillMaxSize(),
+        state = rememberSwipeRefreshState(state.isRefreshing),
+        onRefresh = { action(MyScheduleAction.Refresh) },
+        indicator = { swipeState, trigger ->
+            SwipeRefreshIndicator(
+                state = swipeState,
+                refreshTriggerDistance = trigger,
+                contentColor = MaterialTheme.colors.primary
+            )
+        }
+    ) {
+        if (state.isLoading) {
+            CircularLoading()
+        } else {
+            LoadedMyScheduleScreen(state, openScheduleDetails)
+        }
+    }
+    ErrorTreatment(state.error) {
+        action(MyScheduleAction.CleanErrors)
+    }
+}
+
+@Composable
+private fun LoadedMyScheduleScreen(
+    state: MyScheduleViewState,
+    openScheduleDetails: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
@@ -97,9 +130,6 @@ private fun MyScheduleScreen(
                 }
             }
         }
-    }
-    ErrorTreatment(state.error) {
-        action(MyScheduleAction.CleanErrors)
     }
 }
 

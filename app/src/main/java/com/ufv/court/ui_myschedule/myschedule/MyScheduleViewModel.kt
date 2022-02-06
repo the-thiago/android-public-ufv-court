@@ -26,9 +26,26 @@ class MyScheduleViewModel @Inject constructor(
     val state: StateFlow<MyScheduleViewState> = _state
 
     init {
+        getSchedulesForFirstTime()
         handleActions()
-        getScheduledAsParticipant()
-        getScheduled()
+    }
+
+    private fun getSchedulesForFirstTime() {
+        viewModelScope.launch {
+            _state.value = state.value.copy(isLoading = true)
+            getScheduledAsParticipant()
+            getScheduled()
+            _state.value = state.value.copy(isLoading = false)
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            _state.value = state.value.copy(isRefreshing = true)
+            getScheduledAsParticipant()
+            getScheduled()
+            _state.value = state.value.copy(isRefreshing = false)
+        }
     }
 
     private fun getScheduledAsParticipant() {
@@ -58,6 +75,7 @@ class MyScheduleViewModel @Inject constructor(
             pendingActions.collect { action ->
                 when (action) {
                     MyScheduleAction.CleanErrors -> _state.value = state.value.copy(error = null)
+                    MyScheduleAction.Refresh -> refresh()
                 }
             }
         }

@@ -2,8 +2,6 @@ package com.ufv.court.ui_home.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.schedule_service.domain.usecases.GetSchedulesFreeSpaceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,18 +23,24 @@ class HomeViewModel @Inject constructor(
     val state: StateFlow<HomeViewState> = _state
 
     init {
-        getSchedulesFreeSpace()
+        getSchedulesFreeSpaceForFirstTime()
         handleActions()
     }
 
-    private fun getSchedulesFreeSpace() {
+    private fun getSchedulesFreeSpaceForFirstTime() {
         viewModelScope.launch {
-            val result = getSchedulesFreeSpaceUseCase(Unit)
-            if (result is Result.Success) {
-                _state.value = state.value.copy(schedules = result.data.filter {
-                    it.timeInMillis > System.currentTimeMillis() && !it.cancelled
-                })
-            }
+            _state.value = state.value.copy(isLoading = true)
+            getSchedulesFreeSpace()
+            _state.value = state.value.copy(isLoading = false)
+        }
+    }
+
+    private suspend fun getSchedulesFreeSpace() {
+        val result = getSchedulesFreeSpaceUseCase(Unit)
+        if (result is Result.Success) {
+            _state.value = state.value.copy(schedules = result.data.filter {
+                it.timeInMillis > System.currentTimeMillis() && !it.cancelled
+            })
         }
     }
 
@@ -45,8 +49,17 @@ class HomeViewModel @Inject constructor(
             pendingActions.collect { action ->
                 when (action) {
                     HomeAction.CleanErrors -> _state.value = state.value.copy(error = null)
+                    HomeAction.Refresh -> refresh()
                 }
             }
+        }
+    }
+
+    private fun refresh() {
+        viewModelScope.launch {
+            _state.value = state.value.copy(isRefreshing = true)
+            getSchedulesFreeSpace()
+            _state.value = state.value.copy(isRefreshing = false)
         }
     }
 

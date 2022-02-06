@@ -17,9 +17,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ufv.court.R
 import com.ufv.court.app.theme.ShipCove
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
+import com.ufv.court.core.ui.components.CircularLoading
 import com.ufv.court.core.ui.components.ScheduledItem
 
 @Composable
@@ -59,38 +63,55 @@ private fun HomeScreen(
     openScheduleDetails: (String) -> Unit,
     action: (HomeAction) -> Unit
 ) {
-    LazyColumn(
+    SwipeRefresh(
         modifier = Modifier
             .padding(bottom = 56.dp) // toolbar height
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        item {
-            HeaderCreateEvent {
-                openCalendar()
-            }
-        }
-        item {
-            Text(
-                text = stringResource(R.string.join_a_event),
-                style = MaterialTheme.typography.h5
+        state = rememberSwipeRefreshState(state.isRefreshing),
+        onRefresh = { action(HomeAction.Refresh) },
+        indicator = { swipeState, trigger ->
+            SwipeRefreshIndicator(
+                state = swipeState,
+                refreshTriggerDistance = trigger,
+                contentColor = MaterialTheme.colors.primary
             )
-            if (state.schedules.isEmpty()) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 32.dp),
-                    text = stringResource(R.string.home_empty_schedules),
-                    style = MaterialTheme.typography.body2,
-                    color = ShipCove,
-                    textAlign = TextAlign.Center
-                )
-            }
         }
-        items(state.schedules) {
-            ScheduledItem(it) {
-                openScheduleDetails(it.id)
+    ) {
+        if (state.isLoading) {
+            CircularLoading()
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                item {
+                    HeaderCreateEvent {
+                        openCalendar()
+                    }
+                }
+                item {
+                    Text(
+                        text = stringResource(R.string.join_a_event),
+                        style = MaterialTheme.typography.h5
+                    )
+                    if (state.schedules.isEmpty()) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 32.dp),
+                            text = stringResource(R.string.home_empty_schedules),
+                            style = MaterialTheme.typography.body2,
+                            color = ShipCove,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                items(state.schedules) {
+                    ScheduledItem(it) {
+                        openScheduleDetails(it.id)
+                    }
+                }
             }
         }
     }
