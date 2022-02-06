@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
             val result = getSchedulesFreeSpaceUseCase(Unit)
             if (result is Result.Success) {
                 _state.value = state.value.copy(schedules = result.data.filter {
-                    it.timeInMillis > System.currentTimeMillis()
+                    it.timeInMillis > System.currentTimeMillis() && !it.cancelled
                 })
             }
         }

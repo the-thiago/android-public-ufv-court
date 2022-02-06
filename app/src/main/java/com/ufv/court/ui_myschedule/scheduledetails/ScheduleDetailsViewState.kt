@@ -12,7 +12,10 @@ data class ScheduleDetailsViewState(
     val user: UserModel? = null,
     val showCancellationDialog: Boolean = false,
     val showCancelledDialog: Boolean = false,
-    val isTheOwner: Boolean = false
+    val showParticipatingDialog: Boolean = false,
+    val showCancelParticipationDialog: Boolean = false,
+    val isTheOwner: Boolean = false,
+    val isParticipating: Boolean = false
 ) {
     companion object {
         val Empty = ScheduleDetailsViewState()

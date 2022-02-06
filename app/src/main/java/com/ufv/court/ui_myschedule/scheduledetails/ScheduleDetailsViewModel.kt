@@ -52,7 +52,8 @@ class ScheduleDetailsViewModel @Inject constructor(
             }
             if (scheduleResult is Result.Success && userResult is Result.Success) {
                 _state.value = state.value.copy(
-                    isTheOwner = scheduleResult.data.ownerId == userResult.data.id
+                    isTheOwner = scheduleResult.data.ownerId == userResult.data.id,
+                    isParticipating = scheduleResult.data.participantsId.contains(userResult.data.id)
                 )
             }
             _state.value = state.value.copy(placeholder = false)
@@ -75,10 +76,87 @@ class ScheduleDetailsViewModel @Inject constructor(
                     }
                     ScheduleDetailsAction.ReloadData -> getScheduleAndUser()
                     ScheduleDetailsAction.ParticipateClick -> {
-                        // TODO
+                        if (state.value.isParticipating) {
+                            cancelParticipation()
+                        } else {
+                            participateClick()
+                        }
+                    }
+                    is ScheduleDetailsAction.ChangeShowParticipatingDialog -> {
+                        _state.value = state.value.copy(showParticipatingDialog = action.show)
+                    }
+                    is ScheduleDetailsAction.ChangeShowCancelParticipationDialog -> {
+                        _state.value = state.value.copy(showCancelParticipationDialog = action.show)
                     }
                 }
             }
+        }
+    }
+
+    private fun cancelParticipation() {
+        viewModelScope.launch {
+            _state.value = state.value.copy(isLoading = true)
+            val userId = state.value.user?.id ?: ""
+            val schedule = state.value.schedule ?: return@launch
+            val newParticipants = schedule.participantsId.toMutableList()
+            val newFreeSpaces = if (newParticipants.remove(userId)) {
+                schedule.freeSpaces + 1
+            } else {
+                schedule.freeSpaces
+            }
+            val newSchedule = schedule.copy(
+                participantsId = newParticipants,
+                freeSpaces = newFreeSpaces,
+                hasFreeSpace = newFreeSpaces > 0
+            )
+            val result = updateScheduleUseCase(
+                UpdateScheduleUseCase.Params(
+                    id = schedule.id,
+                    newSchedule = newSchedule
+                )
+            )
+            if (result is Result.Success) {
+                _state.value = state.value.copy(
+                    schedule = newSchedule,
+                    showCancelParticipationDialog = true,
+                    isParticipating = false
+                )
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception)
+            }
+            getScheduleAndUser()
+            _state.value = state.value.copy(isLoading = false)
+        }
+    }
+
+    private fun participateClick() {
+        viewModelScope.launch {
+            _state.value = state.value.copy(isLoading = true)
+            val userId = state.value.user?.id ?: ""
+            val schedule = state.value.schedule ?: return@launch
+            val newParticipants = schedule.participantsId.toMutableList()
+            newParticipants.add(userId)
+            val newFreeSpaces = schedule.freeSpaces - 1
+            val newSchedule = schedule.copy(
+                participantsId = newParticipants,
+                freeSpaces = newFreeSpaces,
+                hasFreeSpace = newFreeSpaces > 0
+            )
+            val result = updateScheduleUseCase(
+                UpdateScheduleUseCase.Params(
+                    id = schedule.id,
+                    newSchedule = newSchedule
+                )
+            )
+            if (result is Result.Success) {
+                _state.value = state.value.copy(
+                    schedule = newSchedule, showParticipatingDialog = true, isParticipating = true
+                )
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception)
+            }
+            getScheduleAndUser()
+            _state.value = state.value.copy(isLoading = false)
         }
     }
 

@@ -11,5 +11,6 @@ data class ScheduleModel(
     val freeSpaces: Int = 0,
     val hasFreeSpace: Boolean = false,
     val cancelled: Boolean = false,
-    val timeInMillis: Long = -1L // millis
+    val timeInMillis: Long = -1L, // millis
+    val participantsId: List<String> = listOf()
 )

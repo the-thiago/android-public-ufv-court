@@ -137,8 +137,14 @@ private fun ScheduleDetailsScreen(
                     .padding(16.dp)
             ) {
                 ScheduleInfo(state.schedule)
-                if (!state.isTheOwner && state.schedule.hasFreeSpace) {
-                    ParticipateButton(isLoading = state.isLoading, action = action)
+                if ((!state.isTheOwner && state.schedule.hasFreeSpace && !state.schedule.cancelled) ||
+                    state.isParticipating
+                ) {
+                    ParticipateButton(
+                        isParticipating = state.isParticipating,
+                        isLoading = state.isLoading,
+                        action = action
+                    )
                 }
             }
         }
@@ -148,19 +154,32 @@ private fun ScheduleDetailsScreen(
     }
     ConfirmCancelledDialog(show = state.showCancelledDialog, action = action)
     ConfirmCancellationDialog(show = state.showCancellationDialog, action = action)
+    ParticipatingDialog(show = state.showParticipatingDialog, action = action)
+    CancelParticipationDialog(show = state.showCancelParticipationDialog, action = action)
     OnLifecycleEvent(action = action)
 }
 
 @Composable
-private fun ParticipateButton(isLoading: Boolean, action: (ScheduleDetailsAction) -> Unit) {
+private fun ParticipateButton(
+    isParticipating: Boolean,
+    isLoading: Boolean,
+    action: (ScheduleDetailsAction) -> Unit
+) {
     Spacer(modifier = Modifier.height(32.dp))
+    val buttonText by remember(isParticipating) {
+        if (isParticipating) {
+            mutableStateOf(R.string.cancel_participate)
+        } else {
+            mutableStateOf(R.string.participate)
+        }
+    }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LoadingButton(
             isLoading = isLoading,
-            buttonText = stringResource(R.string.participate)
+            buttonText = stringResource(buttonText)
         ) {
             action(ScheduleDetailsAction.ParticipateClick)
         }
@@ -277,6 +296,24 @@ private fun ConfirmCancellationDialog(show: Boolean, action: (ScheduleDetailsAct
                 action(ScheduleDetailsAction.ChangeShowCancellationDialog(false))
             }
         )
+    }
+}
+
+@Composable
+private fun ParticipatingDialog(show: Boolean, action: (ScheduleDetailsAction) -> Unit) {
+    if (show) {
+        OneButtonSuccessDialog(message = stringResource(R.string.now_you_are_participating)) {
+            action(ScheduleDetailsAction.ChangeShowParticipatingDialog(false))
+        }
+    }
+}
+
+@Composable
+private fun CancelParticipationDialog(show: Boolean, action: (ScheduleDetailsAction) -> Unit) {
+    if (show) {
+        OneButtonSuccessDialog(message = stringResource(R.string.now_you_are_not_participating)) {
+            action(ScheduleDetailsAction.ChangeShowCancelParticipationDialog(false))
+        }
     }
 }
 
