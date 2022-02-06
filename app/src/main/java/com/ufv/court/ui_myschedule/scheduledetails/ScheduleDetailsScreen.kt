@@ -2,6 +2,7 @@ package com.ufv.court.ui_myschedule.scheduledetails
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -26,15 +27,25 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
-fun ScheduleDetailsScreen(navigateUp: () -> Unit, openEditEvent: (String) -> Unit) {
-    ScheduleDetailsScreen(hiltViewModel(), navigateUp, openEditEvent)
+fun ScheduleDetailsScreen(
+    navigateUp: () -> Unit,
+    openEditEvent: (String) -> Unit,
+    openParticipants: (String) -> Unit
+) {
+    ScheduleDetailsScreen(
+        viewModel = hiltViewModel(),
+        navigateUp = navigateUp,
+        openEditEvent = openEditEvent,
+        openParticipants = openParticipants
+    )
 }
 
 @Composable
 private fun ScheduleDetailsScreen(
     viewModel: ScheduleDetailsViewModel,
     navigateUp: () -> Unit,
-    openEditEvent: (String) -> Unit
+    openEditEvent: (String) -> Unit,
+    openParticipants: (String) -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = ScheduleDetailsViewState.Empty)
@@ -42,7 +53,8 @@ private fun ScheduleDetailsScreen(
     ScheduleDetailsScreen(
         state = viewState,
         navigateUp = navigateUp,
-        openEditEvent = openEditEvent
+        openEditEvent = openEditEvent,
+        openParticipants = openParticipants
     ) { action ->
         viewModel.submitAction(action)
     }
@@ -54,6 +66,7 @@ private fun ScheduleDetailsScreen(
     state: ScheduleDetailsViewState,
     navigateUp: () -> Unit,
     openEditEvent: (String) -> Unit,
+    openParticipants: (String) -> Unit,
     action: (ScheduleDetailsAction) -> Unit
 ) {
     val modalBottomSheetState = rememberModalBottomSheetState(
@@ -75,6 +88,7 @@ private fun ScheduleDetailsScreen(
             state = state,
             navigateUp = navigateUp,
             showBottomSheet = { scope.launch { modalBottomSheetState.show() } },
+            openParticipants = openParticipants,
             action = action
         )
     }
@@ -117,6 +131,7 @@ private fun ScheduleDetailsScreen(
     state: ScheduleDetailsViewState,
     navigateUp: () -> Unit,
     showBottomSheet: () -> Unit,
+    openParticipants: (String) -> Unit,
     action: (ScheduleDetailsAction) -> Unit
 ) {
     Scaffold(topBar = {
@@ -136,7 +151,9 @@ private fun ScheduleDetailsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                ScheduleInfo(state.schedule)
+                ScheduleInfo(state.schedule) {
+                    openParticipants(state.scheduleId)
+                }
                 if (((!state.isTheOwner && state.schedule.hasFreeSpace) || state.isParticipating) &&
                     !state.schedule.cancelled
                 ) {
@@ -188,7 +205,7 @@ private fun ParticipateButton(
 }
 
 @Composable
-private fun ScheduleInfo(schedule: ScheduleModel) {
+private fun ScheduleInfo(schedule: ScheduleModel, openParticipants: () -> Unit) {
     Text(
         text = schedule.title,
         style = MaterialTheme.typography.h5,
@@ -253,6 +270,21 @@ private fun ScheduleInfo(schedule: ScheduleModel) {
         } else schedule.description,
         style = MaterialTheme.typography.body1
     )
+    if (schedule.participantsId.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TextButton(onClick = openParticipants, shape = RoundedCornerShape(24.dp)) {
+                Text(
+                    text = stringResource(R.string.see_participants),
+                    style = MaterialTheme.typography.button,
+                    color = MaterialTheme.colors.primary
+                )
+            }
+        }
+    }
 }
 
 @Composable

@@ -181,6 +181,9 @@ fun NavGraphBuilder.addScheduleDetails(screen: Screen, navController: NavControl
                 navController.navigate(LeafScreen.EditEvent.createRoute(id = it)) {
                     launchSingleTop = true
                 }
+            },
+            openParticipants = {
+
             }
         )
     }
