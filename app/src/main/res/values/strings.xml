@@ -6,6 +6,7 @@
     <string name="email">E-mail</string>
     <string name="password">Senha</string>
     <string name="confirm_password">Confirme sua senha</string>
+    <string name="phone_optional">Telefone (opcional)</string>
     <string name="enter">Entrar</string>
     <string name="forgot_password">Esqueci minha senha</string>
     <string name="i_want_to_register">Quero me cadastrar</string>
@@ -13,7 +14,7 @@
     <string name="create_account">Criar conta</string>
     <string name="create">Criar</string>
     <string name="email_domain_not_allowed">Você deve utilizar um e-mail válido da UFV</string>
-    <string name="empty_field_error">Preencha todos os campos</string>
+    <string name="empty_field_error">Preencha todos os campos obrigatórios</string>
     <string name="different_passwords">Senhas diferentes</string>
     <string name="could_not_create_account">Não foi possível cadastrar a conta</string>
     <string name="invalid_credentials">Credenciais inválidas</string>
@@ -108,4 +109,5 @@
     <string name="participants">Participantes</string>
     <string name="participants_plural">%s participantes</string>
     <string name="participants_singular">%s participante</string>
+    <string name="invalid_phone">Telefone inválido</string>
 </resources>

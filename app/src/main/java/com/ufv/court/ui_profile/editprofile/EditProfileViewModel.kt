@@ -20,6 +20,11 @@ class EditProfileViewModel @Inject constructor(
     private val updateUserUseCase: UpdateUserUseCase
 ) : ViewModel() {
 
+    companion object {
+        const val PHONE_MASK = "(##) #####-####"
+        val PHONE_LENGTH = PHONE_MASK.count { it == '#' }
+    }
+
     private val pendingActions = MutableSharedFlow<EditProfileAction>()
 
     private val _state: MutableStateFlow<EditProfileViewState> =
@@ -45,6 +50,9 @@ class EditProfileViewModel @Inject constructor(
                         _state.value = state.value.copy(name = action.name)
                     }
                     EditProfileAction.SaveProfile -> saveProfile()
+                    is EditProfileAction.ChangePhone -> {
+                        _state.value = state.value.copy(phone = action.phone)
+                    }
                 }
             }
         }
@@ -57,7 +65,7 @@ class EditProfileViewModel @Inject constructor(
                 val oldUser = oldUser ?: return@launch
                 val result = updateUserUseCase(
                     UpdateUserUseCase.Params(
-                        user = oldUser.copy(name = state.value.name),
+                        user = oldUser.copy(name = state.value.name, phone = state.value.phone),
                         imageUri = state.value.newImageUri
                     )
                 )
@@ -76,6 +84,10 @@ class EditProfileViewModel @Inject constructor(
                 _state.value = state.value.copy(error = EditProfileError.EmptyField)
                 return@with false
             }
+            if (phone.isNotBlank() && phone.length != 11) {
+                _state.value = state.value.copy(error = EditProfileError.InvalidPhone)
+                return@with false
+            }
             return@with true
         }
     }
@@ -87,6 +99,7 @@ class EditProfileViewModel @Inject constructor(
                 oldUser = result.data
                 _state.value = state.value.copy(
                     name = result.data.name,
+                    phone = result.data.phone,
                     currentImage = result.data.image,
                     placeholder = false
                 )

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ufv.court.R
 import com.ufv.court.app.theme.BlackRock
+import com.ufv.court.core.core_common.util.toMaskedPhone
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.CircularLoading
 import com.ufv.court.core.ui.components.CustomToolbar
@@ -142,8 +143,10 @@ private fun UserItem(user: UserModel) {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = user.email, style = MaterialTheme.typography.h6)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = user.phone, style = MaterialTheme.typography.h6)
+                if (user.phone.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = user.phone.toMaskedPhone(), style = MaterialTheme.typography.h6)
+                }
             }
         }
     }

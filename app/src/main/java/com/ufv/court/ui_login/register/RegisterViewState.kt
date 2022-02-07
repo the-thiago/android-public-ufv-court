@@ -10,6 +10,7 @@ data class RegisterViewState(
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
+    val phone: String = "",
     val showEmailSentDialog: Boolean = false
 ) {
     companion object {
@@ -25,4 +26,5 @@ sealed class RegisterCredentialsError : Exception() {
     object AuthUserCollision : RegisterCredentialsError()
     object AuthInvalidCredentials : RegisterCredentialsError()
     object SendEmailVerification : RegisterCredentialsError()
+    object InvalidPhone : RegisterCredentialsError()
 }

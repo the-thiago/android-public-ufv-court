@@ -24,6 +24,11 @@ class RegisterViewModel @Inject constructor(
     private val logoutUserUseCase: LogoutUserUseCase
 ) : ViewModel() {
 
+    companion object {
+        const val PHONE_MASK = "(##) #####-####"
+        val PHONE_LENGTH = PHONE_MASK.count { it == '#' }
+    }
+
     private val pendingActions = MutableSharedFlow<RegisterAction>()
 
     private val _state: MutableStateFlow<RegisterViewState> = MutableStateFlow(
@@ -57,6 +62,9 @@ class RegisterViewModel @Inject constructor(
                     is RegisterAction.ShowEmailSentDialog -> {
                         _state.value = state.value.copy(showEmailSentDialog = action.show)
                     }
+                    is RegisterAction.ChangePhone -> {
+                        _state.value = state.value.copy(phone = action.phone)
+                    }
                 }
             }
         }
@@ -72,7 +80,8 @@ class RegisterViewModel @Inject constructor(
                             email = state.value.email,
                             password = state.value.password,
                             name = state.value.name,
-                            photo = state.value.imageUri ?: Uri.EMPTY
+                            photo = state.value.imageUri ?: Uri.EMPTY,
+                            phone = state.value.phone
                         )
                     )
                 )
@@ -110,6 +119,9 @@ class RegisterViewModel @Inject constructor(
             !state.value.email.endsWith("@ufv.br")
         ) {
             _state.value = state.value.copy(error = RegisterCredentialsError.EmailDomainNotAllowed)
+            return false
+        } else if (state.value.phone.isNotBlank() && state.value.phone.length != 11) {
+            _state.value = state.value.copy(error = RegisterCredentialsError.InvalidPhone)
             return false
         }
         return true

@@ -6,5 +6,6 @@ data class RegisterUser(
     val name: String,
     val email: String,
     val password: String,
-    val photo: Uri
+    val photo: Uri,
+    val phone: String
 )

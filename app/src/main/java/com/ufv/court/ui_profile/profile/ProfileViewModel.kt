@@ -51,6 +51,7 @@ class ProfileViewModel @Inject constructor(
                 _state.value = state.value.copy(
                     email = result.data.email,
                     name = result.data.name,
+                    phone = result.data.phone,
                     image = result.data.image,
                     placeholder = false
                 )

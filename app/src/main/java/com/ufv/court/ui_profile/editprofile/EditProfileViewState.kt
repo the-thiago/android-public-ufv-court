@@ -8,6 +8,7 @@ data class EditProfileViewState(
     val isLoading: Boolean = false,
     val currentImage: String = "",
     val name: String = "",
+    val phone: String = "",
     val newImageUri: Uri? = null,
     val profileEditedDialog: Boolean = false,
 ) {
@@ -18,4 +19,5 @@ data class EditProfileViewState(
 
 sealed class EditProfileError : Exception() {
     object EmptyField : EditProfileError()
+    object InvalidPhone : EditProfileError()
 }

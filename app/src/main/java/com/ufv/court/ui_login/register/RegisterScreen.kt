@@ -9,7 +9,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -20,8 +23,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ufv.court.R
+import com.ufv.court.core.ui.base.MaskVisualTransformation
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 
@@ -127,6 +132,24 @@ private fun RegisterScreen(
             ) {
                 action(RegisterAction.ChangeConfirmPassword(it))
             }
+            Spacer(modifier = Modifier.height(24.dp))
+            val phoneVisualTransformation = remember {
+                MaskVisualTransformation(RegisterViewModel.PHONE_MASK)
+            }
+            CustomTextField(
+                labelText = stringResource(R.string.phone_optional),
+                keyboardOptions = KeyboardOptions(
+                    autoCorrect = false,
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                text = state.phone,
+                visualTransformation = phoneVisualTransformation
+            ) { phone ->
+                if (phone.length <= RegisterViewModel.PHONE_LENGTH && phone.isDigitsOnly()) {
+                    action(RegisterAction.ChangePhone(phone))
+                }
+            }
             Spacer(modifier = Modifier.height(32.dp))
             LoadingButton(
                 isLoading = state.isLoading,
@@ -222,6 +245,12 @@ private fun ErrorTreatment(error: Throwable, onDismiss: () -> Unit) {
         is RegisterCredentialsError.SendEmailVerification -> {
             OneButtonErrorDialog(
                 message = stringResource(R.string.verification_email_error),
+                onDismiss = onDismiss
+            )
+        }
+        is RegisterCredentialsError.InvalidPhone -> {
+            OneButtonErrorDialog(
+                message = stringResource(R.string.invalid_phone),
                 onDismiss = onDismiss
             )
         }

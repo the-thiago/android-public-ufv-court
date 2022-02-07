@@ -6,18 +6,24 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ufv.court.R
+import com.ufv.court.core.ui.base.MaskVisualTransformation
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 
@@ -70,6 +76,24 @@ private fun EditProfileScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 CustomTextField(text = state.name, labelText = stringResource(id = R.string.name)) {
                     action(EditProfileAction.ChangeName(it))
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                val phoneVisualTransformation = remember {
+                    MaskVisualTransformation(EditProfileViewModel.PHONE_MASK)
+                }
+                CustomTextField(
+                    labelText = stringResource(R.string.phone_optional),
+                    keyboardOptions = KeyboardOptions(
+                        autoCorrect = false,
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    text = state.phone,
+                    visualTransformation = phoneVisualTransformation
+                ) { phone ->
+                    if (phone.length <= EditProfileViewModel.PHONE_LENGTH && phone.isDigitsOnly()) {
+                        action(EditProfileAction.ChangePhone(phone))
+                    }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
                 LoadingButton(
@@ -133,6 +157,10 @@ private fun ErrorTreatment(error: Throwable?, navigateUp: () -> Unit, onDismiss:
         when (it) {
             EditProfileError.EmptyField -> OneButtonErrorDialog(
                 message = stringResource(id = R.string.empty_field_error),
+                onDismiss = onDismiss
+            )
+            EditProfileError.InvalidPhone -> OneButtonErrorDialog(
+                message = stringResource(id = R.string.invalid_phone),
                 onDismiss = onDismiss
             )
             else -> OneButtonErrorDialog(

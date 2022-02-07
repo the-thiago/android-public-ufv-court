@@ -5,6 +5,7 @@ data class ProfileViewState(
     val placeholder: Boolean = true,
     val showConfirmLogoutDialog: Boolean = false,
     val email: String = "",
+    val phone: String = "",
     val name: String = "",
     val image: String = ""
 ) {

@@ -24,6 +24,7 @@ import com.ufv.court.R
 import com.ufv.court.app.theme.BlackRock
 import com.ufv.court.app.theme.Manatee
 import com.ufv.court.app.theme.ShipCove
+import com.ufv.court.core.core_common.util.toMaskedPhone
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
 
@@ -111,6 +112,14 @@ private fun ProfileTopBar(state: ProfileViewState) {
     Text(text = state.name, style = MaterialTheme.typography.h5)
     Spacer(modifier = Modifier.height(4.dp))
     Text(text = state.email, style = MaterialTheme.typography.body1, color = ShipCove)
+    if (state.phone.isNotBlank()) {
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = state.phone.toMaskedPhone(),
+            style = MaterialTheme.typography.body1,
+            color = ShipCove
+        )
+    }
     Spacer(modifier = Modifier.height(32.dp))
 }
 
