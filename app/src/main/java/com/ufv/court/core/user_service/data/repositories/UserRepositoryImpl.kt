@@ -31,6 +31,10 @@ internal class UserRepositoryImpl @Inject constructor(
         return dataSource.getCurrentUser()
     }
 
+    override suspend fun getUsers(ids: List<String>): List<UserModel> {
+        return dataSource.getUsers(ids = ids)
+    }
+
     override suspend fun logout() {
         dataSource.logout()
     }

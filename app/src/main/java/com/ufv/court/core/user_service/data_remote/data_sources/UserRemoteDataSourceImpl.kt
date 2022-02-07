@@ -202,6 +202,32 @@ internal class UserRemoteDataSourceImpl @Inject constructor() : UserDataSource {
         }
     }
 
+    override suspend fun getUsers(ids: List<String>): List<UserModel> {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(usersPath)
+                    .whereIn("id", ids)
+                    .orderBy("name")
+                    .get()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val usersDocs = task.result?.documents
+                            if (usersDocs?.isNotEmpty() == true) {
+                                val users = usersDocs.map {
+                                    it.toObject<UserModel>() ?: UserModel()
+                                }
+                                continuation.resume(users)
+                            } else {
+                                continuation.resumeWithException(Exception())
+                            }
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
+        }
+    }
+
     override suspend fun logout() {
         requestWrapper {
             Firebase.auth.signOut()

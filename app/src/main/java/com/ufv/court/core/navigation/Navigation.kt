@@ -38,6 +38,19 @@ sealed class LeafScreen(
         }
     }
 
+    class Participants(screen: Screen) : LeafScreen(screen, "participants/{eventId}") {
+
+        override val arguments = listOf(
+            navArgument("eventId") {
+                type = NavType.StringType
+            }
+        )
+
+        fun createRoute(eventId: String): String {
+            return "${root.route}/participants/$eventId"
+        }
+    }
+
     object EditEvent : LeafScreen(Screen.MySchedule, "editevent/{id}") {
         override val arguments = listOf(
             navArgument("id") {

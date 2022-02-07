@@ -105,4 +105,7 @@
     <string name="now_you_are_participating">Agora você está participando do evento!</string>
     <string name="now_you_are_not_participating">Participação cancelada</string>
     <string name="see_participants">Ver participantes</string>
+    <string name="participants">Participantes</string>
+    <string name="participants_plural">%s participantes</string>
+    <string name="participants_singular">%s participante</string>
 </resources>

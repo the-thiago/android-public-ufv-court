@@ -16,6 +16,8 @@ interface UserDataSource {
 
     suspend fun getCurrentUser(): UserModel
 
+    suspend fun getUsers(ids: List<String>): List<UserModel>
+
     suspend fun logout()
 
     suspend fun changePassword(oldPassword: String, newPassword: String)

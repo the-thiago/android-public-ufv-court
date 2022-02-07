@@ -19,6 +19,7 @@ import com.ufv.court.ui_login.login.LoginScreen
 import com.ufv.court.ui_login.register.RegisterScreen
 import com.ufv.court.ui_myschedule.editevent.EditEventScreen
 import com.ufv.court.ui_myschedule.myschedule.MyScheduleScreen
+import com.ufv.court.ui_myschedule.participants.ParticipantsScreen
 import com.ufv.court.ui_myschedule.scheduledetails.ScheduleDetailsScreen
 import com.ufv.court.ui_profile.changepasword.ChangePasswordScreen
 import com.ufv.court.ui_profile.editprofile.EditProfileScreen
@@ -182,10 +183,22 @@ fun NavGraphBuilder.addScheduleDetails(screen: Screen, navController: NavControl
                     launchSingleTop = true
                 }
             },
-            openParticipants = {
-
+            openParticipants = { eventId ->
+                navController.navigate(
+                    LeafScreen.Participants(screen).createRoute(eventId = eventId)
+                ) {
+                    launchSingleTop = true
+                }
             }
         )
+    }
+    addParticipants(screen = screen, navController = navController)
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addParticipants(screen: Screen, navController: NavController) {
+    composable(LeafScreen.Participants(screen).createRoute()) {
+        ParticipantsScreen(navigateUp = navController::navigateUp)
     }
 }
 
