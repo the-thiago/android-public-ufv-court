@@ -81,4 +81,17 @@ sealed class LeafScreen(
     object Profile : LeafScreen(Screen.Profile, "profile")
     object ChangePassword : LeafScreen(Screen.Profile, "changepassword")
     object EditProfile : LeafScreen(Screen.Profile, "editprofile")
+
+    class Photo(screen: Screen) : LeafScreen(screen, "photo/{url}") {
+
+        override val arguments = listOf(
+            navArgument("url") {
+                type = NavType.StringType
+            }
+        )
+
+        fun createRoute(url: String): String {
+            return "${root.route}/photo/$url"
+        }
+    }
 }

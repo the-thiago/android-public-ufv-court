@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,28 +32,35 @@ import com.ufv.court.core.ui.components.RoundedImage
 import com.ufv.court.core.user_service.domain.model.UserModel
 
 @Composable
-fun ParticipantsScreen(navigateUp: () -> Unit) {
-    ParticipantsScreen(viewModel = hiltViewModel(), navigateUp = navigateUp)
+fun ParticipantsScreen(navigateUp: () -> Unit, openPhoto: (String) -> Unit) {
+    ParticipantsScreen(
+        viewModel = hiltViewModel(),
+        navigateUp = navigateUp,
+        openPhoto = openPhoto
+    )
 }
 
 @Composable
 private fun ParticipantsScreen(
     viewModel: ParticipantsViewModel,
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
+    openPhoto: (String) -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = ParticipantsViewState.Empty)
 
     ParticipantsScreen(
         state = viewState,
-        navigateUp = navigateUp
+        navigateUp = navigateUp,
+        openPhoto = openPhoto
     )
 }
 
 @Composable
 private fun ParticipantsScreen(
     state: ParticipantsViewState,
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
+    openPhoto: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -84,7 +93,7 @@ private fun ParticipantsScreen(
                     )
                 }
                 items(items = state.participants) {
-                    UserItem(user = it)
+                    UserItem(user = it, openPhoto = openPhoto)
                 }
                 item {
                     HorizontalDivisor(modifier = Modifier.padding(start = 16.dp))
@@ -95,7 +104,7 @@ private fun ParticipantsScreen(
 }
 
 @Composable
-private fun UserItem(user: UserModel) {
+private fun UserItem(user: UserModel, openPhoto: (String) -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val arrowIconRotation by animateFloatAsState(targetValue = if (expanded) 180f else 0f)
     Column(
@@ -122,7 +131,12 @@ private fun UserItem(user: UserModel) {
                     .padding(end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                RoundedImage(image = user.image, size = 72.dp)
+                RoundedImage(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable { openPhoto(user.image) },
+                    image = user.image, size = 72.dp
+                )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = user.name,

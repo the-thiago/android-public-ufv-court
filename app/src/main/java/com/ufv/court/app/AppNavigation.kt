@@ -21,6 +21,7 @@ import com.ufv.court.ui_myschedule.editevent.EditEventScreen
 import com.ufv.court.ui_myschedule.myschedule.MyScheduleScreen
 import com.ufv.court.ui_myschedule.participants.ParticipantsScreen
 import com.ufv.court.ui_myschedule.scheduledetails.ScheduleDetailsScreen
+import com.ufv.court.ui_photo.PhotoScreen
 import com.ufv.court.ui_profile.changepasword.ChangePasswordScreen
 import com.ufv.court.ui_profile.editprofile.EditProfileScreen
 import com.ufv.court.ui_profile.profile.ProfileScreen
@@ -132,7 +133,9 @@ fun NavGraphBuilder.addCalendar(navController: NavController) {
         CalendarScreen(
             navigateUp = navController::navigateUp,
             openSchedule = {
-                navController.navigate(LeafScreen.Schedule.createRoute(date = it.toEncodedString())) {
+                navController.navigate(
+                    LeafScreen.Schedule.createRoute(date = it.toEncodedString())
+                ) {
                     launchSingleTop = true
                 }
             }
@@ -193,12 +196,24 @@ fun NavGraphBuilder.addScheduleDetails(screen: Screen, navController: NavControl
         )
     }
     addParticipants(screen = screen, navController = navController)
+    addPhoto(screen = screen, navController = navController)
 }
 
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.addParticipants(screen: Screen, navController: NavController) {
     composable(LeafScreen.Participants(screen).createRoute()) {
-        ParticipantsScreen(navigateUp = navController::navigateUp)
+        ParticipantsScreen(
+            navigateUp = navController::navigateUp,
+            openPhoto = { url ->
+                if (url.isNotBlank()) {
+                    navController.navigate(
+                        LeafScreen.Photo(screen).createRoute(url = url.toEncodedString())
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -217,6 +232,7 @@ fun NavGraphBuilder.addProfileTopLevel(navController: NavController) {
         addProfile(navController)
         addChangePassword(navController)
         addEditProfile(navController)
+        addPhoto(screen = Screen.Profile, navController = navController)
     }
 }
 
@@ -239,6 +255,15 @@ fun NavGraphBuilder.addProfile(navController: NavController) {
                 navController.navigate(LeafScreen.EditProfile.createRoute()) {
                     launchSingleTop = true
                 }
+            },
+            openPhoto = { url ->
+                if (url.isNotBlank()) {
+                    navController.navigate(
+                        LeafScreen.Photo(Screen.Profile).createRoute(url = url.toEncodedString())
+                    ) {
+                        launchSingleTop = true
+                    }
+                }
             }
         )
     }
@@ -255,5 +280,12 @@ fun NavGraphBuilder.addChangePassword(navController: NavController) {
 fun NavGraphBuilder.addEditProfile(navController: NavController) {
     composable(LeafScreen.EditProfile.createRoute()) {
         EditProfileScreen(navigateUp = navController::navigateUp)
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addPhoto(screen: Screen, navController: NavController) {
+    composable(LeafScreen.Photo(screen).createRoute()) {
+        PhotoScreen(navigateUp = navController::navigateUp)
     }
 }

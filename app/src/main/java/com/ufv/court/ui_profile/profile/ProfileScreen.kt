@@ -3,6 +3,7 @@ package com.ufv.court.ui_profile.profile
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -14,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,13 +37,15 @@ import com.ufv.court.core.ui.components.*
 fun ProfileScreen(
     openLogin: () -> Unit,
     openChangePassword: () -> Unit,
-    openEditProfile: () -> Unit
+    openEditProfile: () -> Unit,
+    openPhoto: (String) -> Unit
 ) {
     ProfileScreen(
         viewModel = hiltViewModel(),
         openLogin = openLogin,
         openChangePassword = openChangePassword,
-        openEditProfile = openEditProfile
+        openEditProfile = openEditProfile,
+        openPhoto = openPhoto
     )
 }
 
@@ -50,7 +54,8 @@ private fun ProfileScreen(
     viewModel: ProfileViewModel,
     openLogin: () -> Unit,
     openChangePassword: () -> Unit,
-    openEditProfile: () -> Unit
+    openEditProfile: () -> Unit,
+    openPhoto: (String) -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = ProfileViewState.Empty)
@@ -59,7 +64,8 @@ private fun ProfileScreen(
         state = viewState,
         openLogin = openLogin,
         openChangePassword = openChangePassword,
-        openEditProfile = openEditProfile
+        openEditProfile = openEditProfile,
+        openPhoto = openPhoto
     ) { action ->
         viewModel.submitAction(action)
     }
@@ -71,6 +77,7 @@ private fun ProfileScreen(
     openLogin: () -> Unit,
     openChangePassword: () -> Unit,
     openEditProfile: () -> Unit,
+    openPhoto: (String) -> Unit,
     action: (ProfileAction) -> Unit
 ) {
     if (state.placeholder) {
@@ -94,7 +101,7 @@ private fun ProfileScreen(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ProfileTopBar(state)
+                ProfileTopBar(state = state, openPhoto = openPhoto)
                 ProfileHorizontalDivisor()
                 ChangePasswordItem(onClick = openChangePassword)
                 ProfileHorizontalDivisor()
@@ -120,9 +127,14 @@ private fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileTopBar(state: ProfileViewState) {
+private fun ProfileTopBar(state: ProfileViewState, openPhoto: (String) -> Unit) {
     Spacer(modifier = Modifier.height(32.dp))
-    RoundedImage(image = state.image)
+    RoundedImage(
+        modifier = Modifier
+            .clip(CircleShape)
+            .clickable { openPhoto(state.image) },
+        image = state.image
+    )
     Spacer(modifier = Modifier.height(16.dp))
     Text(text = state.name, style = MaterialTheme.typography.h5)
     Spacer(modifier = Modifier.height(4.dp))
