@@ -52,7 +52,6 @@ class ProfileViewModel @Inject constructor(
     private fun getCurrentUser() {
         viewModelScope.launch {
             val result = getCurrentUserUseCase(Unit)
-            delay(2000L)
             if (result is Result.Success) {
                 _state.value = state.value.copy(
                     email = result.data.email,
