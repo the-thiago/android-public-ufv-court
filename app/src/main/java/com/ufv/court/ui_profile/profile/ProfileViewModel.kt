@@ -6,6 +6,7 @@ import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.user_service.domain.usecase.GetCurrentUserUseCase
 import com.ufv.court.core.user_service.domain.usecase.LogoutUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +40,10 @@ class ProfileViewModel @Inject constructor(
                         _state.value = state.value.copy(showConfirmLogoutDialog = action.show)
                     }
                     is ProfileAction.ConfirmLogout -> logout(action.onSuccess)
+                    ProfileAction.Refresh -> {
+                        _state.value = state.value.copy(isRefreshing = true)
+                        getCurrentUser()
+                    }
                 }
             }
         }
@@ -47,13 +52,15 @@ class ProfileViewModel @Inject constructor(
     private fun getCurrentUser() {
         viewModelScope.launch {
             val result = getCurrentUserUseCase(Unit)
+            delay(2000L)
             if (result is Result.Success) {
                 _state.value = state.value.copy(
                     email = result.data.email,
                     name = result.data.name,
                     phone = result.data.phone,
                     image = result.data.image,
-                    placeholder = false
+                    placeholder = false,
+                    isRefreshing = false
                 )
             }
         }

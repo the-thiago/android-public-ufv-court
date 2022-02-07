@@ -3,6 +3,7 @@ package com.ufv.court.ui_profile.profile
 data class ProfileViewState(
     val error: Throwable? = null,
     val placeholder: Boolean = true,
+    val isRefreshing: Boolean = false,
     val showConfirmLogoutDialog: Boolean = false,
     val email: String = "",
     val phone: String = "",

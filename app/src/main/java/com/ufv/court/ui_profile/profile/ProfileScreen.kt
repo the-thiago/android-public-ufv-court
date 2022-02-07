@@ -20,6 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ufv.court.R
 import com.ufv.court.app.theme.BlackRock
 import com.ufv.court.app.theme.Manatee
@@ -73,27 +76,39 @@ private fun ProfileScreen(
     if (state.placeholder) {
         CircularLoading()
     } else {
-        Column(
+        SwipeRefresh(
             modifier = Modifier
                 .padding(bottom = 56.dp) // toolbar height
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize(),
+            state = rememberSwipeRefreshState(state.isRefreshing),
+            onRefresh = { action(ProfileAction.Refresh) },
+            indicator = { swipeState, trigger ->
+                SwipeRefreshIndicator(
+                    state = swipeState,
+                    refreshTriggerDistance = trigger,
+                    contentColor = MaterialTheme.colors.primary
+                )
+            }
         ) {
-            ProfileTopBar(state)
-            ProfileHorizontalDivisor()
-            ChangePasswordItem(onClick = openChangePassword)
-            ProfileHorizontalDivisor()
-            ChangePersonalDataItem(onClick = openEditProfile)
-            ProfileHorizontalDivisor()
-            TermsItem {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ProfileTopBar(state)
+                ProfileHorizontalDivisor()
+                ChangePasswordItem(onClick = openChangePassword)
+                ProfileHorizontalDivisor()
+                ChangePersonalDataItem(onClick = openEditProfile)
+                ProfileHorizontalDivisor()
+                TermsItem {
+                }
+                ProfileHorizontalDivisor()
+                VersionItem {
+                }
+                ProfileHorizontalDivisor()
+                LogoutItem(onClick = { action(ProfileAction.ChangeShowConfirmLogoutDialog(true)) })
+                Spacer(modifier = Modifier.height(16.dp))
             }
-            ProfileHorizontalDivisor()
-            VersionItem {
-            }
-            ProfileHorizontalDivisor()
-            LogoutItem(onClick = { action(ProfileAction.ChangeShowConfirmLogoutDialog(true)) })
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
     ConfirmLogoutDialog(
