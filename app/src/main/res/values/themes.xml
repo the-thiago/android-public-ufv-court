@@ -18,4 +18,11 @@
         <item name="postSplashScreenTheme">@style/Theme.UFVCourt.NoActionBar</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
+
+    <style name="PickerTheme" parent="android:Theme.Material.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/pickerDarkGray</item>
+        <item name="android:colorControlActivated">@color/pickerLightGray</item>
+        <item name="android:textColorPrimary">@color/pickerDarkGray</item>
+        <item name="android:textColorSecondary">@color/pickerDarkGray</item>
+    </style>
 </resources>

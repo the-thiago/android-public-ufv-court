@@ -118,4 +118,5 @@
     <string name="delete">Deletar</string>
     <string name="do_you_want_to_delete_comment">Deseja deletar o cometário</string>
     <string name="comment_deleted">Comentário deletado!</string>
+    <string name="search_by_date">Buscar por data</string>
 </resources>
