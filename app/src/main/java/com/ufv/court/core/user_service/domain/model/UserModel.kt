@@ -5,5 +5,6 @@ data class UserModel(
     val name: String = "",
     val phone: String = "",
     val email: String = "",
-    val image: String = ""
+    val image: String = "",
+    val admin: Boolean = false
 )

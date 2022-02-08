@@ -6,6 +6,7 @@ data class HomeViewState(
     val error: Throwable? = null,
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
+    val isAdmin: Boolean = false,
     val schedules: List<ScheduleModel> = listOf()
 ) {
     companion object {

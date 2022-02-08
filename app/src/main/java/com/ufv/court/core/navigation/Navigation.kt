@@ -64,6 +64,7 @@ sealed class LeafScreen(
     }
 
     object Home : LeafScreen(Screen.Home, "home")
+    object Manage : LeafScreen(Screen.Home, "manage")
     object Calendar : LeafScreen(Screen.Home, "calendar")
     object Schedule : LeafScreen(Screen.Home, "schedule/{date}") {
 

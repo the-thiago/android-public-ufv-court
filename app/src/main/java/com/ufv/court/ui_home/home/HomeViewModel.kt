@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.schedule_service.domain.usecases.GetSchedulesFreeSpaceUseCase
+import com.ufv.court.core.user_service.domain.usecase.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getSchedulesFreeSpaceUseCase: GetSchedulesFreeSpaceUseCase
+    private val getSchedulesFreeSpaceUseCase: GetSchedulesFreeSpaceUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<HomeAction>()
@@ -24,6 +26,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         getSchedulesFreeSpaceForFirstTime()
+        getCurrentUser()
         handleActions()
     }
 
@@ -32,6 +35,15 @@ class HomeViewModel @Inject constructor(
             _state.value = state.value.copy(isLoading = true)
             getSchedulesFreeSpace()
             _state.value = state.value.copy(isLoading = false)
+        }
+    }
+
+    private fun getCurrentUser() {
+        viewModelScope.launch {
+            val result = getCurrentUserUseCase(Unit)
+            if (result is Result.Success) {
+                _state.value = state.value.copy(isAdmin = result.data.admin)
+            }
         }
     }
 

@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,11 +32,13 @@ import com.ufv.court.core.ui.components.ScheduledItem
 fun HomeScreen(
     openCalendar: () -> Unit,
     openScheduleDetails: (String) -> Unit,
+    openManage: () -> Unit
 ) {
     HomeScreen(
         viewModel = hiltViewModel(),
         openCalendar = openCalendar,
-        openScheduleDetails = openScheduleDetails
+        openScheduleDetails = openScheduleDetails,
+        openManage = openManage
     )
 }
 
@@ -42,7 +46,8 @@ fun HomeScreen(
 private fun HomeScreen(
     viewModel: HomeViewModel,
     openCalendar: () -> Unit,
-    openScheduleDetails: (String) -> Unit
+    openScheduleDetails: (String) -> Unit,
+    openManage: () -> Unit
 ) {
     val viewState by rememberFlowWithLifecycle(viewModel.state)
         .collectAsState(initial = HomeViewState.Empty)
@@ -50,7 +55,8 @@ private fun HomeScreen(
     HomeScreen(
         state = viewState,
         openCalendar = openCalendar,
-        openScheduleDetails = openScheduleDetails
+        openScheduleDetails = openScheduleDetails,
+        openManage = openManage
     ) { action ->
         viewModel.submitAction(action)
     }
@@ -61,6 +67,7 @@ private fun HomeScreen(
     state: HomeViewState,
     openCalendar: () -> Unit,
     openScheduleDetails: (String) -> Unit,
+    openManage: () -> Unit,
     action: (HomeAction) -> Unit
 ) {
     SwipeRefresh(
@@ -85,6 +92,13 @@ private fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(16.dp)
             ) {
+                if (state.isAdmin) {
+                    item {
+                        HeaderOpenManage {
+                            openManage()
+                        }
+                    }
+                }
                 item {
                     HeaderCreateEvent {
                         openCalendar()
@@ -113,6 +127,31 @@ private fun HomeScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun HeaderOpenManage(onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(72.dp),
+        onClick = onClick,
+        elevation = 0.dp
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Icon(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .height(32.dp)
+                    .padding(end = 16.dp),
+                painter = painterResource(id = R.drawable.ic_calendar),
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary
+            )
+            TextAndManageIcon(modifier = Modifier.align(Alignment.CenterStart))
         }
     }
 }
@@ -160,6 +199,31 @@ private fun TextAndPlusIcon(modifier: Modifier) {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = stringResource(R.string.schedule_time),
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.primary
+        )
+    }
+}
+
+@Composable
+private fun TextAndManageIcon(modifier: Modifier) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = Modifier.width(16.dp))
+        Icon(
+            modifier = Modifier
+                .background(color = Color.White, shape = CircleShape)
+                .padding(12.dp)
+                .size(20.dp),
+            imageVector = Icons.Default.ManageAccounts,
+            contentDescription = null,
+            tint = MaterialTheme.colors.primary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.manage_schedules),
             style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.primary
         )

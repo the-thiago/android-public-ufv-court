@@ -13,6 +13,7 @@ import com.ufv.court.core.navigation.LeafScreen
 import com.ufv.court.core.navigation.Screen
 import com.ufv.court.ui_home.calendar.CalendarScreen
 import com.ufv.court.ui_home.home.HomeScreen
+import com.ufv.court.ui_home.manage.ManageScreen
 import com.ufv.court.ui_home.schedule.ScheduleScreen
 import com.ufv.court.ui_login.forgotpassword.ForgotPasswordScreen
 import com.ufv.court.ui_login.login.LoginScreen
@@ -101,6 +102,7 @@ fun NavGraphBuilder.addHomeTopLevel(navController: NavController) {
         startDestination = LeafScreen.Home.createRoute()
     ) {
         addHome(navController)
+        addManage(navController)
         addCalendar(navController)
         addSchedule(navController)
         addScheduleDetails(screen = Screen.Home, navController = navController)
@@ -116,6 +118,29 @@ fun NavGraphBuilder.addHome(navController: NavController) {
                     launchSingleTop = true
                 }
             },
+            openScheduleDetails = { scheduleId ->
+                navController.navigate(
+                    LeafScreen.ScheduleDetails(Screen.Home).createRoute(id = scheduleId)
+                ) {
+                    launchSingleTop = true
+                }
+            },
+            openManage = {
+                navController.navigate(
+                    LeafScreen.Manage.createRoute()
+                ) {
+                    launchSingleTop = true
+                }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.addManage(navController: NavController) {
+    composable(LeafScreen.Manage.createRoute()) {
+        ManageScreen(
+            navigateUp = navController::navigateUp,
             openScheduleDetails = { scheduleId ->
                 navController.navigate(
                     LeafScreen.ScheduleDetails(Screen.Home).createRoute(id = scheduleId)

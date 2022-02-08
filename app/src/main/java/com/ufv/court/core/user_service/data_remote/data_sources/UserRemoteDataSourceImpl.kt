@@ -38,7 +38,8 @@ internal class UserRemoteDataSourceImpl @Inject constructor() : UserDataSource {
                             name = userRequest.name,
                             email = userRequest.email,
                             image = "",
-                            phone = userRequest.phone
+                            phone = userRequest.phone,
+                            admin = false
                         )
                         if (userRequest.photo != Uri.EMPTY) {
                             FirebaseStorage.getInstance().reference

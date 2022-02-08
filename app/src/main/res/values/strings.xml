@@ -55,6 +55,8 @@
     <string name="photo">Foto</string>
     <string name="edit_profile">Editar perfil</string>
     <string name="schedule_time">Agendar horário</string>
+    <string name="manage_schedules">Administrar horários</string>
+    <string name="times">Horários</string>
     <string name="select_a_day">Selecione um dia</string>
     <string name="select_a_time">Selecione um horário disponível:</string>
     <string name="schedule_hours">%s:00 às %s:00</string>
