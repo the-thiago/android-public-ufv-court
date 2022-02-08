@@ -37,6 +37,7 @@ import com.ufv.court.ui_myschedule.scheduledetails.ScheduleDetailsAction
 
 @Composable
 fun CommentsSection(
+    currentUserId: String,
     isSendingComment: Boolean,
     showCommentSent: Boolean,
     eventComments: ScheduleComments,
@@ -46,8 +47,7 @@ fun CommentsSection(
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(top = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 6.dp),
         text = stringResource(R.string.comments),
         style = MaterialTheme.typography.h6.copy(color = BlackRock)
     )
@@ -62,8 +62,8 @@ fun CommentsSection(
             textAlign = TextAlign.Center
         )
     } else {
-        eventComments.comments.forEach { comment ->
-            CommentItem(comment)
+        eventComments.comments.forEach {
+            CommentItem(comment = it, currentUserId = currentUserId)
         }
     }
     Surface(
@@ -156,11 +156,12 @@ private fun SendButton(
 }
 
 @Composable
-private fun CommentItem(comment: Comment) {
+private fun CommentItem(comment: Comment, currentUserId: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp)
     ) {
         RoundedImage(
             modifier = Modifier.padding(top = 16.dp),
@@ -188,15 +189,16 @@ private fun CommentItem(comment: Comment) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Icon(
-                    modifier = Modifier
-                        .size(34.dp)
-                        .clip(CircleShape)
-                        .clickable { /*todo*/ }
-                        .padding(6.dp),
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = null
-                )
+                if (currentUserId == comment.userId) {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .clickable { /*todo*/ },
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = comment.text)

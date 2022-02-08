@@ -12,4 +12,8 @@ internal class CommentsRepositoryImpl @Inject constructor(
     override suspend fun getComments(eventId: String): ScheduleComments {
         return dataSource.getComments(eventId = eventId)
     }
+
+    override suspend fun sendComment(eventComments: ScheduleComments) {
+        return dataSource.sendComment(eventComments = eventComments)
+    }
 }

@@ -3,11 +3,15 @@ package com.ufv.court.ui_myschedule.scheduledetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ufv.court.core.comments_service.domain.model.Comment
+import com.ufv.court.core.comments_service.domain.usecases.GetCommentsUseCase
+import com.ufv.court.core.comments_service.domain.usecases.SendCommentsUseCase
 import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.schedule_service.domain.usecases.GetScheduleUseCase
 import com.ufv.court.core.schedule_service.domain.usecases.UpdateScheduleUseCase
 import com.ufv.court.core.user_service.domain.usecase.GetCurrentUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +24,9 @@ class ScheduleDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getScheduleUseCase: GetScheduleUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val updateScheduleUseCase: UpdateScheduleUseCase
+    private val updateScheduleUseCase: UpdateScheduleUseCase,
+    private val getCommentsUseCase: GetCommentsUseCase,
+    private val sendCommentsUseCase: SendCommentsUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<ScheduleDetailsAction>()
@@ -34,6 +40,18 @@ class ScheduleDetailsViewModel @Inject constructor(
     init {
         _state.value = state.value.copy(scheduleId = scheduleId)
         handleActions()
+        getComments()
+    }
+
+    private fun getComments() {
+        viewModelScope.launch {
+            val result = getCommentsUseCase(GetCommentsUseCase.Params(eventId = scheduleId))
+            if (result is Result.Success) {
+                _state.value = state.value.copy(eventComments = result.data)
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception)
+            }
+        }
     }
 
     private fun getScheduleAndUser() {
@@ -91,7 +109,46 @@ class ScheduleDetailsViewModel @Inject constructor(
                     is ScheduleDetailsAction.ChangeComment -> {
                         _state.value = state.value.copy(comment = action.comment)
                     }
+                    ScheduleDetailsAction.SendComment -> sendComment()
                 }
+            }
+        }
+    }
+
+    private fun sendComment() {
+        viewModelScope.launch {
+            val currentUser = state.value.user ?: return@launch
+            _state.value = state.value.copy(isSendingComment = true)
+            val commentUpdated = getCommentsUseCase(GetCommentsUseCase.Params(eventId = scheduleId))
+            if (commentUpdated is Result.Success) {
+                _state.value = state.value.copy(eventComments = commentUpdated.data)
+            }
+            val newComments = state.value.eventComments.comments.toMutableList()
+            val newComment = Comment(
+                userId = currentUser.id,
+                userName = currentUser.name,
+                userPhoto = currentUser.image,
+                time = System.currentTimeMillis(),
+                text = state.value.comment
+            )
+            newComments.add(0, newComment)
+            val newEventComments = state.value.eventComments.copy(comments = newComments)
+            val result = sendCommentsUseCase(
+                SendCommentsUseCase.Params(
+                    eventComments = newEventComments
+                )
+            )
+            if (result is Result.Success) {
+                _state.value = state.value.copy(
+                    isSendingComment = false,
+                    showCommentSent = true,
+                    comment = "",
+                    eventComments = newEventComments
+                )
+                delay(2000L)
+                _state.value = state.value.copy(showCommentSent = false)
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(isSendingComment = false, error = result.exception)
             }
         }
     }

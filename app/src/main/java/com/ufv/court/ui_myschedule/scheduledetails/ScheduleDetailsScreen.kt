@@ -170,6 +170,7 @@ private fun ScheduleDetailsScreen(
                 }
                 Column {
                     CommentsSection(
+                        currentUserId = state.user?.id ?: "",
                         isSendingComment = state.isSendingComment,
                         showCommentSent = state.showCommentSent,
                         eventComments = state.eventComments,
