@@ -16,12 +16,12 @@ internal class ScheduleRemoteDataSourceImpl @Inject constructor() : ScheduleData
 
     private val schedulesPath = "schedules"
 
-    override suspend fun createSchedule(schedule: ScheduleModel) {
-        requestWrapper {
+    override suspend fun createSchedule(schedule: ScheduleModel): String {
+        return requestWrapper {
             suspendCoroutine { continuation ->
                 Firebase.firestore.collection(schedulesPath).add(schedule).addOnCompleteListener {
                     if (it.isSuccessful) {
-                        continuation.resume(Unit)
+                        continuation.resume(it.result?.id ?: "")
                     } else {
                         continuation.resumeWithException(it.exception ?: Exception())
                     }

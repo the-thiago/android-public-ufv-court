@@ -9,8 +9,8 @@ internal class ScheduleRepositoryImpl @Inject constructor(
     private val dataSource: ScheduleDataSource
 ) : ScheduleRepository {
 
-    override suspend fun createSchedule(schedule: ScheduleModel) {
-        dataSource.createSchedule(schedule = schedule)
+    override suspend fun createSchedule(schedule: ScheduleModel): String {
+        return dataSource.createSchedule(schedule = schedule)
     }
 
     override suspend fun getScheduleByDay(timeInMillis: Long): List<ScheduleModel> {

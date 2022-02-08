@@ -4,7 +4,7 @@ import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 
 interface ScheduleDataSource {
 
-    suspend fun createSchedule(schedule: ScheduleModel)
+    suspend fun createSchedule(schedule: ScheduleModel): String
 
     suspend fun getScheduleByDay(timeInMillis: Long): List<ScheduleModel>
 

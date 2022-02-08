@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.ufv.court.core.comments_service.domain.model.ScheduleComments
+import com.ufv.court.core.comments_service.domain.usecases.CreateEventCommentsUseCase
 import com.ufv.court.core.core_common.base.Result
 import com.ufv.court.core.core_common.util.ScheduleUtils
 import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
@@ -21,7 +23,8 @@ import javax.inject.Inject
 class ScheduleViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val createScheduleUseCase: CreateScheduleUseCase,
-    private val getScheduleByDayUseCase: GetScheduleByDayUseCase
+    private val getScheduleByDayUseCase: GetScheduleByDayUseCase,
+    private val createEventCommentsUseCase: CreateEventCommentsUseCase
 ) : ViewModel() {
 
     private val pendingActions = MutableSharedFlow<ScheduleAction>()
@@ -203,11 +206,23 @@ class ScheduleViewModel @Inject constructor(
                 )
                 val result = createScheduleUseCase(CreateScheduleUseCase.Params(newTime))
                 if (result is Result.Success) {
-                    _state.value = state.value.copy(showScheduledDialog = true, isLoading = false)
+                    createEventComments(eventId = result.data)
                 } else if (result is Result.Error) {
                     _state.value = state.value.copy(error = result.exception, isLoading = false)
                 }
             }
+        }
+    }
+
+    private suspend fun createEventComments(eventId: String) {
+        val comments = ScheduleComments(eventId = eventId)
+        val result = createEventCommentsUseCase(
+            CreateEventCommentsUseCase.Params(eventComments = comments)
+        )
+        if (result is Result.Success) {
+            _state.value = state.value.copy(showScheduledDialog = true, isLoading = false)
+        } else if (result is Result.Error) {
+            _state.value = state.value.copy(error = result.exception, isLoading = false)
         }
     }
 

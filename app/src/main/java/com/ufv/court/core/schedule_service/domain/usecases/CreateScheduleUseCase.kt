@@ -9,11 +9,11 @@ import javax.inject.Inject
 class CreateScheduleUseCase @Inject constructor(
     private val repository: ScheduleRepository,
     dispatchers: DispatchersProvider
-) : UseCase<CreateScheduleUseCase.Params, Unit>(dispatchers.io) {
+) : UseCase<CreateScheduleUseCase.Params, String>(dispatchers.io) {
 
     data class Params(val schedule: ScheduleModel)
 
-    override suspend fun execute(parameters: Params) {
+    override suspend fun execute(parameters: Params): String {
         return repository.createSchedule(schedule = parameters.schedule)
     }
 }

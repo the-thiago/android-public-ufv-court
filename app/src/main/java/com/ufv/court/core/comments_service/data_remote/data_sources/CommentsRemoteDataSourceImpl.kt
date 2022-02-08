@@ -57,4 +57,20 @@ internal class CommentsRemoteDataSourceImpl @Inject constructor() : CommentsData
             }
         }
     }
+
+    override suspend fun createEventComments(eventComments: ScheduleComments) {
+        return requestWrapper {
+            suspendCoroutine { continuation ->
+                Firebase.firestore.collection(commentsPath)
+                    .add(eventComments)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            continuation.resume(Unit)
+                        } else {
+                            continuation.resumeWithException(task.exception ?: Exception())
+                        }
+                    }
+            }
+        }
+    }
 }

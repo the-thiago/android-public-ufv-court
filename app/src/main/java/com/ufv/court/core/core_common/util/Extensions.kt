@@ -38,7 +38,7 @@ object ScheduleUtils {
         calendar.timeZone = TimeZone.getTimeZone("UTC")
         calendar.set(Calendar.ZONE_OFFSET, 0)
         calendar.set(Calendar.DST_OFFSET, 0)
-        calendar.set(Calendar.AM_PM, 0)
+        calendar.set(Calendar.AM_PM, 1)
         return calendar.timeInMillis
     }
 }

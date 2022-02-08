@@ -7,4 +7,6 @@ interface CommentsDataSource {
     suspend fun getComments(eventId: String): ScheduleComments
 
     suspend fun sendComment(eventComments: ScheduleComments)
+
+    suspend fun createEventComments(eventComments: ScheduleComments)
 }
