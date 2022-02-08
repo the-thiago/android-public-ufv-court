@@ -9,4 +9,6 @@ sealed class ScheduleDetailsAction {
     object ConfirmEventCancellation : ScheduleDetailsAction()
     object ReloadData : ScheduleDetailsAction()
     object ParticipateClick : ScheduleDetailsAction()
+    object SendComment : ScheduleDetailsAction()
+    data class ChangeComment(val comment: String) : ScheduleDetailsAction()
 }

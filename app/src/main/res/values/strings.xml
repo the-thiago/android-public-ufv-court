@@ -110,4 +110,7 @@
     <string name="participants_plural">%s participantes</string>
     <string name="participants_singular">%s participante</string>
     <string name="invalid_phone">Telefone inválido</string>
+    <string name="comments">Comentários</string>
+    <string name="type_a_comment">Digite um comentário</string>
+    <string name="no_comments">Sem comentários</string>
 </resources>

@@ -23,6 +23,7 @@ import com.ufv.court.R
 import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
 import com.ufv.court.core.ui.components.*
+import com.ufv.court.ui_myschedule.scheduledetails.components.CommentsSection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -149,17 +150,30 @@ private fun ScheduleDetailsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
+                    .padding(top = 16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                ScheduleInfo(state.schedule) {
-                    openParticipants(state.scheduleId)
+                Column {
+                    ScheduleInfo(state.schedule) {
+                        openParticipants(state.scheduleId)
+                    }
+                    if (((!state.isTheOwner && state.schedule.hasFreeSpace) || state.isParticipating) &&
+                        !state.schedule.cancelled
+                    ) {
+                        ParticipateButton(
+                            isParticipating = state.isParticipating,
+                            isLoading = state.isLoading,
+                            action = action
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
-                if (((!state.isTheOwner && state.schedule.hasFreeSpace) || state.isParticipating) &&
-                    !state.schedule.cancelled
-                ) {
-                    ParticipateButton(
-                        isParticipating = state.isParticipating,
-                        isLoading = state.isLoading,
+                Column {
+                    CommentsSection(
+                        isSendingComment = state.isSendingComment,
+                        showCommentSent = state.showCommentSent,
+                        eventComments = state.eventComments,
+                        comment = state.comment,
                         action = action
                     )
                 }
@@ -206,82 +220,88 @@ private fun ParticipateButton(
 
 @Composable
 private fun ScheduleInfo(schedule: ScheduleModel, openParticipants: () -> Unit) {
-    Text(
-        text = schedule.title,
-        style = MaterialTheme.typography.h5,
-        maxLines = 3,
-        overflow = TextOverflow.Ellipsis
-    )
-    if (schedule.cancelled) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = Icons.Default.EventBusy,
-                contentDescription = null,
-                tint = MaterialTheme.colors.primary
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.event_cancelled),
-                style = MaterialTheme.typography.button,
-                color = MaterialTheme.colors.primary
-            )
-        }
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
     ) {
-        TimeInMillisDateInfo(schedule.timeInMillis) { day, month, year ->
-            Text(
-                text = "${day}/${month}/${year}",
-                style = MaterialTheme.typography.button
-            )
-        }
         Text(
-            text = stringResource(
-                id = R.string.schedule_hours,
-                schedule.hourStart.toString().padStart(2, '0'),
-                schedule.hourEnd.toString().padStart(2, '0'),
-            ),
-            style = MaterialTheme.typography.button
+            text = schedule.title,
+            style = MaterialTheme.typography.h5,
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
         )
-    }
-    Spacer(modifier = Modifier.height(16.dp))
-    val freeSpaceId by remember(schedule.freeSpaces) {
-        if (schedule.freeSpaces > 1) {
-            mutableStateOf(R.string.x_free_spaces)
-        } else {
-            mutableStateOf(R.string.x_free_space)
-        }
-    }
-    Text(
-        text = "${schedule.scheduleType} - ${
-            stringResource(id = freeSpaceId, schedule.freeSpaces)
-        }",
-        style = MaterialTheme.typography.button
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-    Text(
-        text = if (schedule.description.isBlank()) {
-            stringResource(id = R.string.there_is_no_description)
-        } else schedule.description,
-        style = MaterialTheme.typography.body1
-    )
-    if (schedule.participantsId.isNotEmpty()) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TextButton(onClick = openParticipants, shape = RoundedCornerShape(24.dp)) {
+        if (schedule.cancelled) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.EventBusy,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(R.string.see_participants),
+                    text = stringResource(id = R.string.event_cancelled),
                     style = MaterialTheme.typography.button,
                     color = MaterialTheme.colors.primary
                 )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TimeInMillisDateInfo(schedule.timeInMillis) { day, month, year ->
+                Text(
+                    text = "${day}/${month}/${year}",
+                    style = MaterialTheme.typography.button
+                )
+            }
+            Text(
+                text = stringResource(
+                    id = R.string.schedule_hours,
+                    schedule.hourStart.toString().padStart(2, '0'),
+                    schedule.hourEnd.toString().padStart(2, '0'),
+                ),
+                style = MaterialTheme.typography.button
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        val freeSpaceId by remember(schedule.freeSpaces) {
+            if (schedule.freeSpaces > 1) {
+                mutableStateOf(R.string.x_free_spaces)
+            } else {
+                mutableStateOf(R.string.x_free_space)
+            }
+        }
+        Text(
+            text = "${schedule.scheduleType} - ${
+                stringResource(id = freeSpaceId, schedule.freeSpaces)
+            }",
+            style = MaterialTheme.typography.button
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = if (schedule.description.isBlank()) {
+                stringResource(id = R.string.there_is_no_description)
+            } else schedule.description,
+            style = MaterialTheme.typography.body1
+        )
+        if (schedule.participantsId.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TextButton(onClick = openParticipants, shape = RoundedCornerShape(24.dp)) {
+                    Text(
+                        text = stringResource(R.string.see_participants),
+                        style = MaterialTheme.typography.button,
+                        color = MaterialTheme.colors.primary
+                    )
+                }
             }
         }
     }
@@ -357,6 +377,7 @@ private fun ScheduleDetailsToolbar(
     cancelled: Boolean
 ) {
     CustomToolbar(
+        elevation = 4.dp,
         toolbarText = stringResource(id = R.string.event),
         onLeftButtonClick = navigateUp,
         rightIcon = if (isTheOwner && !cancelled) {

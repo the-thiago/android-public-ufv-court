@@ -221,9 +221,10 @@ class ScheduleViewModel @Inject constructor(
         calendar.set(Calendar.SECOND, 1)
         calendar.set(Calendar.MILLISECOND, 1)
         calendar.set(Calendar.HOUR, 1)
-        calendar.timeZone = TimeZone.getTimeZone("GMT")
+        calendar.timeZone = TimeZone.getTimeZone("UTC")
         calendar.set(Calendar.ZONE_OFFSET, 0)
         calendar.set(Calendar.DST_OFFSET, 0)
+        calendar.set(Calendar.AM_PM, 0)
         return calendar.timeInMillis
     }
 

@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +22,8 @@ fun CustomTextField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     labelText: String = "",
     hintText: String = "",
+    maxLines: Int = 1,
+    enabled: Boolean = true,
     text: String,
     onTextChange: (String) -> Unit,
 ) {
@@ -42,14 +41,16 @@ fun CustomTextField(
                 cursorColor = Color.Black,
                 disabledLabelColor = Solitude,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current)
             ),
             onValueChange = {
                 onTextChange(it)
             },
             shape = RoundedCornerShape(8.dp),
-            singleLine = true,
-            maxLines = 1,
+            singleLine = maxLines == 1,
+            maxLines = maxLines,
             keyboardOptions = keyboardOptions,
             trailingIcon = trailingIcon,
             leadingIcon = leadingIcon,
@@ -60,7 +61,8 @@ fun CustomTextField(
                     text = hintText,
                     style = MaterialTheme.typography.body2
                 )
-            }
+            },
+            enabled = enabled
         )
     }
 }

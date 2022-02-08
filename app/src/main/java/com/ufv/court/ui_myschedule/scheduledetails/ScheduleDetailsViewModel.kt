@@ -88,6 +88,9 @@ class ScheduleDetailsViewModel @Inject constructor(
                     is ScheduleDetailsAction.ChangeShowCancelParticipationDialog -> {
                         _state.value = state.value.copy(showCancelParticipationDialog = action.show)
                     }
+                    is ScheduleDetailsAction.ChangeComment -> {
+                        _state.value = state.value.copy(comment = action.comment)
+                    }
                 }
             }
         }
