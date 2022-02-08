@@ -122,6 +122,13 @@ class ScheduleDetailsViewModel @Inject constructor(
                         _state.value = state.value.copy(showDeleteCommentDialog = true)
                     }
                     ScheduleDetailsAction.ConfirmDeleteComment -> deleteComment()
+                    ScheduleDetailsAction.Refresh -> {
+                        _state.value = state.value.copy(isRefreshing = true)
+                        getComments()
+                        getScheduleAndUser()
+                        delay(1000L)
+                        _state.value = state.value.copy(isRefreshing = false)
+                    }
                 }
             }
         }

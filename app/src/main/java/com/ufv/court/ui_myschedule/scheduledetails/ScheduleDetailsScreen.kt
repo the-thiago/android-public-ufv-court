@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.ufv.court.R
 import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
@@ -146,37 +149,50 @@ private fun ScheduleDetailsScreen(
         if (state.placeholder || state.schedule == null) {
             CircularLoading()
         } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(top = 16.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+            SwipeRefresh(
+                modifier = Modifier.fillMaxSize(),
+                state = rememberSwipeRefreshState(state.isRefreshing),
+                onRefresh = { action(ScheduleDetailsAction.Refresh) },
+                indicator = { swipeState, trigger ->
+                    SwipeRefreshIndicator(
+                        state = swipeState,
+                        refreshTriggerDistance = trigger,
+                        contentColor = MaterialTheme.colors.primary
+                    )
+                }
             ) {
-                Column {
-                    ScheduleInfo(state.schedule) {
-                        openParticipants(state.scheduleId)
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 16.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        ScheduleInfo(state.schedule) {
+                            openParticipants(state.scheduleId)
+                        }
+                        if (((!state.isTheOwner && state.schedule.hasFreeSpace) || state.isParticipating) &&
+                            !state.schedule.cancelled
+                        ) {
+                            ParticipateButton(
+                                isParticipating = state.isParticipating,
+                                isLoading = state.isLoading,
+                                action = action
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
-                    if (((!state.isTheOwner && state.schedule.hasFreeSpace) || state.isParticipating) &&
-                        !state.schedule.cancelled
-                    ) {
-                        ParticipateButton(
-                            isParticipating = state.isParticipating,
-                            isLoading = state.isLoading,
+                    Column {
+                        CommentsSection(
+                            currentUserId = state.user?.id ?: "",
+                            isSendingComment = state.isSendingComment,
+                            showCommentSent = state.showCommentSent,
+                            eventComments = state.eventComments,
+                            comment = state.comment,
                             action = action
                         )
                     }
-                    Spacer(modifier = Modifier.height(32.dp))
-                }
-                Column {
-                    CommentsSection(
-                        currentUserId = state.user?.id ?: "",
-                        isSendingComment = state.isSendingComment,
-                        showCommentSent = state.showCommentSent,
-                        eventComments = state.eventComments,
-                        comment = state.comment,
-                        action = action
-                    )
                 }
             }
         }

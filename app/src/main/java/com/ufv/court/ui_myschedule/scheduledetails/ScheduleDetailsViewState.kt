@@ -8,6 +8,7 @@ data class ScheduleDetailsViewState(
     val error: Throwable? = null,
     val scheduleId: String = "",
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val placeholder: Boolean = true,
     val schedule: ScheduleModel? = null,
     val user: UserModel? = null,
