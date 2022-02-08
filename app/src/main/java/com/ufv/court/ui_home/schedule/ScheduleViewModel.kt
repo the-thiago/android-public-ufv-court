@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.ufv.court.core.core_common.base.Result
+import com.ufv.court.core.core_common.util.ScheduleUtils
 import com.ufv.court.core.schedule_service.domain.model.ScheduleModel
 import com.ufv.court.core.schedule_service.domain.usecases.CreateScheduleUseCase
 import com.ufv.court.core.schedule_service.domain.usecases.GetScheduleByDayUseCase
@@ -14,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,7 +50,7 @@ class ScheduleViewModel @Inject constructor(
             _state.value = state.value.copy(date = formattedDate.dropLast(1))
             val result = getScheduleByDayUseCase(
                 GetScheduleByDayUseCase.Params(
-                    timeInMillis = getTimeInMillisFromDate(
+                    timeInMillis = ScheduleUtils.getTimeInMillisFromDate(
                         day = dateInfo[0].toInt(),
                         month = dateInfo[1].toInt(),
                         year = dateInfo[2].toInt()
@@ -194,7 +194,7 @@ class ScheduleViewModel @Inject constructor(
                     description = state.value.description,
                     scheduleType = state.value.scheduleType,
                     freeSpaces = freeSpace,
-                    timeInMillis = getTimeInMillisFromDate(
+                    timeInMillis = ScheduleUtils.getTimeInMillisFromDate(
                         day = splitDate[0].toInt(),
                         month = splitDate[1].toInt(),
                         year = splitDate[2].toInt()
@@ -209,23 +209,6 @@ class ScheduleViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun getTimeInMillisFromDate(day: Int, month: Int, year: Int): Long {
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.DAY_OF_MONTH, day)
-        calendar.set(Calendar.MONTH, month - 1)
-        calendar.set(Calendar.YEAR, year)
-        calendar.set(Calendar.HOUR_OF_DAY, 1)
-        calendar.set(Calendar.MINUTE, 1)
-        calendar.set(Calendar.SECOND, 1)
-        calendar.set(Calendar.MILLISECOND, 1)
-        calendar.set(Calendar.HOUR, 1)
-        calendar.timeZone = TimeZone.getTimeZone("UTC")
-        calendar.set(Calendar.ZONE_OFFSET, 0)
-        calendar.set(Calendar.DST_OFFSET, 0)
-        calendar.set(Calendar.AM_PM, 0)
-        return calendar.timeInMillis
     }
 
     private fun getFreeSpaces(): Int {

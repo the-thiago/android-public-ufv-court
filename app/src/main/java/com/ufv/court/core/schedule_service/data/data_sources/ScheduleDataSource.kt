@@ -8,6 +8,8 @@ interface ScheduleDataSource {
 
     suspend fun getScheduleByDay(timeInMillis: Long): List<ScheduleModel>
 
+    suspend fun getAllScheduleAfterDate(timeInMillis: Long): List<ScheduleModel>
+
     suspend fun getScheduledByUser(): List<ScheduleModel>
 
     suspend fun getScheduledAsParticipant(): List<ScheduleModel>

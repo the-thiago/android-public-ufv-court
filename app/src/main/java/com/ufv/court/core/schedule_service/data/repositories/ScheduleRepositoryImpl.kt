@@ -17,6 +17,10 @@ internal class ScheduleRepositoryImpl @Inject constructor(
         return dataSource.getScheduleByDay(timeInMillis = timeInMillis)
     }
 
+    override suspend fun getAllScheduleAfterDate(timeInMillis: Long): List<ScheduleModel> {
+        return dataSource.getAllScheduleAfterDate(timeInMillis = timeInMillis)
+    }
+
     override suspend fun getScheduledByUser(): List<ScheduleModel> {
         return dataSource.getScheduledByUser()
     }

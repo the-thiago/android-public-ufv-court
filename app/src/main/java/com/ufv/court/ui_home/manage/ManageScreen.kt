@@ -1,18 +1,23 @@
 package com.ufv.court.ui_home.manage
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ufv.court.R
 import com.ufv.court.core.ui.base.rememberFlowWithLifecycle
+import com.ufv.court.core.ui.components.CircularLoading
 import com.ufv.court.core.ui.components.CustomToolbar
+import com.ufv.court.core.ui.components.ScheduledItem
 
 @Composable
 fun ManageScreen(
@@ -52,13 +57,23 @@ private fun ManageScreen(
     action: (ManageAction) -> Unit
 ) {
     Scaffold(topBar = {
-        CustomToolbar(toolbarText = stringResource(id = R.string.times)) {
+        CustomToolbar(toolbarText = stringResource(id = R.string.times), elevation = 4.dp) {
             navigateUp()
         }
     }) {
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            item {
-                Text(text = "Manage")
+        if (state.placeholder) {
+            CircularLoading()
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(items = state.schedules) {
+                    ScheduledItem(scheduleModel = it) {
+                        openScheduleDetails(it.id)
+                    }
+                }
             }
         }
     }

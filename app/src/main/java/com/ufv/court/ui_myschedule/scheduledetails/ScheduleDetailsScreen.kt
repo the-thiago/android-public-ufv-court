@@ -143,6 +143,7 @@ private fun ScheduleDetailsScreen(
             navigateUp = navigateUp,
             showBottomSheet = showBottomSheet,
             isTheOwner = state.isTheOwner,
+            isAdmin = state.user?.admin ?: false,
             cancelled = state.schedule?.cancelled ?: true
         )
     }) {
@@ -421,13 +422,14 @@ private fun ScheduleDetailsToolbar(
     navigateUp: () -> Unit,
     showBottomSheet: () -> Unit,
     isTheOwner: Boolean,
+    isAdmin: Boolean,
     cancelled: Boolean
 ) {
     CustomToolbar(
         elevation = 4.dp,
         toolbarText = stringResource(id = R.string.event),
         onLeftButtonClick = navigateUp,
-        rightIcon = if (isTheOwner && !cancelled) {
+        rightIcon = if ((isTheOwner && !cancelled) || isAdmin) {
             {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
@@ -436,7 +438,7 @@ private fun ScheduleDetailsToolbar(
                 )
             }
         } else null,
-        onRightButtonClick = if (isTheOwner && !cancelled) {
+        onRightButtonClick = if ((isTheOwner && !cancelled) || isAdmin) {
             showBottomSheet
         } else {
             {}
