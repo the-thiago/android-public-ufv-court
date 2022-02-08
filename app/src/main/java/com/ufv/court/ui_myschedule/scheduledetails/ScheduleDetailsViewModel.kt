@@ -36,6 +36,7 @@ class ScheduleDetailsViewModel @Inject constructor(
     val state: StateFlow<ScheduleDetailsViewState> = _state
 
     private val scheduleId: String = savedStateHandle.get<String>("id") ?: ""
+    private var deleteCommentIndex = 0
 
     init {
         _state.value = state.value.copy(scheduleId = scheduleId)
@@ -110,7 +111,40 @@ class ScheduleDetailsViewModel @Inject constructor(
                         _state.value = state.value.copy(comment = action.comment)
                     }
                     ScheduleDetailsAction.SendComment -> sendComment()
+                    is ScheduleDetailsAction.ChangeShowDeleteCommentDialog -> {
+                        _state.value = state.value.copy(showDeleteCommentDialog = action.show)
+                    }
+                    is ScheduleDetailsAction.ChangeShowDeletedCommentDialog -> {
+                        _state.value = state.value.copy(showDeletedCommentDialog = action.show)
+                    }
+                    is ScheduleDetailsAction.DeleteCommentClick -> {
+                        deleteCommentIndex = action.commentIndex
+                        _state.value = state.value.copy(showDeleteCommentDialog = true)
+                    }
+                    ScheduleDetailsAction.ConfirmDeleteComment -> deleteComment()
                 }
+            }
+        }
+    }
+
+    private fun deleteComment() {
+        viewModelScope.launch {
+            _state.value = state.value.copy(showDeleteCommentDialog = false)
+            val newComments = state.value.eventComments.comments.toMutableList()
+            newComments.removeAt(deleteCommentIndex)
+            val newEventComments = state.value.eventComments.copy(comments = newComments)
+            val result = sendCommentsUseCase(
+                SendCommentsUseCase.Params(
+                    eventComments = newEventComments
+                )
+            )
+            if (result is Result.Success) {
+                _state.value = state.value.copy(
+                    eventComments = newEventComments,
+                    showDeletedCommentDialog = true
+                )
+            } else if (result is Result.Error) {
+                _state.value = state.value.copy(error = result.exception)
             }
         }
     }

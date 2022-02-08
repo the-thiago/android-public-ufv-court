@@ -20,7 +20,9 @@ data class ScheduleDetailsViewState(
     val eventComments: ScheduleComments = ScheduleComments(),
     val comment: String = "",
     val isSendingComment: Boolean = false,
-    val showCommentSent: Boolean = false
+    val showCommentSent: Boolean = false,
+    val showDeleteCommentDialog: Boolean = false,
+    val showDeletedCommentDialog: Boolean = false
 ) {
     companion object {
         val Empty = ScheduleDetailsViewState()

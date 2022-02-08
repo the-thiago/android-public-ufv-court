@@ -47,7 +47,7 @@ fun CommentsSection(
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         text = stringResource(R.string.comments),
         style = MaterialTheme.typography.h6.copy(color = BlackRock)
     )
@@ -62,8 +62,10 @@ fun CommentsSection(
             textAlign = TextAlign.Center
         )
     } else {
-        eventComments.comments.forEach {
-            CommentItem(comment = it, currentUserId = currentUserId)
+        eventComments.comments.forEachIndexed { index, item ->
+            CommentItem(comment = item, currentUserId = currentUserId) {
+                action(ScheduleDetailsAction.DeleteCommentClick(commentIndex = index))
+            }
         }
     }
     Surface(
@@ -156,7 +158,11 @@ private fun SendButton(
 }
 
 @Composable
-private fun CommentItem(comment: Comment, currentUserId: String) {
+private fun CommentItem(
+    comment: Comment,
+    currentUserId: String,
+    onDeleteClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -194,7 +200,7 @@ private fun CommentItem(comment: Comment, currentUserId: String) {
                         modifier = Modifier
                             .size(24.dp)
                             .clip(CircleShape)
-                            .clickable { /*todo*/ },
+                            .clickable { onDeleteClick() },
                         imageVector = Icons.Default.Delete,
                         contentDescription = null
                     )

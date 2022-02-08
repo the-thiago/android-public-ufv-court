@@ -11,4 +11,8 @@ sealed class ScheduleDetailsAction {
     object ParticipateClick : ScheduleDetailsAction()
     object SendComment : ScheduleDetailsAction()
     data class ChangeComment(val comment: String) : ScheduleDetailsAction()
+    data class ChangeShowDeleteCommentDialog(val show: Boolean) : ScheduleDetailsAction()
+    data class ChangeShowDeletedCommentDialog(val show: Boolean) : ScheduleDetailsAction()
+    data class DeleteCommentClick(val commentIndex: Int) : ScheduleDetailsAction()
+    object ConfirmDeleteComment : ScheduleDetailsAction()
 }

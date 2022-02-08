@@ -113,4 +113,7 @@
     <string name="comments">Comentários</string>
     <string name="type_a_comment">Digite um comentário</string>
     <string name="no_comments">Sem comentários</string>
+    <string name="delete">Deletar</string>
+    <string name="do_you_want_to_delete_comment">Deseja deletar o cometário</string>
+    <string name="comment_deleted">Comentário deletado!</string>
 </resources>

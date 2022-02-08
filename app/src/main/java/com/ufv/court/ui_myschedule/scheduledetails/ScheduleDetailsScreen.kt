@@ -187,6 +187,8 @@ private fun ScheduleDetailsScreen(
     ConfirmCancelledDialog(show = state.showCancelledDialog, action = action)
     ConfirmCancellationDialog(show = state.showCancellationDialog, action = action)
     ParticipatingDialog(show = state.showParticipatingDialog, action = action)
+    DeleteCommentDialog(show = state.showDeleteCommentDialog, action = action)
+    DeletedCommentDialog(show = state.showDeletedCommentDialog, action = action)
     CancelParticipationDialog(show = state.showCancelParticipationDialog, action = action)
     OnLifecycleEvent(action = action)
 }
@@ -357,6 +359,34 @@ private fun ParticipatingDialog(show: Boolean, action: (ScheduleDetailsAction) -
     if (show) {
         OneButtonSuccessDialog(message = stringResource(R.string.now_you_are_participating)) {
             action(ScheduleDetailsAction.ChangeShowParticipatingDialog(false))
+        }
+    }
+}
+
+@Composable
+private fun DeleteCommentDialog(show: Boolean, action: (ScheduleDetailsAction) -> Unit) {
+    if (show) {
+        TwoButtonsDialog(
+            title = stringResource(R.string.delete),
+            message = stringResource(R.string.do_you_want_to_delete_comment),
+            leftButtonText = stringResource(R.string.cancel),
+            rightButtonText = stringResource(R.string.delete),
+            onLeftButtonClick = {
+                action(ScheduleDetailsAction.ChangeShowDeleteCommentDialog(false))
+            },
+            onRightButtonClick = { action(ScheduleDetailsAction.ConfirmDeleteComment) },
+            onDismiss = {
+                action(ScheduleDetailsAction.ChangeShowDeleteCommentDialog(false))
+            }
+        )
+    }
+}
+
+@Composable
+private fun DeletedCommentDialog(show: Boolean, action: (ScheduleDetailsAction) -> Unit) {
+    if (show) {
+        OneButtonSuccessDialog(message = stringResource(R.string.comment_deleted)) {
+            action(ScheduleDetailsAction.ChangeShowDeletedCommentDialog(false))
         }
     }
 }
