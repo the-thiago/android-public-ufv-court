@@ -76,7 +76,7 @@ private fun SingleChoiceDropDownHeader(
     ) {
         Text(
             modifier = Modifier.padding(start = 16.dp),
-            text = if (selectedItem.isEmpty()) stringResource(R.string.select) else selectedItem,
+            text = selectedItem.ifEmpty { stringResource(R.string.select) },
             style = MaterialTheme.typography.body2
         )
         IconButton(

@@ -93,7 +93,8 @@ private fun ScheduleScreen(
                         CustomTextField(
                             text = state.description,
                             labelText = stringResource(R.string.description_optional),
-                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+                            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+                            maxLines = 10
                         ) {
                             action(ScheduleAction.ChangeDescription(it))
                         }
