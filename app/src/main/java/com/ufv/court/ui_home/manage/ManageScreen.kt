@@ -72,7 +72,7 @@ private fun ManageScreen(
     action: (ManageAction) -> Unit
 ) {
     Scaffold(topBar = {
-        CustomToolbar(toolbarText = stringResource(id = R.string.times), elevation = 4.dp) {
+        CustomToolbar(toolbarText = stringResource(id = R.string.events), elevation = 4.dp) {
             navigateUp()
         }
     }) {
@@ -124,7 +124,7 @@ private fun ManageScreen(
 private fun NothingFoundText(modifier: Modifier = Modifier) {
     Text(
         modifier = modifier,
-        text = stringResource(R.string.no_schedule_here),
+        text = stringResource(R.string.no_events_here),
         style = MaterialTheme.typography.body2,
         color = ShipCove,
         textAlign = TextAlign.Center

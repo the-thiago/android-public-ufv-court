@@ -99,7 +99,7 @@ private fun CalendarToolbar(
     navigateUp: () -> Unit
 ) {
     CustomToolbar(
-        toolbarText = stringResource(R.string.select_a_day),
+        toolbarText = stringResource(R.string.select_a_date),
         onLeftButtonClick = navigateUp
     )
 }

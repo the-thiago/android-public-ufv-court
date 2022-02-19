@@ -182,7 +182,7 @@ fun AddProfileImage(profileUri: Uri?, action: (RegisterAction) -> Unit) {
         }
     )
     Box {
-        TextFieldLabel(text = stringResource(R.string.photo))
+        TextFieldLabel(text = stringResource(R.string.photo_optional))
         if (profileUri != null) {
             PreviewUriImage(uri = profileUri, onClick = { launcher.launch("image/*") })
         } else {

@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.firebase.messaging.FirebaseMessaging
 import com.ufv.court.app.theme.UFVCourtTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,6 +25,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
+//        setupFirebaseMessaging()
         viewModel.doInitialWork()
         setContent {
             val startDestination by viewModel.initialDestination.collectAsState()
@@ -56,5 +58,13 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    private fun setupFirebaseMessaging() {
+//        FirebaseMessaging.getInstance().token.addOnSuccessListener(this) { token ->
+//            if (token != null) {
+//                viewModel.sendFirebaseMessagingToken(token = token)
+//            }
+//        }
     }
 }

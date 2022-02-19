@@ -114,7 +114,7 @@ private fun HomeScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 32.dp),
-                            text = stringResource(R.string.home_empty_schedules),
+                            text = stringResource(R.string.home_empty_events),
                             style = MaterialTheme.typography.body2,
                             color = ShipCove,
                             textAlign = TextAlign.Center
@@ -198,7 +198,7 @@ private fun TextAndPlusIcon(modifier: Modifier) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = stringResource(R.string.schedule_time),
+            text = stringResource(R.string.schedule_event),
             style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.primary
         )
@@ -223,7 +223,7 @@ private fun TextAndManageIcon(modifier: Modifier) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            text = stringResource(R.string.manage_schedules),
+            text = stringResource(R.string.manage_events),
             style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.primary
         )

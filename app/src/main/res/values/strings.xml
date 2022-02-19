@@ -53,11 +53,12 @@
     <string name="next">Continuar</string>
     <string name="type_your_name">Preencha o seu nome</string>
     <string name="photo">Foto</string>
+    <string name="photo_optional">Foto (opcional)</string>
     <string name="edit_profile">Editar perfil</string>
-    <string name="schedule_time">Agendar horário</string>
-    <string name="manage_schedules">Administrar horários</string>
-    <string name="times">Horários</string>
-    <string name="select_a_day">Selecione um dia</string>
+    <string name="schedule_event">Agendar evento</string>
+    <string name="manage_events">Administrar eventos</string>
+    <string name="events">Administrar eventos</string>
+    <string name="select_a_date">Selecione uma data</string>
     <string name="select_a_time">Selecione um horário disponível:</string>
     <string name="schedule_hours">%s:00 às %s:00</string>
     <string name="scheduled">Agendado</string>
@@ -85,11 +86,11 @@
         <item>Outro</item>
     </string-array>
     <string name="select_a_time_error">Selecione um horário disponível</string>
-    <string name="scheduled_message">O horário foi agendado para %s!</string>
+    <string name="scheduled_message">O evento foi agendado para %s!</string>
     <string name="my_schedule">Agenda</string>
-    <string name="time_as_participant">Horários como participante</string>
-    <string name="times_scheduled">Horários agendados</string>
-    <string name="no_schedule_here">Não há horários aqui</string>
+    <string name="events_as_participant">Eventos como participante</string>
+    <string name="events_scheduled">Eventos agendados</string>
+    <string name="no_events_here">Não há eventos aqui</string>
     <string name="x_free_spaces">%s vagas</string>
     <string name="x_free_space">%s vaga</string>
     <string name="edit_event">Editar evento</string>
@@ -104,7 +105,7 @@
     <string name="join_a_event">Se junte a um evento…</string>
     <string name="participate">Participar</string>
     <string name="cancel_participate">Cancelar participação</string>
-    <string name="home_empty_schedules">Nada aqui\nAgende um horário!</string>
+    <string name="home_empty_events">Nada aqui\nAgende um evento!</string>
     <string name="now_you_are_participating">Agora você está participando do evento!</string>
     <string name="now_you_are_not_participating">Participação cancelada</string>
     <string name="see_participants">Ver participantes</string>
@@ -118,5 +119,5 @@
     <string name="delete">Deletar</string>
     <string name="do_you_want_to_delete_comment">Deseja deletar o cometário</string>
     <string name="comment_deleted">Comentário deletado!</string>
-    <string name="search_by_date">Buscar por data</string>
+    <string name="search_by_date">Buscar evento por data</string>
 </resources>

@@ -33,4 +33,18 @@ class MainViewModel @Inject constructor(
             isReady = true
         }
     }
+
+    fun sendFirebaseMessagingToken(token: String) {
+        viewModelScope.launch {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+//            registerTokenUseCase(
+//                RegisterTokenUseCase.Params(
+//                    id = userId,
+//                    deviceId = token,
+//                    deviceOs = "android",
+//                    deviceType = "android"
+//                )
+//            )
+        }
+    }
 }

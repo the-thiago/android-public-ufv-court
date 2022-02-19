@@ -91,7 +91,7 @@ private fun LoadedMyScheduleScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        ExpandableSection(textRes = R.string.time_as_participant) {
+        ExpandableSection(textRes = R.string.events_as_participant) {
             if (state.scheduledAsParticipant.isEmpty()) {
                 NoScheduleHereText()
             } else {
@@ -111,7 +111,7 @@ private fun LoadedMyScheduleScreen(
             }
         }
         HorizontalDivisor(modifier = Modifier.padding(start = 16.dp))
-        ExpandableSection(textRes = R.string.times_scheduled) {
+        ExpandableSection(textRes = R.string.events_scheduled) {
             if (state.scheduled.isEmpty()) {
                 NoScheduleHereText()
             } else {
@@ -139,7 +139,7 @@ private fun NoScheduleHereText() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 32.dp),
-        text = stringResource(R.string.no_schedule_here),
+        text = stringResource(R.string.no_events_here),
         style = MaterialTheme.typography.body2,
         color = ShipCove,
         textAlign = TextAlign.Center
