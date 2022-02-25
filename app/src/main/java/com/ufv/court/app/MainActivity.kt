@@ -13,7 +13,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.firebase.messaging.FirebaseMessaging
 import com.ufv.court.app.theme.UFVCourtTheme
 import dagger.hilt.android.AndroidEntryPoint
 

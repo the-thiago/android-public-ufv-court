@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -33,11 +34,15 @@ fun CustomBottomSheetContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                modifier = Modifier.testTag("SelectTextCustomBottomSheetContent"),
                 text = stringResource(R.string.select),
                 style = MaterialTheme.typography.h5,
                 color = BlackRock
             )
-            IconButton(onClick = { onHideBottomSheet() }) {
+            IconButton(
+                modifier = Modifier.testTag("CloseIconCustomBottomSheetContent"),
+                onClick = { onHideBottomSheet() }
+            ) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = null,
@@ -68,17 +73,20 @@ fun CustomBottomSheetOption(
         ) {
             if (iconId == null) {
                 Icon(
+                    modifier = Modifier.testTag("VectorIconCustomBottomSheetOption"),
                     imageVector = imageVector,
                     contentDescription = stringResource(id = optionDescription)
                 )
             } else {
                 Icon(
+                    modifier = Modifier.testTag("DrawableIconCustomBottomSheetOption"),
                     painter = painterResource(id = iconId),
                     contentDescription = stringResource(id = optionDescription)
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
             Text(
+                modifier = Modifier.testTag("LabelCustomBottomSheetOption"),
                 text = stringResource(id = textId),
                 color = ShipCove,
                 style = MaterialTheme.typography.body1

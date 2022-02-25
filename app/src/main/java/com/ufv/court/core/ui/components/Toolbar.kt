@@ -45,7 +45,7 @@ fun CustomToolbar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Center)
-                        .testTag("NozToolbarText"),
+                        .testTag("CustomToolbarText"),
                     text = toolbarText,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h5
@@ -58,7 +58,7 @@ fun CustomToolbar(
                         .padding(end = 16.dp)
                         .align(Alignment.CenterEnd)
                         .background(color = Solitude, shape = CircleShape)
-                        .testTag("NozToolbarRightIcon")
+                        .testTag("CustomToolbarRightIcon")
                 ) {
                     rightIcon()
                 }

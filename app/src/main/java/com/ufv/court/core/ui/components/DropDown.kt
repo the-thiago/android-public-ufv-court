@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.ufv.court.R
@@ -75,14 +76,17 @@ private fun SingleChoiceDropDownHeader(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            modifier = Modifier.padding(start = 16.dp),
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .testTag("SingleChoiceDropDownSelectedText"),
             text = selectedItem.ifEmpty { stringResource(R.string.select) },
             style = MaterialTheme.typography.body2
         )
         IconButton(
             modifier = Modifier
                 .padding(end = 8.dp)
-                .rotate(arrowIconRotation),
+                .rotate(arrowIconRotation)
+                .testTag("SingleChoiceDropDownExpandIcon"),
             onClick = { changeIsExpanded() }
         ) {
             Icon(
@@ -109,7 +113,7 @@ private fun SingleChoiceDropDownList(
             .animateContentSize()
     ) {
         if (isExpanded) {
-            items.forEach { item ->
+            items.forEachIndexed { index, item ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -118,11 +122,13 @@ private fun SingleChoiceDropDownList(
                             changeIsExpanded()
                             onItemClick(item)
                         }
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = 8.dp)
+                        .testTag("SingleChoiceDropDownItem$index"),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Spacer(modifier = Modifier.width(8.dp))
                     RadioButton(
+                        modifier = Modifier.testTag("SingleChoiceDropDownItemRadioButton$index"),
                         selected = selectedItem == item,
                         colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colors.primary),
                         onClick = {
@@ -131,7 +137,11 @@ private fun SingleChoiceDropDownList(
                         }
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = item, style = MaterialTheme.typography.body2)
+                    Text(
+                        modifier = Modifier.testTag("SingleChoiceDropDownItemText$index"),
+                        text = item,
+                        style = MaterialTheme.typography.body2
+                    )
                 }
             }
         }
