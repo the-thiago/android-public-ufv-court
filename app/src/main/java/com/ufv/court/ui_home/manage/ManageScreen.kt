@@ -65,7 +65,7 @@ private fun ManageScreen(
 }
 
 @Composable
-private fun ManageScreen(
+fun ManageScreen(
     state: ManageViewState,
     navigateUp: () -> Unit,
     openScheduleDetails: (String) -> Unit,
