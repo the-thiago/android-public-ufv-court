@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,7 +58,7 @@ private fun ScheduleScreen(
 
 @OptIn(ExperimentalSnapperApi::class)
 @Composable
-private fun ScheduleScreen(
+fun ScheduleScreen(
     state: ScheduleViewState,
     navigateUp: () -> Unit,
     openHome: () -> Unit,
@@ -83,6 +84,7 @@ private fun ScheduleScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         CustomTextField(
+                            modifier = Modifier.testTag("TitleTextField"),
                             text = state.title,
                             labelText = stringResource(R.string.title),
                             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
@@ -91,6 +93,7 @@ private fun ScheduleScreen(
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         CustomTextField(
+                            modifier = Modifier.testTag("DescriptionTextField"),
                             text = state.description,
                             labelText = stringResource(R.string.description_optional),
                             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
@@ -101,6 +104,7 @@ private fun ScheduleScreen(
                         Spacer(modifier = Modifier.height(16.dp))
                         var typeIsExpanded by remember { mutableStateOf(false) }
                         SingleChoiceDropDown(
+                            modifier = Modifier.testTag("TypeOfEvent"),
                             items = stringArrayResource(id = R.array.ScheduleTypes).toList(),
                             selectedItem = state.scheduleType,
                             isExpanded = typeIsExpanded,
@@ -115,12 +119,15 @@ private fun ScheduleScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                modifier = Modifier.padding(start = 4.dp),
+                                modifier = Modifier
+                                    .padding(start = 4.dp)
+                                    .testTag("FreeSpaceText"),
                                 text = stringResource(R.string.there_are_free_spaces),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Checkbox(
+                                modifier = Modifier.testTag("FreeSpaceCheckBox"),
                                 checked = state.hasFreeSpace,
                                 onCheckedChange = { action(ScheduleAction.ChangeHasFreeSpace(it)) },
                                 colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colors.primary)
@@ -205,6 +212,7 @@ private fun SelectTime(
                 onClick = { schedulesIsExpanded = !schedulesIsExpanded }
             )
             .padding(top = 16.dp, bottom = if (schedulesIsExpanded) 8.dp else 16.dp)
+            .testTag("SelectTime")
     ) {
         Row(
             modifier = Modifier.padding(start = 16.dp, end = 8.dp),
