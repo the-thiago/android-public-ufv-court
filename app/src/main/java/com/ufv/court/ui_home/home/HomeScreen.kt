@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -63,7 +64,7 @@ private fun HomeScreen(
 }
 
 @Composable
-private fun HomeScreen(
+fun HomeScreen(
     state: HomeViewState,
     openCalendar: () -> Unit,
     openScheduleDetails: (String) -> Unit,
@@ -106,6 +107,7 @@ private fun HomeScreen(
                 }
                 item {
                     Text(
+                        modifier = Modifier.testTag("JoinEventText"),
                         text = stringResource(R.string.join_a_event),
                         style = MaterialTheme.typography.h5
                     )
@@ -137,7 +139,8 @@ private fun HeaderOpenManage(onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(72.dp),
+            .height(72.dp)
+            .testTag("HeaderOpenManage"),
         onClick = onClick,
         elevation = 0.dp
     ) {
@@ -162,7 +165,8 @@ private fun HeaderCreateEvent(modifier: Modifier = Modifier, onClick: () -> Unit
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(72.dp),
+            .height(72.dp)
+            .testTag("HeaderCreateEvent"),
         onClick = onClick,
         elevation = 0.dp
     ) {
