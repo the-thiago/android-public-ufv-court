@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,7 +42,7 @@ private fun ForgotPasswordScreen(
 }
 
 @Composable
-private fun ForgotPasswordScreen(
+fun ForgotPasswordScreen(
     state: ForgotPasswordViewState,
     navigateUp: () -> Unit,
     action: (ForgotPasswordAction) -> Unit
@@ -55,7 +56,9 @@ private fun ForgotPasswordScreen(
         ForgotPasswordToolbar(navigateUp = navigateUp, action = action)
         Spacer(modifier = Modifier.height(16.dp))
         CustomTextField(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .testTag("EmailTextField"),
             text = state.email,
             labelText = stringResource(id = R.string.email)
         ) {
