@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -61,7 +62,7 @@ private fun RegisterScreen(
 }
 
 @Composable
-private fun RegisterScreen(
+fun RegisterScreen(
     state: RegisterViewState,
     navigateUp: () -> Unit,
     openLogin: () -> Unit,
@@ -85,6 +86,7 @@ private fun RegisterScreen(
             AddProfileImage(profileUri = state.imageUri, action = action)
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
+                modifier = Modifier.testTag("NameTextField"),
                 labelText = stringResource(R.string.name),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Words,
@@ -96,6 +98,7 @@ private fun RegisterScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
+                modifier = Modifier.testTag("EmailTextField"),
                 labelText = stringResource(R.string.email),
                 keyboardOptions = KeyboardOptions(
                     autoCorrect = false,
@@ -108,6 +111,7 @@ private fun RegisterScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
+                modifier = Modifier.testTag("PasswordTextField"),
                 labelText = stringResource(R.string.password),
                 keyboardOptions = KeyboardOptions(
                     autoCorrect = false,
@@ -121,6 +125,7 @@ private fun RegisterScreen(
             }
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
+                modifier = Modifier.testTag("ConfirmPasswordTextField"),
                 labelText = stringResource(R.string.confirm_password),
                 keyboardOptions = KeyboardOptions(
                     autoCorrect = false,
@@ -137,6 +142,7 @@ private fun RegisterScreen(
                 MaskVisualTransformation(RegisterViewModel.PHONE_MASK)
             }
             CustomTextField(
+                modifier = Modifier.testTag("PhoneTextField"),
                 labelText = stringResource(R.string.phone_optional),
                 keyboardOptions = KeyboardOptions(
                     autoCorrect = false,
