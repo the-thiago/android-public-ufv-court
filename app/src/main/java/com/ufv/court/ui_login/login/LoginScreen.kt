@@ -69,7 +69,7 @@ private fun LoginScreen(
 }
 
 @Composable
-private fun LoginScreen(
+fun LoginScreen(
     state: LoginViewState,
     openHome: () -> Unit,
     openRegister: () -> Unit,
@@ -126,7 +126,6 @@ private fun LoginScreen(
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
-                modifier = Modifier.testTag("ForgotPasswordTextButton"),
                 text = stringResource(R.string.forgot_password),
                 fontSize = 16.sp
             )
@@ -137,7 +136,6 @@ private fun LoginScreen(
             shape = RoundedCornerShape(24.dp)
         ) {
             Text(
-                modifier = Modifier.testTag("RegisterTextButton"),
                 text = stringResource(R.string.i_want_to_register),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
