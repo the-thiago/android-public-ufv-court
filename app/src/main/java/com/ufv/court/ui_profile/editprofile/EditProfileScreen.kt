@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,7 +53,7 @@ private fun EditProfileScreen(
 }
 
 @Composable
-private fun EditProfileScreen(
+fun EditProfileScreen(
     state: EditProfileViewState,
     navigateUp: () -> Unit,
     action: (EditProfileAction) -> Unit
@@ -74,7 +75,11 @@ private fun EditProfileScreen(
             ) {
                 EditProfileImage(state = state, action = action)
                 Spacer(modifier = Modifier.height(16.dp))
-                CustomTextField(text = state.name, labelText = stringResource(id = R.string.name)) {
+                CustomTextField(
+                    modifier = Modifier.testTag("NameTextField"),
+                    text = state.name,
+                    labelText = stringResource(id = R.string.name)
+                ) {
                     action(EditProfileAction.ChangeName(it))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -82,6 +87,7 @@ private fun EditProfileScreen(
                     MaskVisualTransformation(EditProfileViewModel.PHONE_MASK)
                 }
                 CustomTextField(
+                    modifier = Modifier.testTag("PhoneTextField"),
                     labelText = stringResource(R.string.phone_optional),
                     keyboardOptions = KeyboardOptions(
                         autoCorrect = false,
