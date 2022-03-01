@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -50,7 +51,7 @@ private fun MyScheduleScreen(
 }
 
 @Composable
-private fun MyScheduleScreen(
+fun MyScheduleScreen(
     state: MyScheduleViewState,
     openScheduleDetails: (String) -> Unit,
     action: (MyScheduleAction) -> Unit
@@ -91,9 +92,12 @@ private fun LoadedMyScheduleScreen(
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        ExpandableSection(textRes = R.string.events_as_participant) {
+        ExpandableSection(
+            modifier = Modifier.testTag("EventAsParticipantText"),
+            textRes = R.string.events_as_participant
+        ) {
             if (state.scheduledAsParticipant.isEmpty()) {
-                NoScheduleHereText()
+                NoScheduleHereText(modifier = Modifier.testTag("EventAsParticipantEmpty"))
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
                 Column(
@@ -111,9 +115,12 @@ private fun LoadedMyScheduleScreen(
             }
         }
         HorizontalDivisor(modifier = Modifier.padding(start = 16.dp))
-        ExpandableSection(textRes = R.string.events_scheduled) {
+        ExpandableSection(
+            modifier = Modifier.testTag("EventsScheduledText"),
+            textRes = R.string.events_scheduled
+        ) {
             if (state.scheduled.isEmpty()) {
-                NoScheduleHereText()
+                NoScheduleHereText(modifier = Modifier.testTag("EventsScheduledEmpty"))
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
                 Column(
@@ -134,9 +141,9 @@ private fun LoadedMyScheduleScreen(
 }
 
 @Composable
-private fun NoScheduleHereText() {
+private fun NoScheduleHereText(modifier: Modifier = Modifier) {
     Text(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 32.dp),
         text = stringResource(R.string.no_events_here),
