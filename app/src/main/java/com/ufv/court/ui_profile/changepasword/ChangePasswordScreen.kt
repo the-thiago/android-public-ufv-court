@@ -8,6 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -35,7 +36,7 @@ private fun ChangePasswordScreen(
 }
 
 @Composable
-private fun ChangePasswordScreen(
+fun ChangePasswordScreen(
     state: ChangePasswordViewState,
     navigateUp: () -> Unit,
     action: (ChangePasswordAction) -> Unit
@@ -130,6 +131,7 @@ private fun TextFieldsAndButton(
     ) {
         ChangePasswordSpacer()
         CustomTextField(
+            modifier = Modifier.testTag("CurrentPasswordChangePassword"),
             text = state.currentPassword,
             onTextChange = { action(ChangePasswordAction.ChangeCurrentPassword(it)) },
             labelText = stringResource(R.string.current_password),
@@ -137,6 +139,7 @@ private fun TextFieldsAndButton(
         )
         ChangePasswordSpacer()
         CustomTextField(
+            modifier = Modifier.testTag("NewPasswordChangePassword"),
             text = state.newPassword,
             onTextChange = { action(ChangePasswordAction.ChangeNewPassword(it)) },
             labelText = stringResource(R.string.new_password),
@@ -144,6 +147,7 @@ private fun TextFieldsAndButton(
         )
         ChangePasswordSpacer()
         CustomTextField(
+            modifier = Modifier.testTag("ConfirmPasswordChangePassword"),
             text = state.confirmPassword,
             onTextChange = { action(ChangePasswordAction.ChangeConfirmPassword(it)) },
             labelText = stringResource(R.string.confirm_new_password),
