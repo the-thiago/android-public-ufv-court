@@ -8,6 +8,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -41,7 +42,7 @@ private fun EditEventScreen(
 }
 
 @Composable
-private fun EditEventScreen(
+fun EditEventScreen(
     state: EditEventViewState,
     navigateUp: () -> Unit,
     action: (EditEventAction) -> Unit
@@ -64,6 +65,7 @@ private fun EditEventScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CustomTextField(
+                    modifier = Modifier.testTag("TitleTextField"),
                     text = state.schedule.title,
                     labelText = stringResource(id = R.string.title)
                 ) {
@@ -71,6 +73,7 @@ private fun EditEventScreen(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 CustomTextField(
+                    modifier = Modifier.testTag("DescriptionTextField"),
                     text = state.schedule.description,
                     labelText = stringResource(id = R.string.description_optional),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
@@ -90,6 +93,7 @@ private fun EditEventScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 CustomTextField(
+                    modifier = Modifier.testTag("FreeSpaceTextField"),
                     text = state.remainingFreeSpaces,
                     labelText = stringResource(id = R.string.remaining_free_spaces),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
