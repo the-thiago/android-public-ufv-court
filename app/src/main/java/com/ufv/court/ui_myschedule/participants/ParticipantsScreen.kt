@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -57,7 +58,7 @@ private fun ParticipantsScreen(
 }
 
 @Composable
-private fun ParticipantsScreen(
+fun ParticipantsScreen(
     state: ParticipantsViewState,
     navigateUp: () -> Unit,
     openPhoto: (String) -> Unit
@@ -87,7 +88,9 @@ private fun ParticipantsScreen(
                         }
                     }
                     Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .testTag("ParticipantsTitle"),
                         text = stringResource(id = textRes, state.participants.size.toString()),
                         style = MaterialTheme.typography.h5
                     )
