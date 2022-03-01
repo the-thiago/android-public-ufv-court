@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -131,7 +132,7 @@ private fun ScheduleDetailsBottomSheet(
 }
 
 @Composable
-private fun ScheduleDetailsScreen(
+fun ScheduleDetailsScreen(
     state: ScheduleDetailsViewState,
     navigateUp: () -> Unit,
     showBottomSheet: () -> Unit,
@@ -246,6 +247,7 @@ private fun ScheduleInfo(schedule: ScheduleModel, openParticipants: () -> Unit) 
             .padding(horizontal = 16.dp)
     ) {
         Text(
+            modifier = Modifier.testTag("TitleScheduleInfo"),
             text = schedule.title,
             style = MaterialTheme.typography.h5,
             maxLines = 3,
@@ -253,7 +255,10 @@ private fun ScheduleInfo(schedule: ScheduleModel, openParticipants: () -> Unit) 
         )
         if (schedule.cancelled) {
             Spacer(modifier = Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.testTag("CancelledScheduleInfo"),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
                     imageVector = Icons.Default.EventBusy,
                     contentDescription = null,
@@ -304,15 +309,18 @@ private fun ScheduleInfo(schedule: ScheduleModel, openParticipants: () -> Unit) 
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = if (schedule.description.isBlank()) {
+            modifier = Modifier.testTag("DescriptionScheduleInfo"),
+            text = schedule.description.ifBlank {
                 stringResource(id = R.string.there_is_no_description)
-            } else schedule.description,
+            },
             style = MaterialTheme.typography.body1
         )
         if (schedule.participantsId.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("ParticipantsScheduleInfo"),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 TextButton(onClick = openParticipants, shape = RoundedCornerShape(24.dp)) {
