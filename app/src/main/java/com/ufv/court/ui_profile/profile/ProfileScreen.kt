@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -72,7 +73,7 @@ private fun ProfileScreen(
 }
 
 @Composable
-private fun ProfileScreen(
+fun ProfileScreen(
     state: ProfileViewState,
     openLogin: () -> Unit,
     openChangePassword: () -> Unit,
@@ -136,12 +137,22 @@ private fun ProfileTopBar(state: ProfileViewState, openPhoto: (String) -> Unit) 
         image = state.image
     )
     Spacer(modifier = Modifier.height(16.dp))
-    Text(text = state.name, style = MaterialTheme.typography.h5)
+    Text(
+        modifier = Modifier.testTag("NameProfile"),
+        text = state.name,
+        style = MaterialTheme.typography.h5
+    )
     Spacer(modifier = Modifier.height(4.dp))
-    Text(text = state.email, style = MaterialTheme.typography.body1, color = ShipCove)
+    Text(
+        modifier = Modifier.testTag("EmailProfile"),
+        text = state.email,
+        style = MaterialTheme.typography.body1,
+        color = ShipCove
+    )
     if (state.phone.isNotBlank()) {
         Spacer(modifier = Modifier.height(6.dp))
         Text(
+            modifier = Modifier.testTag("PhoneProfile"),
             text = state.phone.toMaskedPhone(),
             style = MaterialTheme.typography.body1,
             color = ShipCove
