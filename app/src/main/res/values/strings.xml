@@ -75,7 +75,7 @@
     <string name="description_optional">Descrição (opcional)</string>
     <string name="there_are_free_spaces">Há vagas livres:</string>
     <string name="free_spaces">Vagas livres</string>
-    <string name="remaining_free_spaces">Vagas livres restantes</string>
+    <string name="remaining_free_spaces">Vagas livres</string>
     <string name="schedule_text">Agendar</string>
     <string-array name="ScheduleTypes">
         <item>Futsal</item>
