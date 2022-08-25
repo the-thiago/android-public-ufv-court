@@ -59,7 +59,7 @@ fun ScheduledItem(
             TimeInMillisDateInfo(scheduleModel.timeInMillis) { day, month, year ->
                 Text(
                     modifier = Modifier.testTag("DateScheduledItem"),
-                    text = " ${day}/${month}/${year} - ${scheduleModel.hourStart}h as ${scheduleModel.hourEnd}h",
+                    text = " ${day}/${month}/${year} - ${scheduleModel.hourStart}h to ${scheduleModel.hourEnd}h",
                     style = MaterialTheme.typography.button
                 )
             }

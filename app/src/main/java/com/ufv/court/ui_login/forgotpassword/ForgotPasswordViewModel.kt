@@ -62,8 +62,7 @@ class ForgotPasswordViewModel @Inject constructor(
 
     private fun emailIsValid(): Boolean {
         if (state.value.email.isEmpty() ||
-            !Patterns.EMAIL_ADDRESS.matcher(state.value.email).matches() ||
-            !state.value.email.endsWith("@ufv.br")
+            !Patterns.EMAIL_ADDRESS.matcher(state.value.email).matches()
         ) {
             _state.value = state.value.copy(error = ForgotPasswordError.InvalidEmail)
             return false

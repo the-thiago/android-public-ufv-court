@@ -115,9 +115,7 @@ class RegisterViewModel @Inject constructor(
         } else if (state.value.password != state.value.confirmPassword) {
             _state.value = state.value.copy(error = RegisterCredentialsError.DifferentPassword)
             return false
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(state.value.email).matches() ||
-            !state.value.email.endsWith("@ufv.br")
-        ) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(state.value.email).matches()) {
             _state.value = state.value.copy(error = RegisterCredentialsError.EmailDomainNotAllowed)
             return false
         } else if (state.value.phone.isNotBlank() && state.value.phone.length != 11) {
